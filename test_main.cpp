@@ -14,9 +14,12 @@ int main(int argc, char** argv) {
 	
 	Verilated::commandArgs(argc, argv);
 
+#if 1
 	encoder_main(argc, argv);
-	printf("encode end");
+	printf("encode end\n");
 	return 0;
+#endif
+
 	int ret = init_param(argc, argv);
 	if (ret <0) {
 		return -1;

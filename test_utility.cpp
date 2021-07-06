@@ -14,6 +14,9 @@ int width = 0;
 int height = 0;
 
 
+extern int v_y_data[128*16*2];
+extern int v_cb_data[128*16];
+extern int v_cr_data[128*16];
 
 
 void posedge_clock_result(Vwrapper *dut){
@@ -35,7 +38,7 @@ void posedge_clock(Vwrapper *dut){
 	int i,j;
 	for(i=0;i<8;i++) {
 		for(j=0;j<8;j++) {
-			dut->INPUT_DATA[i][j] = org[(i*8)+j];
+			dut->INPUT_DATA[i][j] = v_y_data[(i*8)+j];
 			}
 	}
 	dut->INPUT_DATA_ENABLE=1;
@@ -58,6 +61,7 @@ void unreset_test(Vwrapper *dut) {
 }
 
 int init_param(int argc, char** argv) {
+#if 0
 	if (argc != 5) {
 		printf("error %d", __LINE__);
 		return -1;
@@ -82,7 +86,9 @@ int init_param(int argc, char** argv) {
 
 	width = atoi(argv[3]);
 	height = atoi(argv[4]);
+#else
 
+#endif
 	return 0;
 }
 

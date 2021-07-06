@@ -365,7 +365,7 @@ void *thread_start_routin(void *arg)
 	int counter = 0;
 	for(;;) {
 #if 1
-		//printf("start 1\n");
+		printf("start 1\n");
 		pthread_mutex_lock(&slice_num_thread_mutex[param->thread_no]);
 		while(slice_num_thread[param->thread_no] == 0) {
 			counter = 0;
@@ -392,10 +392,12 @@ void *thread_start_routin(void *arg)
 			//printf("size=%d\n", slice_size);
 		}
 //		int index = (counter * MAX_THREAD_NUM) + param->thread_no;
-		//printf("wait_write_bitstream\n");
+		printf("wait_write_bitstream\n");
 		wait_write_bitstream(param);
-		//printf("start4 %p %d\n", slice_param[index].bitstream->bitstream_buffer, size*8);
+		printf("start %p %d\n", slice_param[index].bitstream->bitstream_buffer, size*8);
+#ifdef DEV_ENCODE
 		setByte(&write_bitstream, slice_param[index].bitstream->bitstream_buffer, size);
+#endif
 		if (slice_param[index+j-1].end == true) {
 			//printf("start5 \n" );
 
@@ -521,8 +523,8 @@ void encode_slices(struct encoder_param * param)
 
 	gettimeofday(&startTime,NULL);
 //	printf("s %d.%d\n", (int)startTime.tv_sec, (int)startTime.tv_usec);
-	start_write_bitstream();
 
+	start_write_bitstream();
 
 	frame_end_wait();
 	gettimeofday(&endTime,NULL);
@@ -530,9 +532,11 @@ void encode_slices(struct encoder_param * param)
 #ifdef TIME_SCALE
 	printf("end %d\n", (int)(endTime.tv_sec - startTime.tv_sec));
 #endif
+#ifdef DEV_ENCODE
     for (i = 0; i < slice_num_max ; i++) {
         setSliceTalbeFlush(slice_size_table[i], slice_size_table_offset + (i * 2));
     }
+#endif
 
 }
 
@@ -558,6 +562,7 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
     set_picture_header(param);
 
     encode_slices(param);
+#ifdef DEV_ENCODE
     uint32_t picture_end = (getBitSize(&write_bitstream)) >>  3 ;
 
     uint32_t tmp  = picture_end - picture_size_offset;
@@ -570,6 +575,9 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
     uint32_t frame_size_data = SET_DATA32(*encode_frame_size);
     setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
     return ptr;
+#else
+    return NULL;
+#endif
 }
 
 

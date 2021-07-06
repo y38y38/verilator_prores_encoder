@@ -236,9 +236,9 @@ int32_t ComplmentVideoFrame(uint16_t *data, int32_t horizontal, int32_t vertical
 /*  2 →１６bit */
 #define MAX_DATA_SIZE ((MAX_HORIZONTAL * MAX_VERTICAL) * 2)
 
-static uint8_t input_y_data[MAX_DATA_SIZE];
-static uint8_t input_cb_data[MAX_DATA_SIZE];
-static uint8_t input_cr_data[MAX_DATA_SIZE];
+uint8_t input_y_data[MAX_DATA_SIZE];
+uint8_t input_cb_data[MAX_DATA_SIZE];
+uint8_t input_cr_data[MAX_DATA_SIZE];
 
 /*
  * ./encoder [-l luma_matrix_file] [-c  chroma_matrix_file] [-q qscale_file] [-h horizontal] [-v vertical] [-m slice_size_in_mb] -i input_file -o output_file
@@ -363,6 +363,7 @@ int encoder_main(int argc, char **argv)
 #endif
         uint32_t frame_size;
         uint8_t *frame = encode_frame(&param, &frame_size);
+#ifdef DEV_ENCODE
 #ifndef TIME_SCALE
         size_t writesize = fwrite(frame, 1, frame_size,  output);
         if (writesize != frame_size) {
@@ -374,6 +375,7 @@ int encoder_main(int argc, char **argv)
 		if (i==5) {
 			break;
 		}
+#endif
 #endif
     }
 

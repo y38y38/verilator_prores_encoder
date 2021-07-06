@@ -169,6 +169,7 @@ static void pre_quant_qt_qscale(int16_t *block, uint8_t *qmat, uint8_t scale, in
 
     }
 
+
 }
 
 // macro block num * block num per macro  block * pixel num per block * pixel size
@@ -211,6 +212,13 @@ static uint8_t qScale2quantization_index(uint8_t qscale)
 }
 #endif
 
+
+int v_y_data[128*16*2];
+int v_cb_data[128*16];
+int v_cr_data[128*16];
+
+
+
 uint16_t encode_slice(struct Slice *param)
 {
 	//initBitStream(param->bitstream);
@@ -241,9 +249,11 @@ uint16_t encode_slice(struct Slice *param)
 //	printf("offset=0x%x\n", code_size_of_cb_data_offset);
 
 	getYver2((uint16_t*)param->working_buffer, param->y_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
+	memcpy(v_y_data, param->working_buffer, 128*16*2);
+#ifdef DEV_ENCODE
 	size = (uint16_t)encode_slice_component(param, param->working_buffer, param->luma_matrix, MB_IN_BLOCK);
     uint16_t y_size  = SET_DATA16(size);
-
+#endif
     uint16_t cb_size;
     if (param->format_444 == true) {
 
@@ -257,17 +267,29 @@ uint16_t encode_slice(struct Slice *param)
 
     } else {
 		getCver2((uint16_t*)param->working_buffer, param->cb_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
+		memcpy(v_cb_data, param->working_buffer, 128*16);
+#ifdef DEV_ENCODE
 		size = (uint16_t)encode_slice_component(param, (int16_t*)param->working_buffer, param->chroma_matrix, MB_422C_IN_BLCCK);
         cb_size = SET_DATA16(size);
+#endif
 
 		getCver2((uint16_t*)param->working_buffer, param->cr_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
+		memcpy(v_cr_data, param->working_buffer, 128*16);
+#ifdef DEV_ENCODE
+
 		size = (uint16_t)encode_slice_component(param, (int16_t*)param->working_buffer, param->chroma_matrix, MB_422C_IN_BLCCK);
+#endif
     }
 
+#ifdef DEV_ENCODE
     setByteInOffset(param->bitstream, code_size_of_y_data_offset , (uint8_t *)&y_size, 2);
     setByteInOffset(param->bitstream, code_size_of_cb_data_offset , (uint8_t *)&cb_size, 2);
     uint32_t current_offset = getBitSize(param->bitstream);
 	//printf("size=0x%x\n",  ((current_offset - start_offset)/8));
+
     return ((current_offset - start_offset)/8);
+#else
+	return 0;
+#endif
 }
 
