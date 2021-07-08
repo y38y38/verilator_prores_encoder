@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 #if 1
 	encoder_main(argc, argv);
 	printf("encode end\n");
-	return 0;
+//	return 0;
 #endif
 
 	int ret = init_param(argc, argv);
@@ -47,8 +47,7 @@ int main(int argc, char** argv) {
 	}
 	// Release reset
 	unreset_test(dut);
-
-	while (time_counter < 74 && !Verilated::gotFinish()) {
+	while (is_run(time_counter) && !Verilated::gotFinish()) {
 		toggle_clock(dut);
 		if (dut->CLOCK) {
 			posedge_clock(dut);
@@ -60,9 +59,9 @@ int main(int argc, char** argv) {
 		}
 		tfp->dump(time_counter);  // 波形ダンプ用の記述を追加
 		time_counter++;
-
+//return 0;
 	}
-
+//return 0;
 	end_test(dut);
 	dut->final();
 	tfp->close(); 

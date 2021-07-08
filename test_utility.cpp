@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "encoder_main.h"
 #include "test_utility.h"
 
 
@@ -20,18 +20,20 @@ extern int v_cr_data[128*16];
 
 
 void posedge_clock_result(Vwrapper *dut){
-	if (dut->OUTPUT_DATA_ENABLE != 0) {
+//return ;
 		static int first = 1;
-		if (first) {
+		if (first<20) {
 			int i,j;
+			printf("%d\n", first);
 			for(i=0;i<8;i++) {
 				for(j=0;j<8;j++) {
-					fprintf(out, "%d\n", dut->OUTPUT_DATA[i][j]);
+//					fprintf(out, "%d\n", dut->OUTPUT_DATA[i][j]);
+					printf("%d ", dut->OUTPUT_DATA[i][j]);
 				}
+				printf("\n");
 			}
-			first = 0;
+			first++;
 		}
-	}
 }
 
 void posedge_clock(Vwrapper *dut){
@@ -39,17 +41,33 @@ void posedge_clock(Vwrapper *dut){
 	for(i=0;i<8;i++) {
 		for(j=0;j<8;j++) {
 			dut->INPUT_DATA[i][j] = v_y_data[(i*8)+j];
-			}
+
+		}
 	}
-	dut->INPUT_DATA_ENABLE=1;
+	dut->QSCALE = qscale_table_[0];
+	for(i=0;i<8;i++) {
+		for(j=0;j<8;j++) {
+			dut->QMAT[i][j] = chroma_matrix2_[(i*8)+j];
+
+		}
+	}
 }
 
+bool is_run(int time_counter) {
+//	printf("is %d\n", time_counter);
+	if (time_counter < 36) {
+		return true;
+
+	} else {
+		return false;
+	}
+}
 
 void init_test(Vwrapper *dut) {
 }
 
 void end_test(Vwrapper *dut) {
-	fclose(out);
+//	fclose(out);
 }
 
 void reset_test(Vwrapper *dut) {

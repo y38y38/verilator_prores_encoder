@@ -7,6 +7,9 @@
 
 int init_param(int argc, char** argv);
 
+
+bool is_run(int time_counter);
+
 void init_test(Vwrapper *dut);
 void end_test(Vwrapper *dut);
 
