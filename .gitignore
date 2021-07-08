@@ -3,3 +3,4 @@
 *.a
 obj_dir/*
 *.bin
+*fst
