@@ -13,8 +13,44 @@
 
 #include "prores.h"
 #include "debug.h"
+void print_block8(int8_t *block)
+{
 
+    int32_t x,y;
+    for (y=0;y<8;y++) {
+        for (x=0;x<8;x++) {
+            printf("%d ", block[(y * 8) + x]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
 
+void print_block32(int32_t *block)
+{
+
+    int32_t x,y;
+    for (y=0;y<8;y++) {
+        for (x=0;x<8;x++) {
+            printf("%d ", block[(y * 8) + x]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void print_block16(int16_t *block)
+{
+
+    int32_t x,y;
+    for (y=0;y<8;y++) {
+        for (x=0;x<8;x++) {
+            printf("%d ", block[(y * 8) + x]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
 void aprint_block(int16_t *block)
 {
 

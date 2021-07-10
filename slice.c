@@ -13,9 +13,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
+#include "config.h"
 #include "prores.h"
 #include "encoder.h"
+#include "debug.h"
+
 
 #include "dct.h"
 #include "bitstream.h"
@@ -168,7 +170,13 @@ static void pre_quant_qt_qscale(int16_t *block, uint8_t *qmat, uint8_t scale, in
         }
 
     }
-
+	#if 0
+	static int first3 = 1;
+	if (first3 ) {
+		print_block8((int8_t*)qmat);
+	}
+	first3=0;
+#endif
 
 }
 
@@ -178,16 +186,57 @@ static void pre_quant_qt_qscale(int16_t *block, uint8_t *qmat, uint8_t scale, in
 static uint32_t encode_slice_component(struct Slice *param, int16_t* pixel, uint8_t *matrix, int mb_in_block)
 {
     uint32_t start_offset= getBitSize(param->bitstream);
-
+#if 0
+	static int first =1;
+	if (first) {
+		for(int i=0;i<8;i++) {
+			for(int j=0;j<8;j++) {
+				printf("%d ", pixel[(i*8) + j]);
+			}
+		}
+			printf("\n");
+	}
+	first = 0;
+#endif
     pre_dct(pixel, param->slice_size_in_mb * mb_in_block);
 
     int32_t i;
     for (i = 0;i< param->slice_size_in_mb * mb_in_block;i++) {
         dct_block(&pixel[i* BLOCK_IN_PIXEL]);
     }
+
+#if 0
+	static int first3 =1;
+	if (first3) {
+			printf("\n");
+		for(int i=0;i<8;i++) {
+			for(int j=0;j<8;j++) {
+				printf("%d ", pixel[(i*8) + j]);
+			}
+//			printf("\n");
+		}
+	printf("\n");
+	}
+	first3 = 0;
+#endif
     //after_dct(pixel, param->slice_size_in_mb * mb_in_block);
 	pre_quant_qt_qscale(pixel, matrix,param->qscale,param->slice_size_in_mb * mb_in_block);
-
+#if 1
+	static int first2 =1;
+	if (first2) {
+//			printf("\n");
+	for (int b = 0;b<param->slice_size_in_mb * mb_in_block;b++) {
+//	for (int b = 0;b<1;b++) {
+		for(int i=0;i<8;i++) {
+			for(int j=0;j<8;j++) {
+				printf("%d ", pixel[(i*8) + j + (b * 64)]);
+			}
+		}
+		printf("\n");
+	}
+	}
+	first2 = 1;
+#endif
     //pre_quant(pixel, param->slice_size_in_mb * mb_in_block);
     //encode_qt(pixel, param->chroma_matrix, param->slice_size_in_mb * mb_in_block);
     //encode_qscale(pixel,param->qscale , param->slice_size_in_mb * mb_in_block);
@@ -213,9 +262,9 @@ static uint8_t qScale2quantization_index(uint8_t qscale)
 #endif
 
 
-int v_y_data[128*16*2];
-int v_cb_data[128*16];
-int v_cr_data[128*16];
+int16_t v_y_data[128*16*2];
+int16_t v_cb_data[128*16];
+int16_t v_cr_data[128*16];
 
 
 
@@ -250,10 +299,22 @@ uint16_t encode_slice(struct Slice *param)
 
 	getYver2((uint16_t*)param->working_buffer, param->y_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
 	memcpy(v_y_data, param->working_buffer, 128*16*2);
+#if 0
+	static int first = 1;
+	if (first ) {
+		print_block16(v_y_data);
+	}
+	first=0;
+#endif
+//	printf("slicce11\n");
 #ifdef DEV_ENCODE
+//#if 1
+//	printf("slicce\n");
 	size = (uint16_t)encode_slice_component(param, param->working_buffer, param->luma_matrix, MB_IN_BLOCK);
     uint16_t y_size  = SET_DATA16(size);
 #endif
+//#ifdef DEV_ENCODE
+#if 1
     uint16_t cb_size;
     if (param->format_444 == true) {
 
@@ -280,13 +341,14 @@ uint16_t encode_slice(struct Slice *param)
 		size = (uint16_t)encode_slice_component(param, (int16_t*)param->working_buffer, param->chroma_matrix, MB_422C_IN_BLCCK);
 #endif
     }
+#endif
 
 #ifdef DEV_ENCODE
     setByteInOffset(param->bitstream, code_size_of_y_data_offset , (uint8_t *)&y_size, 2);
     setByteInOffset(param->bitstream, code_size_of_cb_data_offset , (uint8_t *)&cb_size, 2);
     uint32_t current_offset = getBitSize(param->bitstream);
 	//printf("size=0x%x\n",  ((current_offset - start_offset)/8));
-
+	printf("aa\n");
     return ((current_offset - start_offset)/8);
 #else
 	return 0;

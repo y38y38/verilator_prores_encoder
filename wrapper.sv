@@ -8,7 +8,9 @@ module wapper(
 	input wire [31:0] QSCALE,
 	input wire [31:0] QMAT[8][8],
 	
-	
+	output wire [31:0] PRE_DCT_OUTPUT[8][8],
+	output wire [31:0] DCT_OUTPUT[8][8],
+
 	output wire [31:0] OUTPUT_DATA[8][8],
 
 	input wire VLC_RESET,
@@ -25,7 +27,7 @@ module wapper(
 	
     );
 
-wire [31:0] PRE_DCT_OUTPUT[8][8];
+//wire [31:0] PRE_DCT_OUTPUT[8][8];
 
 
 pre_dct pre_dct_inst (
@@ -36,7 +38,7 @@ pre_dct pre_dct_inst (
 );
 
 
-wire [31:0] DCT_OUTPUT[8][8];
+//wire [31:0] DCT_OUTPUT[8][8];
 
 dct dct_inst (
 	.CLOCK(CLOCK),

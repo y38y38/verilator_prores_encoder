@@ -365,7 +365,7 @@ void *thread_start_routin(void *arg)
 	int counter = 0;
 	for(;;) {
 #if 1
-		printf("start 1\n");
+		//printf("start 1\n");
 		pthread_mutex_lock(&slice_num_thread_mutex[param->thread_no]);
 		while(slice_num_thread[param->thread_no] == 0) {
 			counter = 0;
@@ -392,9 +392,9 @@ void *thread_start_routin(void *arg)
 			//printf("size=%d\n", slice_size);
 		}
 //		int index = (counter * MAX_THREAD_NUM) + param->thread_no;
-		printf("wait_write_bitstream\n");
+		//printf("wait_write_bitstream\n");
 		wait_write_bitstream(param);
-		printf("start %p %d\n", slice_param[index].bitstream->bitstream_buffer, size*8);
+		//("start %p %d\n", slice_param[index].bitstream->bitstream_buffer, size*8);
 #ifdef DEV_ENCODE
 		setByte(&write_bitstream, slice_param[index].bitstream->bitstream_buffer, size);
 #endif

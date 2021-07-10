@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
 #if 1
 	encoder_main(argc, argv);
-	printf("encode end\n");
+	//printf("encode end\n");
 //	return 0;
 #endif
 
