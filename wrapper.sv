@@ -23,8 +23,19 @@ module wapper(
 	output wire [23:0] AC_BITSTREAM_LEVEL_SUM,
 
 	output wire [23:0] AC_BITSTREAM_RUN_OUTPUT_ENABLE,
-	output wire [23:0] AC_BITSTREAM_RUN_SUM
-	
+	output wire [23:0] AC_BITSTREAM_RUN_SUM,
+
+output wire [23:0] LENGTH,
+output wire [19:0] ABS_PREVIOUSDCDIFF,
+output wire [19:0] ABS_PREVIOUSDCDIFF_NEXT,
+output wire [19:0] PREVIOUSDCOEFF,
+output wire [19:0] PREVIOUSDCDIFF,
+output wire [19:0] DC_COEFF_DIFFERENCE,
+output wire [19:0] VAL,
+output wire [19:0] VAL_N,
+output wire [23:0] PPPP,
+output wire [1:0] is_expo_golomb_code
+
     );
 
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
@@ -60,7 +71,6 @@ pre_quant_qt_qscale pre_quant_qt_qscale_inst(
 
 
 
-
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	.clk(CLOCK),
 	.reset_n(VLC_RESET),
@@ -68,7 +78,20 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	//1bit多く用意しておく。
 	.DcCoeff(INPUT_DC_DATA),
 	.output_enable(DC_BITSTREAM_OUTPUT_ENABLE),//mask
-	.sum(DC_BITSTREAM_SUM)
+	.sum(DC_BITSTREAM_SUM),
+	.pppp(PPPP),
+
+	//debug
+	.LENGTH(LENGTH),
+	.abs_previousDCDiff(ABS_PREVIOUSDCDIFF),
+	.abs_previousDCDiff_next(ABS_PREVIOUSDCDIFF_NEXT), 
+	.previousDCCoeff(PREVIOUSDCOEFF), 
+	.previousDCDiff(PREVIOUSDCDIFF), 
+	.dc_coeff_difference(DC_COEFF_DIFFERENCE), 
+	.val(VAL),
+	.val_n(VAL_N),
+	.is_expo_golomb_code(is_expo_golomb_code)
+
 );
 
 entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(

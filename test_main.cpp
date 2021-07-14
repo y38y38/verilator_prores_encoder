@@ -47,14 +47,27 @@ int main(int argc, char** argv) {
 	}
 	// Release reset
 	unreset_test(dut);
+	//printf("loop\n");
 	while (is_run(time_counter) && !Verilated::gotFinish()) {
+//			printf("2 DcCoeff %d\n", dut->INPUT_DC_DATA);
+//			printf("2 previousDCCoeff %d\n", dut->PREVIOUSDCOEFF);
 		toggle_clock(dut);
+//			printf("3 DcCoeff %d\n", dut->INPUT_DC_DATA);
+//			printf("3 previousDCCoeff %d\n", dut->PREVIOUSDCOEFF);
 		if (dut->CLOCK) {
+//			printf("4 DcCoeff %d\n", dut->INPUT_DC_DATA);
+//			printf("4 previousDCCoeff %d\n", dut->PREVIOUSDCOEFF);
 			posedge_clock(dut);
 		}
+//			printf("5 DcCoeff %d\n", dut->INPUT_DC_DATA);
+//			printf("5 previousDCCoeff %d\n", dut->PREVIOUSDCOEFF);
 		// Evaluate DUT
+		//printf("b dc_coeff %d\n", dut->INPUT_DC_DATA);
 		dut->eval();
+		//printf("a dc_coeff %d\n", dut->INPUT_DC_DATA);
 		if (dut->CLOCK) {
+//		printf("1 DcCoeff %d\n", dut->INPUT_DC_DATA);
+//		printf("1 previousDCCoeff %d\n", dut->PREVIOUSDCOEFF);
 			posedge_clock_result(dut);
 		}
 		tfp->dump(time_counter);  // 波形ダンプ用の記述を追加

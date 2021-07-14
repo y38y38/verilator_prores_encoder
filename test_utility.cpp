@@ -29,7 +29,14 @@ int result_y_block_counter =0;
 int result_cb_block_counter =0;
 int result_cr_block_counter =0;
 
+
+int v_y_data_result_flag = 0;
+int v_cb_data_result_flag = 0;
+int v_cr_data_result_flag = 0;
+
+
 void posedge_clock_result(Vwrapper *dut){
+//	printf("aa");
 //return ;
 		static int first = 1;
 		//		printf("\n");
@@ -60,9 +67,11 @@ void posedge_clock_result(Vwrapper *dut){
 			}
 		}
 		first++;
-		if (first>=12) {
+//		if (first>=12) {
+		if (1) {
+//			printf("e %d %d\n", first,result_block_counter );
 			if (result_block_counter>=0 && result_block_counter<32) {
-			//printf("%d %d\n", first,result_block_counter );
+//			printf("s %d %d\n", first,result_block_counter );
 //				memcpy(&v_y_data_result[result_y_block_counter*64], dut->DCT_OUTPUT, 64*2);
 //				printf("%d %d\n", dut->DCT_OUTPUT[0][0], dut->DCT_OUTPUT[0][1] );
 				for(int i=0;i<8;i++) {
@@ -73,38 +82,80 @@ void posedge_clock_result(Vwrapper *dut){
 				}
 				printf("\n");
 				result_y_block_counter++;
+				if (result_block_counter == 31) {
+					v_y_data_result_flag = 1;
+				}
 			} else if (result_block_counter >= 32 && result_block_counter < 48) {
 			//printf("%d %d\n", first,result_block_counter );
 //				memcpy(&v_cb_data_result[result_cb_block_counter*64], dut->OUTPUT_DATA, 64*2);
 				for(int i=0;i<8;i++) {
 					for(int j=0;j<8;j++) {
 						v_cb_data_result[(result_cb_block_counter*64) + (i*8) + j] = dut->OUTPUT_DATA[i][j];
-						printf("%d ", v_cb_data_result[(i*8)+ j + (result_cb_block_counter*64)]);
+						//printf("%d ", v_cb_data_result[(i*8)+ j + (result_cb_block_counter*64)]);
 					}
 				}
-				printf("\n");
+				//printf("\n");
 				result_cb_block_counter++;
+				if (result_block_counter == 47) {
+					v_cb_data_result_flag = 1;
+				}
 			} else if (result_block_counter >= 48 && result_block_counter < 64) {
 			//printf("%d %d\n", first,result_block_counter );
 //				memcpy(&v_cr_data_result[result_cr_block_counter*64], dut->OUTPUT_DATA, 64*2);
 				for(int i=0;i<8;i++) {
 					for(int j=0;j<8;j++) {
 						v_cr_data_result[(result_cr_block_counter*64) + (i*8) + j] = dut->OUTPUT_DATA[i][j];
-						printf("%d ", v_cr_data_result[(i*8)+ j + (result_cr_block_counter*64)]);
+						//printf("%d ", v_cr_data_result[(i*8)+ j + (result_cr_block_counter*64)]);
 					}
 				}
-				printf("\n");
+				//printf("\n");
 				result_cr_block_counter++;
+				if (result_block_counter == 63) {
+					v_cb_data_result_flag = 1;
+				}
 			} else {
 //				printf("end of dct %d %d %d %d %d\n", first , result_block_counter, result_y_block_counter, result_cb_block_counter, result_cr_block_counter);
 			}
 			result_block_counter++;
 //			printf("result_block_counter %d\n",result_block_counter );
 		}
+	if (dut->VLC_RESET) {
+//		printf("%x %x\n", dut->DC_BITSTREAM_OUTPUT_ENABLE, dut->DC_BITSTREAM_SUM);
+//		printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
+#if 0
+		printf("VLC_RESET %d\n", dut->VLC_RESET);
+		printf("ABS_PREVIOUSDCDIFF %d\n", dut->ABS_PREVIOUSDCDIFF);
+		printf("ABS_PREVIOUSDCDIFF_NEXT %d\n", dut->ABS_PREVIOUSDCDIFF_NEXT);
+		printf("PREVIOUSDCOEFF %d\n", dut->PREVIOUSDCOEFF);
+		printf("PREVIOUSDCDIFF %d\n", dut->PREVIOUSDCDIFF);
+		printf("DC_COEFF_DIFFERENCE %d\n", dut->DC_COEFF_DIFFERENCE);
+		printf("VAL %d\n", dut->VAL);
+		printf("VAL_N %d\n", dut->VAL_N);
+		printf("is_expo_golomb_code %d\n", dut->is_expo_golomb_code);
+		printf("INPUT_DC_DATA %d\n", dut->INPUT_DC_DATA);
+		printf("LENGTH %d\n", dut->LENGTH);
+#endif
+	}
+#if 0
+LENGTH,
+ABS_PREVIOUSDCDIFF,
+ABS_PREVIOUSDCDIFF_NEXT,
+PREVIOUSDCOEFF,
+PREVIOUSDCDIFF,
+DC_COEFF_DIFFERENCE,
+VAL,
+VAL_N
+#endif
+
 }
 static int block_counter = 0;
 static int block_cb_counter = 0;
 static int block_cr_counter = 0;
+
+static int vlc_counter = 0;
+
+extern uint8_t block_pattern_scan_read_order_table[64];
+
 void posedge_clock(Vwrapper *dut){
 #if 0
 	static int first = 1;
@@ -177,11 +228,80 @@ void posedge_clock(Vwrapper *dut){
 	}
 	first3=0;
 #endif
+	#define Y_DC_RESET_STATE	(1)
+	#define Y_DC_STATE			(2)
+	#define Y_AC_RESET_STATE	(3)
+	#define Y_AC_STATE			(4)
+	#define	CB_DC_RESET_STATE	(5)
+	#define	CB_DC_STATE			(6)
+	#define CB_AC_RESET_STATE	(7)
+	#define CB_AC_STATE			(8)
+	#define CR_DC_RESET_STATE	(9)
+	#define CR_DC_STATE			(10)
+	#define CR_AC_RESET_STATE	(11)
+	#define CR_AC_STATE			(12)
+	static int vlc_state = 0;
+	if (v_cb_data_result_flag == 1) {
+		if (vlc_state == 0) {
+			vlc_state = Y_DC_RESET_STATE;
+			vlc_counter = 0;
+		} else if (vlc_state == Y_DC_RESET_STATE) {
+			dut->VLC_RESET = 0;
+			vlc_state = Y_DC_STATE;
+		} else if (vlc_state == Y_DC_STATE) {
+			static int first =1;
+			if (first) {
+				dut->VLC_RESET = 1;
+				vlc_counter = 0;
+				first = 0;
+			}
+
+			dut->INPUT_DC_DATA = v_y_data_result[vlc_counter*64];
+
+			if (vlc_counter == 31) {
+				vlc_state = Y_AC_RESET_STATE;
+			}
+		} else if (vlc_state == Y_AC_RESET_STATE) {
+			dut->VLC_RESET = 0;
+			vlc_state = Y_AC_STATE;
+
+		} else if (vlc_state == Y_AC_STATE) {
+			static int first =1;
+			static int conefficient = 1;
+			static int block = 0;
+			static int position;
+
+			if (first) {
+				dut->VLC_RESET = 1;
+				vlc_counter = 0;
+				first = 0;
+			}
+			if (block == 0) {
+	        	position = block_pattern_scan_read_order_table[conefficient];
+			}
+
+			dut->INPUT_AC_DATA = v_y_data_result[(block * 64) + position];
+
+			block++;
+			if (block == 32) {
+				block = 0;
+				conefficient++;
+			}
+
+			if (conefficient == 64) {
+				vlc_state = CR_DC_RESET_STATE;
+			}
+		}
+//		printf("state %d\n", vlc_state);
+		
+		vlc_counter++;
+	}
+
 }
 
 bool is_run(int time_counter) {
-//	printf("is %d\n", time_counter);
-	if (time_counter < 200) {
+	//printf("is %d\n", time_counter);
+	if (time_counter < 800) {
 		return true;
 
 	} else {
@@ -239,6 +359,6 @@ int init_param(int argc, char** argv) {
 
 void toggle_clock(Vwrapper *dut) {
 	dut->CLOCK = !dut->CLOCK; // Toggle clock
-	dut->eval();
+//	dut->eval();
 
 }

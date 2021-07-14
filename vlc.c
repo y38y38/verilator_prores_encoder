@@ -24,9 +24,12 @@ static void golomb_rice_code(int32_t k, uint32_t val, struct bitstream *bitstrea
 
     if (k ==0) {
         if (q != 0) {
-            setBit(bitstream, 0,q);
-        }
-        setBit(bitstream, 1,1);
+//            setBit(bitstream, 0,q);
+    	    setBit(bitstream, 1,1+q);
+        } else {
+	        setBit(bitstream, 1,1);
+
+		}
     } else {
         uint32_t tmp = (k==0) ? 1 : (2<<(k-1));
         uint32_t r = val & (tmp -1 );
@@ -36,7 +39,7 @@ static void golomb_rice_code(int32_t k, uint32_t val, struct bitstream *bitstrea
     }
     return;
 }
-static void exp_golomb_code(int32_t k, uint32_t val, struct bitstream *bitstream)
+static void exp_golomb_code(int32_t k, uint32_t val, struct bitstream *bitstream, int add_bit)
 {
 
 	//LOG
@@ -46,7 +49,7 @@ static void exp_golomb_code(int32_t k, uint32_t val, struct bitstream *bitstream
 
     int32_t codeword_length = (2 * q) + k + 1;
 
-    setBit(bitstream, sum, codeword_length);
+    setBit(bitstream, sum, codeword_length+ add_bit);
     return;
 }
 static void rice_exp_combo_code(int32_t last_rice_q, int32_t k_rice, int32_t k_exp, uint32_t val, struct bitstream *bitstream)
@@ -56,23 +59,23 @@ static void rice_exp_combo_code(int32_t last_rice_q, int32_t k_rice, int32_t k_e
     if (val < value) {
         golomb_rice_code(k_rice, val, bitstream);
     } else {
-        setBit(bitstream, 0,last_rice_q + 1);
-        exp_golomb_code(k_exp, val - value, bitstream);
+//        setBit(bitstream, 0,last_rice_q + 1);
+        exp_golomb_code(k_exp, val - value, bitstream, last_rice_q + 1);
     }
     return;
 }
 static void entropy_encode_dc_coefficient(bool first, int32_t abs_previousDCDiff , int val, struct bitstream *bitstream)
 {
     if (first) {
-        exp_golomb_code(5, val, bitstream);
+        exp_golomb_code(5, val, bitstream,0);
     } else if (abs_previousDCDiff == 0) {
-        exp_golomb_code(0, val, bitstream);
+        exp_golomb_code(0, val, bitstream,0);
     } else if (abs_previousDCDiff == 1) {
-        exp_golomb_code(1, val, bitstream);
+        exp_golomb_code(1, val, bitstream,0);
     } else if (abs_previousDCDiff == 2) {
         rice_exp_combo_code(1,2,3, val, bitstream);
     } else {
-        exp_golomb_code(3, val, bitstream);
+        exp_golomb_code(3, val, bitstream,0);
     }
     return;
 
@@ -84,13 +87,13 @@ static void encode_vlc_codeword_ac_run(int32_t previousRun, int32_t val, struct 
     } else if ((previousRun== 2)||(previousRun== 3)) {
         rice_exp_combo_code(1,0,1, val, bitstream);
     } else if (previousRun== 4) {
-        exp_golomb_code(0, val, bitstream);
+        exp_golomb_code(0, val, bitstream,0);
     } else if ((previousRun>= 5) && (previousRun <= 8))  {
         rice_exp_combo_code(1,1,2, val,bitstream);
     } else if ((previousRun>= 9) && (previousRun <= 14))  {
-        exp_golomb_code(1, val,bitstream);
+        exp_golomb_code(1, val,bitstream,0);
     } else {
-        exp_golomb_code(2, val,bitstream);
+        exp_golomb_code(2, val,bitstream,0);
     }
     return;
 
@@ -104,11 +107,11 @@ static void encode_vlc_codeword_ac_level(int32_t previousLevel, int32_t val, str
     } else if (previousLevel== 2) {
         rice_exp_combo_code(2,0,1, val, bitstream);
     } else if (previousLevel == 3)  {
-        exp_golomb_code(0, val, bitstream);
+        exp_golomb_code(0, val, bitstream,0);
     } else if ((previousLevel>= 4) && (previousLevel<= 7))  {
-        exp_golomb_code(1, val, bitstream);
+        exp_golomb_code(1, val, bitstream,0);
     } else {
-        exp_golomb_code(2, val, bitstream);
+        exp_golomb_code(2, val, bitstream,0);
     }
     return;
 
@@ -173,7 +176,7 @@ void entropy_encode_dc_coefficients(int16_t*coefficients, int32_t numBlocks, str
 }
 
 //from figure 4
-static const uint8_t block_pattern_scan_table[64] = {
+ const uint8_t block_pattern_scan_table[64] = {
      0,  1,  4,  5, 16, 17, 21, 22,
      2,  3,  6,  7, 18, 20, 23, 28,
      8,  9, 12, 13, 19, 24, 27, 29,
@@ -183,7 +186,7 @@ static const uint8_t block_pattern_scan_table[64] = {
     35, 40, 43, 48, 51, 56, 59, 61,
     41, 42, 49, 50, 57, 58, 62, 63,
 };
-static uint8_t block_pattern_scan_read_order_table[64];
+uint8_t block_pattern_scan_read_order_table[64];
 
 
 uint32_t entropy_encode_ac_coefficients(int16_t*coefficients, int32_t numBlocks, struct bitstream *bitstream)

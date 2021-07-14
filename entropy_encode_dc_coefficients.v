@@ -8,15 +8,18 @@ module entropy_encode_dc_coefficients(
 	//1bit多く用意しておく。
 	input [19:0] DcCoeff,
 	output reg [23:0] output_enable,//mask
+output reg [23:0] previousDCDiff, 
 	output reg [23:0] sum,
 	output wire [23:0] LENGTH,
+	output reg [23:0] pppp,
 output reg [19:0] abs_previousDCDiff,
 output reg [19:0] abs_previousDCDiff_next, 
 output reg [19:0] previousDCCoeff, 
-output reg [19:0] previousDCDiff, 
 output reg [19:0] dc_coeff_difference, 
 output reg [19:0] val,
-output reg [19:0] val_n
+output reg [19:0] val_n,
+
+reg [1:0] is_expo_golomb_code
 
 
 
@@ -101,13 +104,12 @@ end
 
 
 //dicision talbe
-reg is_expo_golomb_code;
 reg is_add_setbit;
 reg [2:0] k;
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
-		is_expo_golomb_code <= 1'b0;
+		is_expo_golomb_code <= 2'b10;
 		is_add_setbit <= 1'b0;
 		k <= 3'h0;
 		val_n <= 20'h0;
@@ -115,29 +117,29 @@ always @(posedge clk, negedge reset_n) begin
 	end else begin
 //		abs_previousDCDiff = 0;
 		if (first_n_n == 1'b1) begin
-			is_expo_golomb_code <= 1'b1;
+			is_expo_golomb_code <= 2'b1;
 			is_add_setbit <= 1'b0;
 			k <= 5;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 0) begin
-			is_expo_golomb_code <= 1'b1;
+			is_expo_golomb_code <= 2'b1;
 			is_add_setbit <= 1'b0;
 			k <= 0;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 1) begin
-			is_expo_golomb_code <= 1'b1;
+			is_expo_golomb_code <= 2'b1;
 			is_add_setbit <= 1'b0;
 			k <= 1;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 2) begin
 			//uint32_t value = (last_rice_q + 1) << k_rice;
 			if (val < 8) begin
-				is_expo_golomb_code <= 1'b0;
+				is_expo_golomb_code <= 2'b0;
 				is_add_setbit <= 1'b0;
 				k <= 2;
 				val_n <= val;
 			end else begin
-				is_expo_golomb_code <= 1'b1;
+				is_expo_golomb_code <= 2'b1;
 		        //setBit(bitstream, 0,last_rice_q + 1);
 				is_add_setbit <= 1'b1;
 				k <= 3;
@@ -145,7 +147,7 @@ always @(posedge clk, negedge reset_n) begin
 			end
 			
 		end else begin
-			is_expo_golomb_code <= 1'b1;
+			is_expo_golomb_code <= 2'b1;
 			is_add_setbit <= 1'b0;
 			k <= 3;
 			val_n <= val;
@@ -157,14 +159,16 @@ end
 
 
 
-always @(posedge clk, negedge reset_n) begin
+//always @(posedge clk, negedge reset_n) begin
+always @(posedge clk) begin
 	if (!reset_n) begin
 		previousDCCoeff <= 20'h0;
-		previousDCDiff <= 20'h3;
 		abs_previousDCDiff <= 20'h0;
 		abs_previousDCDiff_next <= 20'h0;
 		dc_coeff_difference <= 20'h0;
 		val <= 20'h0;
+//		sum = 24'hfff0;
+		previousDCDiff <= 24'h3;
 
 	end else begin
 		if (previousDCDiff[19] == 1'b0) begin
@@ -196,10 +200,10 @@ reg [31:0] codeword_length = 32'h0;
 //exp_golomb_code
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
-		output_enable = 24'h0;
-		sum = 24'h0;
+		//output_enable = 24'h0;
+		//sum = 24'h0;
 	end else begin
-		if (is_expo_golomb_code == 1'b1) begin
+		if (is_expo_golomb_code == 2'b1) begin
 			q = getfloorclog2((val_n + (1<<(k)))) - k;
 			//q =  input_data + 16'h1;
 			sum[19:0] = val_n + (1<<k);
@@ -214,6 +218,16 @@ always @(posedge clk, negedge reset_n) begin
 end
 
 
+always @(posedge clk, negedge reset_n) begin
+	if (!reset_n) begin
+		previousDCDiff <= 20'hffff; 
+	end else begin
+		
+	end
+end
+
+
+
 //golomb_rice_code
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
@@ -221,7 +235,8 @@ always @(posedge clk, negedge reset_n) begin
 		sum = 24'h0;
 		codeword_length = 32'h0;
 	end else begin
-		if (is_expo_golomb_code == 1'b0) begin
+//		sum = 24'haaaa;
+		if (is_expo_golomb_code == 2'b0) begin
 			q = val_n >> k;
 			if (k==0) begin
 				if(q!=0) begin
@@ -243,6 +258,14 @@ always @(posedge clk, negedge reset_n) begin
 		end
 	end
 end
+always @(posedge clk, negedge reset_n) begin
+	if (is_expo_golomb_code == 2'b10) begin
+		codeword_length = 32'h0;
+		output_enable = 20'h0;
+		sum = 20'h0;
+	end
+end
+
 
 
 
