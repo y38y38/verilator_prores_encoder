@@ -19,9 +19,11 @@ output reg [19:0] dc_coeff_difference,
 output reg [19:0] val,
 output reg [19:0] val_n,
 
-reg [1:0] is_expo_golomb_code
+output reg [1:0] is_expo_golomb_code,
 
 
+output reg is_add_setbit,
+output reg [2:0] k
 
 
 );
@@ -86,8 +88,6 @@ function [23:0] bitmask;
 endfunction
 
 
-
-
 reg first;
 reg first_n;
 reg first_n_n;
@@ -104,8 +104,6 @@ end
 
 
 //dicision talbe
-reg is_add_setbit;
-reg [2:0] k;
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
@@ -117,29 +115,29 @@ always @(posedge clk, negedge reset_n) begin
 	end else begin
 //		abs_previousDCDiff = 0;
 		if (first_n_n == 1'b1) begin
-			is_expo_golomb_code <= 2'b1;
+			is_expo_golomb_code <= 2'b01;
 			is_add_setbit <= 1'b0;
 			k <= 5;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 0) begin
-			is_expo_golomb_code <= 2'b1;
+			is_expo_golomb_code <= 2'b01;
 			is_add_setbit <= 1'b0;
 			k <= 0;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 1) begin
-			is_expo_golomb_code <= 2'b1;
+			is_expo_golomb_code <= 2'b01;
 			is_add_setbit <= 1'b0;
 			k <= 1;
 			val_n <= val;
 		end else if (abs_previousDCDiff_next == 2) begin
 			//uint32_t value = (last_rice_q + 1) << k_rice;
 			if (val < 8) begin
-				is_expo_golomb_code <= 2'b0;
+				is_expo_golomb_code <= 2'b00;
 				is_add_setbit <= 1'b0;
 				k <= 2;
 				val_n <= val;
 			end else begin
-				is_expo_golomb_code <= 2'b1;
+				is_expo_golomb_code <= 2'b01;
 		        //setBit(bitstream, 0,last_rice_q + 1);
 				is_add_setbit <= 1'b1;
 				k <= 3;
@@ -147,7 +145,7 @@ always @(posedge clk, negedge reset_n) begin
 			end
 			
 		end else begin
-			is_expo_golomb_code <= 2'b1;
+			is_expo_golomb_code <= 2'b01;
 			is_add_setbit <= 1'b0;
 			k <= 3;
 			val_n <= val;
@@ -203,7 +201,7 @@ always @(posedge clk, negedge reset_n) begin
 		//output_enable = 24'h0;
 		//sum = 24'h0;
 	end else begin
-		if (is_expo_golomb_code == 2'b1) begin
+		if (is_expo_golomb_code == 2'b01) begin
 			q = getfloorclog2((val_n + (1<<(k)))) - k;
 			//q =  input_data + 16'h1;
 			sum[19:0] = val_n + (1<<k);
@@ -236,7 +234,7 @@ always @(posedge clk, negedge reset_n) begin
 		codeword_length = 32'h0;
 	end else begin
 //		sum = 24'haaaa;
-		if (is_expo_golomb_code == 2'b0) begin
+		if (is_expo_golomb_code == 2'b00) begin
 			q = val_n >> k;
 			if (k==0) begin
 				if(q!=0) begin
@@ -259,10 +257,14 @@ always @(posedge clk, negedge reset_n) begin
 	end
 end
 always @(posedge clk, negedge reset_n) begin
-	if (is_expo_golomb_code == 2'b10) begin
-		codeword_length = 32'h0;
-		output_enable = 20'h0;
-		sum = 20'h0;
+	if (!reset_n) begin
+	end else begin
+		if (is_expo_golomb_code == 2'b10) begin
+			codeword_length = 32'h0;
+			output_enable = 20'h0;
+			sum = 20'0;
+			//sum[1:0] = is_expo_golomb_code;
+		end
 	end
 end
 

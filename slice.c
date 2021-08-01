@@ -221,7 +221,7 @@ static uint32_t encode_slice_component(struct Slice *param, int16_t* pixel, uint
 #endif
     //after_dct(pixel, param->slice_size_in_mb * mb_in_block);
 	pre_quant_qt_qscale(pixel, matrix,param->qscale,param->slice_size_in_mb * mb_in_block);
-#if 1
+#if 0
 	static int first2 =1;
 	if (first2) {
 //			printf("\n");
