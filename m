@@ -1,5 +1,6 @@
 rm -rf obj_dir
-verilator --cc  --exe  --trace-fst --trace-params --trace-structs --trace-underscore  -CFLAGS -DDEBUG -LDFLAGS -lpthread \
+#verilator --cc  --exe  --trace-fst --trace-params --trace-structs --trace-underscore  -CFLAGS -DDEBUG -LDFLAGS -lpthread \
+verilator --cc  --exe    -CFLAGS -DDEBUG -LDFLAGS -lpthread \
     wrapper.sv \
 	-exe test_main.cpp \
 	test_utility.cpp \

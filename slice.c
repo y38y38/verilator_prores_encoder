@@ -311,10 +311,11 @@ uint16_t encode_slice(struct Slice *param)
 //#if 1
 //	printf("slicce\n");
 extern int log_on;
-log_on=1;
+//log_on=1;
 
 	size = (uint16_t)encode_slice_component(param, param->working_buffer, param->luma_matrix, MB_IN_BLOCK);
-log_on=0;
+printf("y end\n");
+//log_on=0;
     uint16_t y_size  = SET_DATA16(size);
 #endif
 //#ifdef DEV_ENCODE

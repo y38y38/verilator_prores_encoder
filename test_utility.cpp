@@ -136,11 +136,11 @@ void posedge_clock_result(Vwrapper *dut){
 	if (dut->VLC_RESET) {
 //		printf("%x %x\n", dut->DC_BITSTREAM_OUTPUT_ENABLE, dut->DC_BITSTREAM_SUM);
 		if (vlc_state == Y_DC_STATE) {
-//			printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
+			printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
 
 		} else if (vlc_state == Y_AC_STATE) {
 			if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
-				printf("s %x %d \n", dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_RUN_LENGTH);
+				//printf("s %x %d \n", dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_RUN_LENGTH);
 
 			}
 			//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
@@ -239,7 +239,7 @@ void posedge_clock(Vwrapper *dut){
 
 	block_counter++;
 	if (block_counter >= 64) {
-		block_counter = 0;
+		//block_counter = 0;
 	}
 
 	dut->QSCALE = qscale_table_[0];
@@ -300,7 +300,7 @@ void posedge_clock(Vwrapper *dut){
 
 			//128x16x2
 //			if ((block * 64) + position > (128*16*2))
-			printf("p %d %d %d\n", (block * 64) + position, block,position,conefficient);
+			//printf("p %d %d %d\n", (block * 64) + position, block,position,conefficient);
 			dut->INPUT_AC_DATA = v_y_data_result[(block * 64) + position];
 
 			block++;
@@ -322,7 +322,7 @@ void posedge_clock(Vwrapper *dut){
 }
 
 bool is_run(int time_counter) {
-	printf("is %d\n", time_counter);
+//	printf("is %d\n", time_counter);
 	if (time_counter < 5000) {
 		return true;
 

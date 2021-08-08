@@ -1,7 +1,7 @@
 #ifndef __TEST_UTILITY_H__
 #define __TEST_UTILITY_H__
 #include <verilated.h>
-#include <verilated_fst_c.h> 
+//#include <verilated_fst_c.h> 
 #include "Vwrapper.h"
 
 

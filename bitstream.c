@@ -24,7 +24,7 @@ int log_on=0;
 void setBit(struct bitstream *write_bitstream, uint32_t buf, uint32_t size_of_bit)
 {
 	if (log_on==1) {
-			//printf("%d %x\n", size_of_bit, buf);
+			printf("%d %x\n", size_of_bit, buf);
 	}
 
 	if (write_bitstream->tmp_buf_byte_offset > (MAX_SLICE_BITSTREAM_SIZE - 4)) {
