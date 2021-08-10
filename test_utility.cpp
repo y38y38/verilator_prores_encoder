@@ -136,14 +136,18 @@ void posedge_clock_result(Vwrapper *dut){
 	if (dut->VLC_RESET) {
 //		printf("%x %x\n", dut->DC_BITSTREAM_OUTPUT_ENABLE, dut->DC_BITSTREAM_SUM);
 		if (vlc_state == Y_DC_STATE) {
-			printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
+			//printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
 
 		} else if (vlc_state == Y_AC_STATE) {
 			if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
-				//printf("s %x %d \n", dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_RUN_LENGTH);
+				//printf("%d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM);
 
 			}
 			//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
+			if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
+				printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+
+			}
 
 		}
 
@@ -295,7 +299,7 @@ void posedge_clock(Vwrapper *dut){
 				first = 0;
 			}
 			if (block == 0) {
-	        	position = block_pattern_scan_read_order_table[conefficient];
+	        	position = block_pattern_scan_read_order_table[conefficient%64];
 			}
 
 			//128x16x2
@@ -309,11 +313,15 @@ void posedge_clock(Vwrapper *dut){
 				conefficient++;
 			}
 
-			if (conefficient == 64) {
-				vlc_state = CR_DC_RESET_STATE;
-				printf("end of y ac\n");
+			if (conefficient == 65) {
+				vlc_state = CB_DC_RESET_STATE;
+				//printf("end of y ac\n");
 			}
+		} else if (vlc_state == CB_DC_RESET_STATE) {
+			dut->VLC_RESET = 0;
+			vlc_state = Y_AC_STATE;
 		}
+
 //		printf("state %d\n", vlc_state);
 		
 		vlc_counter++;

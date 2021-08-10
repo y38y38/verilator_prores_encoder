@@ -19,6 +19,7 @@ module wapper(
 	output wire [23:0] DC_BITSTREAM_SUM,
 
 	input wire [19:0] INPUT_AC_DATA,
+	output wire [31:0] AC_BITSTREAM_LEVEL_LENGTH,
 	output wire [23:0] AC_BITSTREAM_LEVEL_OUTPUT_ENABLE,
 	output wire [23:0] AC_BITSTREAM_LEVEL_SUM,
 

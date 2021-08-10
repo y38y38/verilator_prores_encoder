@@ -314,7 +314,7 @@ extern int log_on;
 //log_on=1;
 
 	size = (uint16_t)encode_slice_component(param, param->working_buffer, param->luma_matrix, MB_IN_BLOCK);
-printf("y end\n");
+//printf("y end\n");
 //log_on=0;
     uint16_t y_size  = SET_DATA16(size);
 #endif
