@@ -25,6 +25,7 @@ module wapper(
 
 	output wire [23:0] AC_BITSTREAM_RUN_OUTPUT_ENABLE,
 	output wire [23:0] AC_BITSTREAM_RUN_SUM,
+	output wire [23:0] AC_BITSTREAM_RUN_SUM_N,
 	output wire [31:0] AC_BITSTREAM_RUN_LENGTH,
 
 output wire [23:0] LENGTH,
@@ -120,6 +121,7 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	.Coeff(INPUT_AC_DATA),
 	.output_enable(AC_BITSTREAM_RUN_OUTPUT_ENABLE),//mask
 	.sum(AC_BITSTREAM_RUN_SUM),
+	.sum_n(AC_BITSTREAM_RUN_SUM_N),
 	.codeword_length(AC_BITSTREAM_RUN_LENGTH)
 );
 

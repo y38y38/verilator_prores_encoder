@@ -17,7 +17,10 @@ output reg signed [19:0] run_n,
 output reg [1:0] is_expo_golomb_code,
 output reg [1:0] is_add_setbit,
 output reg [2:0] k,
-output reg [31:0] q
+output reg [31:0] q,
+output reg [23:0] sum_n,
+output reg [23:0] output_enable_n,//mask
+output reg [31:0] codeword_length_n
 
 
 
@@ -154,12 +157,12 @@ end
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		output_enable = 24'h0;
-		sum = 24'h0;
+		sum <= 24'h0;
 	end else begin
 		if (is_expo_golomb_code == 2'b1) begin
 			q = getfloorclog2((run_n + (1<<(k)))) - k;
 			//q =  input_data + 16'h1;
-			sum[19:0] = run_n + (1<<k);
+			sum[19:0] <= run_n + (1<<k);
 //			if (is_add_setbit == 1'b1) begin
 				//dd
 				codeword_length = (2 * q) + k + 1 + is_add_setbit;
@@ -176,7 +179,7 @@ end
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		output_enable = 24'h0;
-		sum = 24'h0;
+		sum <= 24'h0;
 		codeword_length = 32'h0;
 	end else begin
 		if (is_expo_golomb_code == 2'b0) begin
@@ -184,18 +187,18 @@ always @(posedge clk, negedge reset_n) begin
 //			q = run_n >> k;
 			if (k==0) begin
 				if(q!=0) begin
-					sum = 1;
+					sum <= 1;
 					codeword_length = q+1;
 					output_enable = bitmask(codeword_length);
 				end else begin
-					sum = 1;
+					sum <= 1;
 					codeword_length = 1;
 					output_enable = 1;
 				end
 			end else begin
 				// 0x4 | 1 & 0x3
 				// 0x5 
-				sum = (1<<k) | (run_n & ((1<<k) - 1));
+				sum <= (1<<k) | (run_n & ((1<<k) - 1));
 //				sum = 20'h111 ;//(1<<k) | (run_n & ((1<<k) - 1));
 				codeword_length = q + 1 + k;
 				output_enable = bitmask( codeword_length);	
@@ -208,10 +211,21 @@ always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 	end else begin
 		if (is_expo_golomb_code == 2'h2) begin
-			sum = 0;
+			sum <= 0;
 			codeword_length = 0;
 			output_enable = 0;
 		end
+	end
+end
+
+always @(posedge clk, negedge reset_n) begin
+	if (!reset_n) begin
+		sum_n <= 24'h0;
+		codeword_length_n <= 0;
+		output_enable_n <= 0;
+
+	end else begin
+		sum_n <= sum;
 	end
 end
 

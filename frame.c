@@ -66,7 +66,7 @@ static struct bitstream slice_bitstream[MAX_THREAD_NUM];
 static uint8_t slice_bistream_buffer[MAX_THREAD_NUM][MAX_SLICE_BITSTREAM_SIZE];
 
 
-static struct Slice slice_param[MAX_SLICE_NUM];
+struct Slice slice_param[MAX_SLICE_NUM];
 
 static pthread_mutex_t slice_num_thread_mutex[MAX_THREAD_NUM];
 static pthread_cond_t slice_num_thread_cond[MAX_THREAD_NUM];

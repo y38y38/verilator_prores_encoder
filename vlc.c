@@ -239,6 +239,9 @@ uint32_t entropy_encode_ac_coefficients(int16_t*coefficients, int32_t numBlocks,
                 encode_vlc_codeword_ac_run(previousRun, run, bitstream);
 
                 log_on =0;
+				if (log_on) {
+					printf("l %d\n", level);
+				}
                 abs_level_minus_1 = GetAbs(level) - 1;
                 if (level >=0) {
 	                encode_vlc_codeword_ac_level( previousLevelSymbol, abs_level_minus_1, bitstream, 0);

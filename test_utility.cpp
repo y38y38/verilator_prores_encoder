@@ -136,18 +136,31 @@ void posedge_clock_result(Vwrapper *dut){
 	if (dut->VLC_RESET) {
 //		printf("%x %x\n", dut->DC_BITSTREAM_OUTPUT_ENABLE, dut->DC_BITSTREAM_SUM);
 		if (vlc_state == Y_DC_STATE) {
-			//printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
+			static int counter = 0;
+			if ((counter> 2) && (counter<32+3)) {
+				//printf("%d %x\n", dut->LENGTH, dut->DC_BITSTREAM_SUM);
+			}
+			counter++;
 
 		} else if (vlc_state == Y_AC_STATE) {
-			if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
-				//printf("%d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM);
+			static int counter = 0;
+			if (counter < 2018) {
+				if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
+//					printf("%d %x %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM,  dut->AC_BITSTREAM_RUN_SUM_N,  dut->VAL,   dut->VAL_N);
+					printf("%d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM_N,  dut->AC_BITSTREAM_RUN_SUM_N,  dut->VAL,   dut->VAL_N);
 
+				}
 			}
-			//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
-			if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
-				printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+			if (counter < 2018) {
 
+				//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
+				if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
+					//printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+
+				}
 			}
+
+			counter++;
 
 		}
 
@@ -305,7 +318,12 @@ void posedge_clock(Vwrapper *dut){
 			//128x16x2
 //			if ((block * 64) + position > (128*16*2))
 			//printf("p %d %d %d\n", (block * 64) + position, block,position,conefficient);
-			dut->INPUT_AC_DATA = v_y_data_result[(block * 64) + position];
+			if (conefficient < 64) {
+				dut->INPUT_AC_DATA = v_y_data_result[(block * 64) + position];
+			}  else {
+				dut->INPUT_AC_DATA = 1;
+			}
+			//printf("conefficient %d\n", conefficient);
 
 			block++;
 			if (block == 32) {
@@ -322,7 +340,7 @@ void posedge_clock(Vwrapper *dut){
 			vlc_state = Y_AC_STATE;
 		}
 
-//		printf("state %d\n", vlc_state);
+	//	printf("state %d\n", vlc_state);
 		
 		vlc_counter++;
 	}
@@ -330,7 +348,7 @@ void posedge_clock(Vwrapper *dut){
 }
 
 bool is_run(int time_counter) {
-//	printf("is %d\n", time_counter);
+	//printf("is %d\n", time_counter);
 	if (time_counter < 5000) {
 		return true;
 
