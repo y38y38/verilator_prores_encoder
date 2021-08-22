@@ -4,3 +4,4 @@
 obj_dir/*
 *.bin
 *fst
+tmp/*

@@ -267,8 +267,8 @@ void posedge_clock_result(Vwrapper *dut){
 					run_length_n = run_length;
 					run_sum_n = run_sum;
 //					printf("%d %x\n", run_length_n, run_sum_n, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
-					printf("%d %x\n", run_length_n, run_sum_n);
-					printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+					//printf("%d %x\n", run_length_n, run_sum_n);
+					//printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
 
 					setBit(slice_param[0].bitstream, run_sum_n, run_length_n);
 					setBit(slice_param[0].bitstream, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH);
