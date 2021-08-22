@@ -52,7 +52,7 @@ struct thread_param {
 
 
 
-static struct bitstream write_bitstream;
+struct bitstream write_bitstream;
 static uint8_t bitstream_buffer[MAX_BITSTREAM_SIZE];
 
 
@@ -60,7 +60,7 @@ static uint8_t bitstream_buffer[MAX_BITSTREAM_SIZE];
 //void start_write_bitstream(void);
 //void frame_end_wait(void);
 
-static uint16_t slice_size_table[MAX_SLICE_NUM];
+uint16_t slice_size_table[MAX_SLICE_NUM];
 
 static struct bitstream slice_bitstream[MAX_THREAD_NUM];
 static uint8_t slice_bistream_buffer[MAX_THREAD_NUM][MAX_SLICE_BITSTREAM_SIZE];
@@ -83,7 +83,7 @@ uint32_t slice_num_max;
 
 
 
-static uint32_t picture_size_offset_ = 0;
+uint32_t picture_size_offset_ = 0;
 
 
 int32_t GetSliceNum(int32_t horizontal, int32_t vertical, int32_t sliceSize)
@@ -439,7 +439,7 @@ void frame_end_wait(void) {
 }
 
 
-
+    uint32_t slice_size_table_offset;
 void encode_slices(struct encoder_param * param)
 {
     uint32_t mb_x;
@@ -456,7 +456,7 @@ void encode_slices(struct encoder_param * param)
 
     /* write dummy slice size table */
     int32_t i;
-    uint32_t slice_size_table_offset = (getBitSize(&write_bitstream)) >> 3 ;
+    slice_size_table_offset = (getBitSize(&write_bitstream)) >> 3 ;
     for (i = 0; i < slice_num_max ; i++) {
         uint16_t slice_size = 0x0;
         setByte(&write_bitstream, (uint8_t*)&slice_size, 2);
@@ -540,6 +540,8 @@ void encode_slices(struct encoder_param * param)
 
 }
 
+uint32_t frame_size_offset;
+ uint32_t picture_size_offset;
 
 uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
 {
@@ -547,7 +549,7 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
 	write_bitstream.bitstream_buffer = bitstream_buffer;
     initBitStream(&write_bitstream);
 
-    uint32_t frame_size_offset = getBitSize(&write_bitstream) >> 3 ;
+    frame_size_offset = getBitSize(&write_bitstream) >> 3 ;
     uint32_t frame_size = SET_DATA32(0x0); 
     setByte(&write_bitstream, (uint8_t*)&frame_size,4);
 
@@ -557,7 +559,7 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
     setByte(&write_bitstream, (uint8_t*)&frame_identifier,4);
 
     set_frame_header(param);
-    uint32_t picture_size_offset = (getBitSize(&write_bitstream)) >> 3 ;
+    picture_size_offset = (getBitSize(&write_bitstream)) >> 3 ;
 
     set_picture_header(param);
 

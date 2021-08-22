@@ -23,7 +23,8 @@ output reg [1:0] is_expo_golomb_code,
 
 
 output reg is_add_setbit,
-output reg [2:0] k
+output reg [2:0] k,
+output reg first_diff
 
 
 );
@@ -167,6 +168,7 @@ always @(posedge clk) begin
 		val <= 20'h0;
 //		sum = 24'hfff0;
 		previousDCDiff <= 24'h3;
+		first_diff <= 1;
 
 	end else begin
 		if (previousDCDiff[19] == 1'b0) begin
@@ -183,7 +185,15 @@ always @(posedge clk) begin
 //		val <= Signedintegertosymbolmapping(dc_coeff_difference);
 		abs_previousDCDiff <= getabs(previousDCDiff);
 		abs_previousDCDiff_next <= abs_previousDCDiff;
-		previousDCDiff <= DcCoeff - previousDCCoeff;
+		if (first_diff) begin
+			previousDCDiff <= 3;
+			//previousDCDiff <= DcCoeff - previousDCCoeff;
+			first_diff <=0;
+			
+		end else begin
+			previousDCDiff <= DcCoeff - previousDCCoeff;
+			
+		end
 		previousDCCoeff <= DcCoeff;
 	end
 
@@ -206,7 +216,7 @@ always @(posedge clk, negedge reset_n) begin
 			//q =  input_data + 16'h1;
 			sum[19:0] = val_n + (1<<k);
 			if (is_add_setbit == 1'b1) begin
-				codeword_length = (2 * q) + k + 4;
+				codeword_length = (2 * q) + k + 3;
 			end else begin
 				codeword_length = (2 * q) + k + 1;
 			end

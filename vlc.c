@@ -177,6 +177,7 @@ void entropy_encode_dc_coefficients(int16_t*coefficients, int32_t numBlocks, str
     int32_t abs_previousDCDiff;
 
     DcCoeff = (coefficients[0]) ;
+	//printf("val %d\n", coefficients[0]);
     val = Signedintegertosymbolmapping(DcCoeff);
     entropy_encode_dc_coefficient(true, 0, val, bitstream);
 
@@ -185,6 +186,7 @@ void entropy_encode_dc_coefficients(int16_t*coefficients, int32_t numBlocks, str
     previousDCDiff = 3;
     n = 1;
     while( n <numBlocks) {
+		//printf("val %d\n", coefficients[n * 64]);
         DcCoeff = (coefficients[n++ * 64]); 
         dc_coeff_difference = DcCoeff - previousDCCoeff;
         if (previousDCDiff < 0) {
@@ -238,9 +240,9 @@ uint32_t entropy_encode_ac_coefficients(int16_t*coefficients, int32_t numBlocks,
                 extern int log_on;
                 encode_vlc_codeword_ac_run(previousRun, run, bitstream);
 
-                log_on =0;
+//                log_on =0;
 				if (log_on) {
-					printf("l %d\n", level);
+//					printf("l %d\n", level);
 				}
                 abs_level_minus_1 = GetAbs(level) - 1;
                 if (level >=0) {
@@ -254,7 +256,7 @@ uint32_t entropy_encode_ac_coefficients(int16_t*coefficients, int32_t numBlocks,
                     //setBit(bitstream, 1,1);
                 }
                 add_bit_n = 0;
-                log_on =0;
+//                log_on =0;
 
                 previousRun = run;
                 previousLevelSymbol = abs_level_minus_1;

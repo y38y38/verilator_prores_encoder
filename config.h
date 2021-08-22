@@ -19,5 +19,5 @@
 
 //#define TIME_SCALE
 
-#define DEV_ENCODE
+//#define DEV_ENCODE
 #endif

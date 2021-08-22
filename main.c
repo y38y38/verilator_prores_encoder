@@ -243,6 +243,7 @@ uint8_t input_cr_data[MAX_DATA_SIZE];
 /*
  * ./encoder [-l luma_matrix_file] [-c  chroma_matrix_file] [-q qscale_file] [-h horizontal] [-v vertical] [-m slice_size_in_mb] -i input_file -o output_file
  */
+FILE *slice_output;
 int encoder_main(int argc, char **argv)
 {
     int32_t ret = GetParam(argc, argv);
@@ -255,8 +256,8 @@ int encoder_main(int argc, char **argv)
         printf("err %s\n", input_file_);
         return -1;
     }
-    FILE *output = fopen(output_file_, "w");
-    if (output == NULL) {
+    slice_output = fopen(output_file_, "w");
+    if (slice_output == NULL) {
         printf("err %s\n", output_file_);
         return -1;
     }
@@ -365,10 +366,10 @@ int encoder_main(int argc, char **argv)
         uint8_t *frame = encode_frame(&param, &frame_size);
 #ifdef DEV_ENCODE
 #ifndef TIME_SCALE
-        size_t writesize = fwrite(frame, 1, frame_size,  output);
+        size_t writesize = fwrite(frame, 1, frame_size,  slice_output);
         if (writesize != frame_size) {
             printf("%s %d %d\n", __FUNCTION__, __LINE__, (int)writesize);
-            //printf("write %d %p %d %p \n", (int)writesize, raw_data, raw_size,output);
+            //printf("write %d %p %d %p \n", (int)writesize, raw_data, raw_size,slice_output);
             return -1;
         }
 #else
@@ -380,7 +381,11 @@ int encoder_main(int argc, char **argv)
     }
 
     fclose(input);
-    fclose(output);
+#ifdef DEV_ENCODE
+    fclose(slice_output);
+#endif
+
+//	fclose(slice_output);
 
     return 0;
 }

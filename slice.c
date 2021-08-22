@@ -242,7 +242,11 @@ static uint32_t encode_slice_component(struct Slice *param, int16_t* pixel, uint
     //encode_qscale(pixel,param->qscale , param->slice_size_in_mb * mb_in_block);
 
     entropy_encode_dc_coefficients(pixel, param->slice_size_in_mb * mb_in_block, param->bitstream);
+	extern int log_on;
+	log_on = 0;
+
     entropy_encode_ac_coefficients(pixel, param->slice_size_in_mb * mb_in_block, param->bitstream);
+	//log_on = 0;
     //byte aliened
     uint32_t size  = getBitSize(param->bitstream);
     if (size & 7 )  {
@@ -266,13 +270,15 @@ int16_t v_y_data[128*16*2];
 int16_t v_cb_data[128*16];
 int16_t v_cr_data[128*16];
 
-
+uint32_t code_size_of_y_data_offset;
+uint32_t code_size_of_cb_data_offset;
+uint32_t slice_start_offset;
 
 uint16_t encode_slice(struct Slice *param)
 {
 	//initBitStream(param->bitstream);
 
-    uint32_t start_offset= getBitSize(param->bitstream);
+    slice_start_offset= getBitSize(param->bitstream);
 //	uint32_t size2;
 //	printf("start_slice_offset %d %p\n", start_offset, getBitStream(param->bitstream, &size2));
     uint8_t slice_header_size = 6;
@@ -284,13 +290,13 @@ uint16_t encode_slice(struct Slice *param)
 
     setByte(param->bitstream, &param->qscale, 1);
 
-    uint32_t code_size_of_y_data_offset = getBitSize(param->bitstream);
+    code_size_of_y_data_offset = getBitSize(param->bitstream);
     code_size_of_y_data_offset = code_size_of_y_data_offset >> 3;
     uint16_t size = 0;
     uint16_t coded_size_of_y_data = SET_DATA16(size);
     setByte(param->bitstream, (uint8_t*)&coded_size_of_y_data , 2);
 
-    uint32_t code_size_of_cb_data_offset = getBitSize(param->bitstream);
+    code_size_of_cb_data_offset = getBitSize(param->bitstream);
     code_size_of_cb_data_offset = code_size_of_cb_data_offset >> 3 ;
     size = 0;
     uint16_t coded_size_of_cb_data = SET_DATA16(size);
@@ -318,8 +324,7 @@ extern int log_on;
 //log_on=0;
     uint16_t y_size  = SET_DATA16(size);
 #endif
-//#ifdef DEV_ENCODE
-#if 1
+
     uint16_t cb_size;
     if (param->format_444 == true) {
 
@@ -334,6 +339,7 @@ extern int log_on;
     } else {
 		getCver2((uint16_t*)param->working_buffer, param->cb_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
 		memcpy(v_cb_data, param->working_buffer, 128*16);
+//#ifdef DEV_ENCODE
 #ifdef DEV_ENCODE
 		size = (uint16_t)encode_slice_component(param, (int16_t*)param->working_buffer, param->chroma_matrix, MB_422C_IN_BLCCK);
         cb_size = SET_DATA16(size);
@@ -342,18 +348,19 @@ extern int log_on;
 		getCver2((uint16_t*)param->working_buffer, param->cr_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);
 		memcpy(v_cr_data, param->working_buffer, 128*16);
 #ifdef DEV_ENCODE
-
+//#if 1
+		extern int log_on;
+		log_on=1;
 		size = (uint16_t)encode_slice_component(param, (int16_t*)param->working_buffer, param->chroma_matrix, MB_422C_IN_BLCCK);
 #endif
     }
-#endif
 
 #ifdef DEV_ENCODE
     setByteInOffset(param->bitstream, code_size_of_y_data_offset , (uint8_t *)&y_size, 2);
     setByteInOffset(param->bitstream, code_size_of_cb_data_offset , (uint8_t *)&cb_size, 2);
     uint32_t current_offset = getBitSize(param->bitstream);
 	//printf("size=0x%x\n",  ((current_offset - start_offset)/8));
-    return ((current_offset - start_offset)/8);
+    return ((current_offset - slice_start_offset)/8);
 #else
 	return 0;
 #endif

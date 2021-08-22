@@ -3,4 +3,5 @@ mkdir -p ./tmp/
 #../../prores_decoder/decoder ./tmp/out.bin ./tmp/out.yuv 
 #../../yuv/formatconv/422_10_to_420_8/chg.sh ./tmp/out.yuv ./tmp/out8_420_128x16.yuv 128 16
 #../../yuv/sn16/sn16 ./tmp/out.yuv ./in_128x16.yuv 128 16
-#diff ./tmp/out.yuv ../../prores_decoder/test/output_sample/out_128x16.yuv.org
+diff ./tmp/out.bin./out.bin.org
+hexdump -C ./tmp/out.bin > out.bin.txt
