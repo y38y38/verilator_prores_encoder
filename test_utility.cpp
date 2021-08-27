@@ -36,8 +36,6 @@ int result_cb_block_counter =0;
 int result_cr_block_counter =0;
 
 
-//int v_y_data_result_flag = 0;
-//int v_cb_data_result_flag = 0;
 int v_cr_data_result_flag = 0;
 
 	#define Y_DC_RESET_STATE	(1)
@@ -224,13 +222,6 @@ void posedge_clock_result(Vwrapper *dut){
 			static uint32_t run_length_n=0;
 			static uint32_t run_sum_n=0;
 
-//			if (counter < 2017) {
-//				if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
-//					printf("%d %x %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM,  dut->AC_BITSTREAM_RUN_SUM_N,  dut->VAL,   dut->VAL_N);
-					//printf("%d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM,  dut->AC_BITSTREAM_RUN_SUM_N,  dut->VAL,   dut->VAL_N);
-
-//				}
-//			}
 			if (component == 0) {
 				if (counter < 2018) {
 					//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
