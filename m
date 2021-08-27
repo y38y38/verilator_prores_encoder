@@ -4,7 +4,7 @@ verilator --cc  --exe    -CFLAGS -DDEBUG -LDFLAGS -lpthread \
     wrapper.sv \
 	-exe test_main.cpp \
 	test_utility.cpp \
-	main.c \
+	encoder_main.c \
 	bitstream.c \
 	dct.c \
 	debug.c \
