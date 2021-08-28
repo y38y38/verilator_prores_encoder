@@ -22,7 +22,7 @@
 
 
 //#define MAX_SLICE_BITSTREAM_SIZE	(1024*1024) //1K
-#define MAX_SLICE_BITSTREAM_SIZE	(1024*1024*10) //1M
+#define MAX_SLICE_BITSTREAM_SIZE	(1024*1024*10) //10M
 //static uint8_t bitstream_buffer[MAX_BITSTREAM_SIZE];
 
 

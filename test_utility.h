@@ -4,6 +4,11 @@
 //#include <verilated_fst_c.h> 
 #include "Vwrapper.h"
 
+#include "config.h"
+#include "dct.h"
+#include "bitstream.h"
+#include "vlc.h"
+#include "slice.h"
 
 int init_param(int argc, char** argv);
 
@@ -20,5 +25,11 @@ void toggle_clock(Vwrapper *dut);
 
 void posedge_clock(Vwrapper *dut);
 void posedge_clock_result(Vwrapper *dut);
+
+
+void posedge_clock_v(int16_t *pixel, Vwrapper *dut, int block_num);
+void posedge_clock_result_v(Vwrapper *dut, struct bitstream * bitstream, int block_num);
+
+
 
 #endif

@@ -6,7 +6,12 @@
 	],
 	"settings": {
 		"files.associations": {
-			"type_traits": "cpp"
+			"type_traits": "cpp",
+			"array": "c",
+			"string": "c",
+			"string_view": "c",
+			"initializer_list": "cpp",
+			"utility": "cpp"
 		}
 	}
 }
