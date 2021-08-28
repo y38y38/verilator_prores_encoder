@@ -13,7 +13,6 @@
 #include "encoder.h"
 #include "debug.h"
 
-#if 1
 static int time_counter = 0;
 uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscale, int block_num, struct bitstream *bitstream) {
 	
@@ -48,4 +47,3 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	return 0;
 }
 
-#endif
