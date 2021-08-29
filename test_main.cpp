@@ -37,148 +37,83 @@ extern uint16_t slice_size_table[MAX_SLICE_NUM];
 extern FILE *slice_output;
 
 
-static int time_counter = 0;
 int encoder_main(int argc, char **argv);
 
 int main(int argc, char** argv) {
 	
 	Verilated::commandArgs(argc, argv);
 
-#if 1
 	encoder_main(argc, argv);
-	//printf("encode end\n");
-//	return 0;
-#endif
 
 	int ret = init_param(argc, argv);
 	if (ret <0) {
 		return -1;
 	}
 
-	// Instantiate DUT
-	Vwrapper *dut = new Vwrapper();
-	struct bitstream bitstream[3];
-				//printf("a %d \n", getBitSize(&write_bitstream));
+	struct bitstream bitstream;
+	bitstream.bitstream_buffer  = (uint8_t*)malloc(MAX_SLICE_BITSTREAM_SIZE);
+	if (bitstream.bitstream_buffer == NULL) {
+		printf("error %s %d\n", __FILE__, __LINE__);
+		return 0;
+	}
+
+	int16_t *component_data[3];
+	component_data[0] = v_y_data;
+	component_data[1] = v_cb_data;
+	component_data[2] = v_cr_data;
+
+	uint8_t  *component_matrix_table[3];
+	component_matrix_table[0] = luma_matrix2_;
+	component_matrix_table[1] = chroma_matrix2_;
+	component_matrix_table[2] = chroma_matrix2_;
+
+	int block_num[3];
+	block_num[0] = 32;
+	block_num[1] = 16;
+	block_num[2] = 16;
+
+	uint16_t component_size[3];
 
 	for(int i=0;i<3;i++) {
-		bitstream[i].bitstream_buffer  = (uint8_t*)malloc(MAX_SLICE_BITSTREAM_SIZE);
-		if (bitstream[i].bitstream_buffer == NULL) {
-			printf("error %s %d\n", __FILE__, __LINE__);
-			return 0;
-		}
-		initBitStream(&bitstream[i]);
-	}
-//	struct Slice slice_param;
-//	slice_param = slice_param[0];
-	uint16_t y_size = 0;
-	uint16_t cb_size = 0;
-	uint16_t cr_size = 0;
+		initBitStream(&bitstream);
+		encode_slice_component_v(component_data[i],component_matrix_table[i], qscale_table_[0], block_num[i], &bitstream);
 
-
-		//uint32_t size  = getBitSize(&bitstream[0]);
-		//printf("y size=%d\n", size/8);
-
-//	for(int i=0;i<3;i++) {
-		encode_slice_component_v(v_y_data,luma_matrix2_, qscale_table_[0], 32, &bitstream[0]);
-
-		//end of y 
-		uint32_t size  = getBitSize(&bitstream[0]);
+		uint32_t size  = getBitSize(&bitstream);
 		if (size & 7 )  {
-			setBit(&bitstream[0], 0x0, 8 - (size % 8));
+			setBit(&bitstream, 0x0, 8 - (size % 8));
 		}
-		//printf("y size=%d\n", size/8);
 
-	    uint32_t current_offset = getBitSize(&bitstream[0]);
-		//printf("y size=%d\n", current_offset/8);
+	    uint32_t current_offset = getBitSize(&bitstream);
 		uint32_t vlc_size = (current_offset)/8;
-	    y_size  = SET_DATA16(vlc_size);
-		//printf("y_size=%d\n", y_size);
+	    component_size[i]  = SET_DATA16(vlc_size);
 
-   		//current_offset = getBitSize(slice_param[0].bitstream);
-		//printf("offset %d\n", current_offset/8);
+		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
 
-		size  = getBitSize(&bitstream[0]);
+	}
 
-		setByte(slice_param[0].bitstream, bitstream[0].bitstream_buffer, size/8);
-	
-		//printf("y_size %d\n", y_size);
-   		current_offset = getBitSize(slice_param[0].bitstream);
-		//printf("offset %d\n", current_offset/8);
+    setByteInOffset(slice_param[0].bitstream, code_size_of_y_data_offset , (uint8_t *)&component_size[0], 2);
+	setByteInOffset(slice_param[0].bitstream, code_size_of_cb_data_offset , (uint8_t *)&component_size[1], 2);
+	uint32_t current_offset = getBitSize(slice_param[0].bitstream);
+	uint32_t slice_size =  ((current_offset - slice_start_offset)/8);
+	write_slice_size(slice_param[0].slice_no, slice_size);
 
 
+	setByte(&write_bitstream, slice_param[0].bitstream->bitstream_buffer, slice_size);
+    setSliceTalbeFlush(slice_size_table[0], slice_size_table_offset);
+    uint32_t picture_end = (getBitSize(&write_bitstream)) >>  3 ;
+    uint32_t tmp  = picture_end - picture_size_offset;
+    uint32_t picture_size = SET_DATA32(tmp);
+    setByteInOffset(&write_bitstream, picture_size_offset_, (uint8_t*)&picture_size, 4);
+	uint32_t encode_frame_size;
+	 uint8_t *ptr = getBitStream(&write_bitstream, &encode_frame_size);
+    uint32_t frame_size_data = SET_DATA32(encode_frame_size);
+    setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
 
-		encode_slice_component_v(v_cb_data,chroma_matrix2_, qscale_table_[0], 16, &bitstream[1]);
-		//end of y 
-		size  = getBitSize(&bitstream[1]);
-		if (size & 7 )  {
-		setBit(&bitstream[1], 0x0, 8 - (size % 8));
-		}
-		//printf("cb size=%d\n", size);
-	    current_offset = getBitSize(&bitstream[1]);
-		vlc_size = (current_offset)/8;
-	    cb_size  = SET_DATA16(vlc_size);
+    size_t writesize = fwrite(ptr, 1, encode_frame_size,  slice_output);
+    if (writesize != encode_frame_size) {
+	    printf("%s %d %d\n", __FUNCTION__, __LINE__, (int)writesize);
+    	//return -1;
+	}
+	fclose(slice_output);
 
-		//printf("%d \n", getBitSize(slice_param[0].bitstream));
-		setByte(slice_param[0].bitstream, bitstream[1].bitstream_buffer, vlc_size);
-		//printf("%x\n", bitstream[1].bitstream_buffer[0]);
-
-		encode_slice_component_v(v_cr_data,chroma_matrix2_, qscale_table_[0], 16, &bitstream[2]);
-
-
-				//end of cr
-				size  = getBitSize(&bitstream[2]);
-				if (size & 7 )  {
-	       			setBit(&bitstream[2], 0x0, 8 - (size % 8));
-	   			}
-		//printf("cr size=%d\n", size);
-	    current_offset = getBitSize(&bitstream[2]);
-		vlc_size = (current_offset)/8;
-	    cr_size  = SET_DATA16(vlc_size);
-
-
-
-   		current_offset = getBitSize(slice_param[0].bitstream);
-		//printf("offset %d\n", current_offset/8);
-		setByte(slice_param[0].bitstream, bitstream[2].bitstream_buffer, vlc_size);
-   		current_offset = getBitSize(slice_param[0].bitstream);
-		//printf("offset %d\n", current_offset/8);
-		
-			    setByteInOffset(slice_param[0].bitstream, code_size_of_y_data_offset , (uint8_t *)&y_size, 2);
-	    		setByteInOffset(slice_param[0].bitstream, code_size_of_cb_data_offset , (uint8_t *)&cb_size, 2);
-	    		current_offset = getBitSize(slice_param[0].bitstream);
-				//printf("size=0x%x\n",  ((current_offset - slice_start_offset)/8));
-	    		uint32_t slice_size =  ((current_offset - slice_start_offset)/8);
-				write_slice_size(slice_param[0].slice_no, slice_size);
-
-				//printf("a %d \n", getBitSize(&write_bitstream));
-
-				setByte(&write_bitstream, slice_param[0].bitstream->bitstream_buffer, slice_size);
-		        setSliceTalbeFlush(slice_size_table[0], slice_size_table_offset);
-
-			    uint32_t picture_end = (getBitSize(&write_bitstream)) >>  3 ;
-
-			    uint32_t tmp  = picture_end - picture_size_offset;
-			    uint32_t picture_size = SET_DATA32(tmp);
-
-			    setByteInOffset(&write_bitstream, picture_size_offset_, (uint8_t*)&picture_size, 4);
-
-				uint32_t encode_frame_size;
-	   			 uint8_t *ptr = getBitStream(&write_bitstream, &encode_frame_size);
-			    uint32_t frame_size_data = SET_DATA32(encode_frame_size);
-			    setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
-
-	//	FILE *aa = fopen("./tmp/out.bin", "w");
-		//	printf("encode_frame_size %d %p %p\n", encode_frame_size,ptr , slice_output);
-//		        size_t writesize = fwrite(ptr, 1, encode_frame_size,  aa);
-		        size_t writesize = fwrite(ptr, 1, encode_frame_size,  slice_output);
-	    	    if (writesize != encode_frame_size) {
-	        	    printf("%s %d %d\n", __FUNCTION__, __LINE__, (int)writesize);
-	            	//printf("write %d %p %d %p \n", (int)writesize, raw_data, raw_size,output);
-	            	//return -1;
-	        	}
-		//		printf("writesize %d\n", writesize);
-				fclose(slice_output);
-				//fclose(aa);
-
-//	}
 }

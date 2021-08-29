@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "encoder_main.h"
-#include "test_utility.h"
 
 #include "config.h"
 #include "dct.h"
@@ -11,13 +9,18 @@
 #include "encoder.h"
 #include "debug.h"
 
+#include "encoder_main.h"
 
-int16_t v_data_result[128*16*2];
-
-int result_block_counter =0;
+#include "test_utility.h"
 
 
-int v_cr_data_result_flag = 0;
+extern uint8_t block_pattern_scan_read_order_table[64];
+
+
+#define MAX_BLOCK_NUM	(32)
+#define MAX_PIXEL_NUM	(64)
+#define BYTE_PER_PIXEL	(2)
+
 
 #define Y_DC_RESET_STATE	(1)
 #define Y_DC_STATE			(2)
@@ -26,6 +29,10 @@ int v_cr_data_result_flag = 0;
 #define END_STATE			(13)
 static int vlc_state = 0;
 
+
+int16_t v_data_result[128*16];
+
+
 void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 	for(int i=0;i<8;i++) {
 		for(int j=0;j<8;j++) {
@@ -33,11 +40,7 @@ void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 		}
 	}
 }
-static int block_counter = 0;
 
-static int vlc_counter = 0;
-
-extern uint8_t block_pattern_scan_read_order_table[64];
 
 void set_pixel_data(Vwrapper *dut, int16_t *data) {
 	int i,j;
@@ -67,7 +70,7 @@ void set_qscale(Vwrapper *dut, uint8_t qscale) {
 }
 bool is_run(int time_counter) {
 	//printf("is %d\n", time_counter);
-	if (time_counter < 10000) {
+	if (time_counter < (10000/2)) {
 		return true;
 
 	} else {
@@ -75,10 +78,8 @@ bool is_run(int time_counter) {
 	}
 }
 
-extern void vlc_init(void);
 
 void end_test(Vwrapper *dut) {
-//	fclose(out);
 }
 
 void reset_test(Vwrapper *dut) {
@@ -99,148 +100,83 @@ void toggle_clock(Vwrapper *dut) {
 }
 
 
-static int y_first1 = 1;
-static int y_first2 = 1;
-static int result_first = 1;
-static int dc_state_first =1;
-static int ac_state_first =1;
-static int conefficient = 1;
-static int block = 0;
-static int position = 0;
-
+static int dc_vlc_counter = 0;
+static int ac_vlc_counter = 0;
 void init_test(Vwrapper *dut) {
-//	vlc_init();
-	block_counter = 0;
-	result_block_counter = 0;
-	y_first1 = 1;
-	y_first2 = 1;
 	vlc_state = 0;
-	v_cr_data_result_flag=0;
-	result_first = 1;
-	dc_state_first = 1;
-	ac_state_first = 1;
-	conefficient = 1;
-	block = 0;
-	position = 0;
+	dc_vlc_counter = 0;
+	ac_vlc_counter = 0;
+
 
 }
 
 
-#define MAX_BLOCK_NUM	(32)
-
-void posedge_clock_v(int16_t *pixel, Vwrapper *dut, int block_num){
-	set_pixel_data(dut, &pixel[(block_counter%MAX_BLOCK_NUM) * 64]);
-	block_counter++;
+void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num){
+	
+	set_pixel_data(dut, &pixel[(time_counter%MAX_BLOCK_NUM) * MAX_PIXEL_NUM]);
 
 	set_qscale(dut, qscale_table_[0]);
 	set_qmatrix(dut, luma_matrix2_);
 
-	if (v_cr_data_result_flag == 1) {
-
-		if (vlc_state == 0) {
-			vlc_state = Y_DC_RESET_STATE;
-		} else if (vlc_state == Y_DC_RESET_STATE) {
-			dut->VLC_RESET = 0;
+	//until dct output 
+	if (time_counter == block_num + 11) {
+		dut->VLC_RESET = 0;
+	} else if ((time_counter >= block_num + 12) 
+				&& (time_counter < (block_num + 56))
+				) {
+		if (time_counter == block_num + 12) {
+			dut->VLC_RESET = 1;
 			vlc_state = Y_DC_STATE;
-		} else if (vlc_state == Y_DC_STATE){
-			if (dc_state_first) {
-				dut->VLC_RESET = 1;
-				vlc_counter = 0;
-				dc_state_first = 0;
-			}
-
-			dut->INPUT_DC_DATA = v_data_result[(vlc_counter*64)%(block_num*64)];
-
-//			if (vlc_counter == 31+12) {
-			if (vlc_counter == (block_num-1) + 12) {
-				vlc_state = Y_AC_RESET_STATE;
-			}
-		} else if (vlc_state == Y_AC_RESET_STATE) {
-			dut->VLC_RESET = 0;
-			vlc_state = Y_AC_STATE;
-		} else if (vlc_state == Y_AC_STATE){
-
-			if (ac_state_first) {
-				dut->VLC_RESET = 1;
-				vlc_counter = 0;
-				ac_state_first = 0;
-			}
-			if (block == 0) {
-	        	position = block_pattern_scan_read_order_table[conefficient%64];
-			}
-
-			if (conefficient < 64) {
-				dut->INPUT_AC_DATA = v_data_result[(block * 64) + position];
-			}  else {
-				dut->INPUT_AC_DATA = 1;
-			}
-			//printf("conefficient %d\n", conefficient);
-
-			block++;
-			if (block == block_num) {
-				block = 0;
-				conefficient++;
-			}
-
-			if (conefficient == 65) {
-				vlc_state = END_STATE;
-			}
 		}
-		vlc_counter++;
+		int counter = ((time_counter - (block_num + 12))*64);
+		dut->INPUT_DC_DATA = v_data_result[counter %(block_num*MAX_PIXEL_NUM)];
+	} else if (time_counter == block_num + 56) {
+		dut->VLC_RESET = 0;
+	} else if ((time_counter >= block_num + 57) 
+				&& (time_counter < (63 * block_num) + 57 + block_num + 3 )
+			) {
+	    if (time_counter == block_num + 57)  {
+			dut->VLC_RESET = 1;
+			vlc_state = Y_AC_STATE;
+		}
+		int conefficient1 = ((time_counter - (block_num + 57)) /  block_num) + 1; 
+    	int position = block_pattern_scan_read_order_table[conefficient1%MAX_PIXEL_NUM];
+		int block = (time_counter - (block_num + 57)) % block_num;
+		if (conefficient1 < MAX_PIXEL_NUM) {
+			dut->INPUT_AC_DATA = v_data_result[(block * MAX_PIXEL_NUM) + position];
+		}  else {
+			dut->INPUT_AC_DATA = 1;
+		}
+	} else {
+		dut->VLC_RESET = 0;
 	}
-//	printf("state=%d\n", vlc_state);
 
 }
 
-void posedge_clock_result_v(Vwrapper *dut, struct bitstream *bitstream, int block_num) {
-		result_first++;
-		if (result_first>=12) {
-			if (result_block_counter>=0 && result_block_counter<block_num) {
-				set_result_dct_data(&v_data_result[(result_block_counter*64)], dut);
-				result_block_counter++;
-				if (result_block_counter == (block_num-1)) {
-					v_cr_data_result_flag = 1;
-				}
+void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bitstream, int block_num) {
 
-			}
+	if (time_counter>=10) {
+		if (time_counter>=10 && ((time_counter - 10) < block_num)) {
+			set_result_dct_data(&v_data_result[(((time_counter - 10) % MAX_BLOCK_NUM ) * 64)], dut);
 		}
+	}
 
 	if (dut->VLC_RESET) {
 		if (vlc_state == Y_DC_STATE){
-			static int counter = 0;
 
-			if (vlc_state == Y_DC_STATE) {
-				if (y_first1) {
-					y_first1 = 0;
-					counter = 0;
-				}
-			}
-
-			if ((counter> 2) && (counter<(block_num+3))) {
+			if ((dc_vlc_counter> 2) && (dc_vlc_counter<(block_num+3))) {
 				setBit(bitstream, dut->DC_BITSTREAM_SUM, dut->LENGTH);
 			}
-			counter++;
+			dc_vlc_counter++;
 
 		} else if (vlc_state == Y_AC_STATE){
-			static int counter = 0;
-			if (y_first2) {
-				counter = 0;
-				y_first2 = 0;
-			}
 
 			static uint32_t run_length=0;
 			static uint32_t run_sum=0;
-			static uint32_t run_length_n=0;
-			static uint32_t run_sum_n=0;
-			if (counter < ((block_num * 63) +2)) {
-				//printf("level %d %x\n", dut->AC_BITSTREAM_LEVEL_OUTPUT_ENABLE, dut->AC_BITSTREAM_LEVEL_SUM);
+			if (ac_vlc_counter < ((block_num * 63) +2)) {
 				if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
-					//printf("%d %x\n", dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
-					run_length_n = run_length;
-					run_sum_n = run_sum;
-						//printf("%d %x\n", run_length_n, run_sum_n, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
 
-					setBit(bitstream, run_sum_n, run_length_n);
+					setBit(bitstream, run_sum, run_length);
 					setBit(bitstream, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH);
 				}
 				if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
@@ -250,7 +186,7 @@ void posedge_clock_result_v(Vwrapper *dut, struct bitstream *bitstream, int bloc
 				//	printf("%d %x %d %x %d %x\n", run_length, run_sum, run_length_n, run_sum_n, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
 			}
 
-			counter++;
+			ac_vlc_counter++;
 
 		}
 	} else {

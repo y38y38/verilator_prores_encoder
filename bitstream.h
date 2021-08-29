@@ -10,6 +10,7 @@
 
 #ifndef __BITSTREAM_H__
 #define __BITSTREAM_H__
+#include <stdint.h>
 
 #define  SET_DATA32(x)    ((x & 0x000000ff) << 24 |  \
                         (x & 0x0000ff00) <<  8 | \

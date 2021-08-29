@@ -27,8 +27,8 @@ void posedge_clock(Vwrapper *dut);
 void posedge_clock_result(Vwrapper *dut);
 
 
-void posedge_clock_v(int16_t *pixel, Vwrapper *dut, int block_num);
-void posedge_clock_result_v(Vwrapper *dut, struct bitstream * bitstream, int block_num);
+void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num);
+void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream * bitstream, int block_num);
 
 
 
