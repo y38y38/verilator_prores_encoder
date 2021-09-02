@@ -83,12 +83,17 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	//1bit多く用意しておく。
 	.DcCoeff(INPUT_DC_DATA),
 	.output_enable(DC_BITSTREAM_OUTPUT_ENABLE),//mask
-	.sum_n(DC_BITSTREAM_SUM),
 	.pppp(PPPP),
 
+//	.sum_n(DC_BITSTREAM_SUM),
+//	.LENGTH(LENGTH),
+
+	.sum_n_n(DC_BITSTREAM_SUM),
+	.codeword_length_n(LENGTH),
+
+
 	//debug
-	.LENGTH(LENGTH),
-	.abs_previousDCDiff(ABS_PREVIOUSDCDIFF),
+//	.abs_previousDCDiff(ABS_PREVIOUSDCDIFF),
 	.abs_previousDCDiff_next(ABS_PREVIOUSDCDIFF_NEXT), 
 	.previousDCCoeff(PREVIOUSDCOEFF), 
 	.previousDCDiff(PREVIOUSDCDIFF), 

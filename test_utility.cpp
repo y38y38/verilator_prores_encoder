@@ -166,7 +166,7 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 	if (dut->VLC_RESET) {
 		if (vlc_state == Y_DC_STATE){
 
-			if ((dc_vlc_counter> 3) && (dc_vlc_counter<(block_num+4))) {
+			if ((dc_vlc_counter> 4) && (dc_vlc_counter<(block_num+5))) {
 				setBit(bitstream, dut->DC_BITSTREAM_SUM, dut->LENGTH);
 				//printf("%x %d\n", dut->DC_BITSTREAM_SUM, dut->LENGTH);
 			}

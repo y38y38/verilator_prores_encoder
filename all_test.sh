@@ -8,4 +8,5 @@ for file_name in ../prores_decoder/test/input_sample10bit/*.yuv ;do
 #   diff ./tmp/${OUT_NAME%.yuv}_dec.yuv ./input_128x16/${OUT_NAME%.yuv}_dec.yuv
     diff ./tmp/${OUT_NAME%.yuv}.bin ../prores_decoder/test/output_sample10bit/${OUT_NAME%.yuv}.bin
     #../sn16/sn16 ${file_name} ./tmp/${OUT_NAME%.yuv}_dec.yuv 128 16
+#	break
 done
