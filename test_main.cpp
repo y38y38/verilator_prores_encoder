@@ -86,7 +86,7 @@ int main(int argc, char** argv) {
 	    uint32_t current_offset = getBitSize(&bitstream);
 		uint32_t vlc_size = (current_offset)/8;
 	    component_size[i]  = SET_DATA16(vlc_size);
-
+		//printf("vlc %d\n",vlc_size);
 		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
 
 	}
