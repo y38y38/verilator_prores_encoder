@@ -135,7 +135,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		//printf("b %d\n", block_num);
 		dut->VLC_RESET = 0;
 	} else if ((time_counter >= block_num + 57) 
-				&& (time_counter < (63 * block_num) + 57 + block_num + 3 )
+				&& (time_counter < (63 * block_num) + 57 + block_num + 4 )
 			) {
 	    if (time_counter == block_num + 57)  {
 			dut->VLC_RESET = 1;
@@ -146,11 +146,14 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		int block = (time_counter - (block_num + 57)) % block_num;
 		if (conefficient1 < MAX_PIXEL_NUM) {
 			dut->INPUT_AC_DATA = v_data_result[(block * MAX_PIXEL_NUM) + position];
+			//printf("v %d\n", dut->INPUT_AC_DATA);
 		}  else {
 			dut->INPUT_AC_DATA = 1;
+		//printf("e\n");
 		}
 	} else {
 		dut->VLC_RESET = 0;
+//		printf("e\n");
 	}
 
 }
@@ -176,17 +179,29 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 
 			static uint32_t run_length=0;
 			static uint32_t run_sum=0;
-			if (ac_vlc_counter < ((block_num * 63) +2)) {
+			if (ac_vlc_counter < ((block_num * 63) +100)) {
 				if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
 
-					setBit(bitstream, run_sum, run_length);
+//					setBit(bitstream, run_sum, run_length);
+					setBit(bitstream, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_RUN_LENGTH);
 					setBit(bitstream, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH);
+					//printf("%d %x %d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
 				}
-				if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
-					run_length = dut->AC_BITSTREAM_RUN_LENGTH;
-					run_sum = dut->AC_BITSTREAM_RUN_SUM;
-				}
-				//	printf("%d %x %d %x %d %x\n", run_length, run_sum, run_length_n, run_sum_n, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+#if 0
+				printf("%d %x %d %x \t%d %d %d\t %d %d %d\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM
+				,dut->r_is_expo_golomb_code_n_n
+				,dut->r_is_expo_golomb_code_n
+				,dut->r_is_expo_golomb_code
+				,dut->l_is_expo_golomb_code_n_n
+				,dut->l_is_expo_golomb_code_n
+				,dut->l_is_expo_golomb_code
+				);
+#endif
+				//printf("%d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM);
+//				if (dut->AC_BITSTREAM_RUN_OUTPUT_ENABLE) {
+//					run_length = dut->AC_BITSTREAM_RUN_LENGTH;
+//					run_sum = dut->AC_BITSTREAM_RUN_SUM;
+//				}
 			}
 
 			ac_vlc_counter++;
