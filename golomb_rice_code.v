@@ -78,9 +78,9 @@ always @(posedge clk, negedge reset_n) begin
 			end
 		end else begin
 			if (is_ac_level_n) begin
-				codeword_length <= q + 2 + k_n;
+				codeword_length <= q + 2 + {29'h0, k_n};
 			end else begin
-				codeword_length <= q + 1 + k_n;
+				codeword_length <= q + 1 + {29'h0, k_n};
 			end
 		end
 	end

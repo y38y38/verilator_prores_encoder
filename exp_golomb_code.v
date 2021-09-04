@@ -38,7 +38,7 @@ always @(posedge clk, negedge reset_n) begin
 	end else begin
 		if (is_ac_level) begin
 			if (is_ac_minus_n) begin
-				sum <= (val + (1<<k))<<1|1;
+				sum <= (val + (1<<k))<<1|1;//1clk
 			end else begin
 				sum <= (val + (1<<k))<<1|0;
 			end
@@ -57,7 +57,7 @@ always @(posedge clk, negedge reset_n) begin
 		q <= 32'h0;
 	end else begin
 		casex(val + (1<<(k)))
-			32'b1xxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001f - k;
+			32'b1xxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001f - k;//1clk
 			32'b01xx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001e - k;
 			32'b001x_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001d - k;
 			32'b0001_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001c - k;
@@ -102,7 +102,7 @@ always @(posedge clk, negedge reset_n) begin
 //			codeword_length <= (2 * q) + k_n + 3;
 //		end else begin
 		if (is_ac_level) begin
-			codeword_length <= (2 * q) + k_n + 2 + is_add_setbit_n;
+			codeword_length <= (2 * q) + k_n + 2 + is_add_setbit_n;//2clk
 		end else begin
 			codeword_length <= (2 * q) + k_n + 1 + is_add_setbit_n;
 		end

@@ -14,31 +14,37 @@ module wapper(
 	output wire [31:0] OUTPUT_DATA[8][8],
 
 	input wire VLC_RESET,
-	input wire [19:0] INPUT_DC_DATA,
-	output wire [23:0] DC_BITSTREAM_OUTPUT_ENABLE,
-	output wire [23:0] DC_BITSTREAM_SUM,
+	input wire [31:0] INPUT_DC_DATA,
+	output wire [31:0] DC_BITSTREAM_OUTPUT_ENABLE,
+	output wire [31:0] DC_BITSTREAM_SUM,
 
-	input wire [19:0] INPUT_AC_DATA,
+	input wire [31:0] INPUT_AC_DATA,
 	output wire [31:0] AC_BITSTREAM_LEVEL_LENGTH,
-	output wire [23:0] AC_BITSTREAM_LEVEL_OUTPUT_ENABLE,
-	output wire [23:0] AC_BITSTREAM_LEVEL_SUM,
+	output wire [31:0] AC_BITSTREAM_LEVEL_OUTPUT_ENABLE,
+	output wire [31:0] AC_BITSTREAM_LEVEL_SUM,
 
-	output wire [23:0] AC_BITSTREAM_RUN_OUTPUT_ENABLE,
-	output wire [23:0] AC_BITSTREAM_RUN_SUM,
-	output wire [23:0] AC_BITSTREAM_RUN_SUM_N,
+	output wire [31:0] AC_BITSTREAM_RUN_OUTPUT_ENABLE,
+	output wire [31:0] AC_BITSTREAM_RUN_SUM,
+	output wire [31:0] AC_BITSTREAM_RUN_SUM_N,
 	output wire [31:0] AC_BITSTREAM_RUN_LENGTH,
 
-output wire [23:0] LENGTH,
-output wire [19:0] ABS_PREVIOUSDCDIFF,
-output wire [19:0] ABS_PREVIOUSDCDIFF_NEXT,
-output wire [19:0] PREVIOUSDCOEFF,
-output wire [19:0] PREVIOUSDCDIFF,
-output wire [19:0] DC_COEFF_DIFFERENCE,
-output wire [19:0] VAL,
-output wire [19:0] VAL_N,
-output wire [23:0] PPPP,
+output wire [31:0] LENGTH,
+output wire [31:0] ABS_PREVIOUSDCDIFF,
+output wire [31:0] ABS_PREVIOUSDCDIFF_NEXT,
+output wire [31:0] PREVIOUSDCOEFF,
+output wire [31:0] PREVIOUSDCDIFF,
+output wire [31:0] DC_COEFF_DIFFERENCE,
+output wire [31:0] VAL,
+output wire [31:0] VAL_N,
+output wire [31:0] PPPP,
 output wire [1:0] is_expo_golomb_code,
 output wire is_add_setbit,
+output wire [1:0] r_is_expo_golomb_code_n_n,
+output wire [1:0] r_is_expo_golomb_code_n,
+output wire [1:0] r_is_expo_golomb_code,
+output wire [1:0] l_is_expo_golomb_code_n_n,
+output wire [1:0] l_is_expo_golomb_code_n,
+output wire [1:0] l_is_expo_golomb_code,
 output wire [2:0] k
 
     );
@@ -113,8 +119,11 @@ entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 	//1bit多く用意しておく。
 	.Coeff(INPUT_AC_DATA),
 	.output_enable(AC_BITSTREAM_LEVEL_OUTPUT_ENABLE),//mask
-	.sum(AC_BITSTREAM_LEVEL_SUM),
-	.codeword_length(AC_BITSTREAM_LEVEL_LENGTH)
+	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
+	.is_expo_golomb_code(l_is_expo_golomb_code),
+	.is_expo_golomb_code_n(l_is_expo_golomb_code_n),
+	.is_expo_golomb_code_n_n(l_is_expo_golomb_code_n_n),
+	.codeword_length_n_n(AC_BITSTREAM_LEVEL_LENGTH)
 );
 
 entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
@@ -125,9 +134,12 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	//1bit多く用意しておく。
 	.Coeff(INPUT_AC_DATA),
 	.output_enable(AC_BITSTREAM_RUN_OUTPUT_ENABLE),//mask
-	.sum(AC_BITSTREAM_RUN_SUM),
-	.sum_n(AC_BITSTREAM_RUN_SUM_N),
-	.codeword_length(AC_BITSTREAM_RUN_LENGTH)
+//	.sum(AC_BITSTREAM_RUN_SUM),
+	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
+	.is_expo_golomb_code(r_is_expo_golomb_code),
+	.is_expo_golomb_code_n(r_is_expo_golomb_code_n),
+	.is_expo_golomb_code_n_n(r_is_expo_golomb_code_n_n),
+	.codeword_length_n_n_n(AC_BITSTREAM_RUN_LENGTH)
 );
 
 
