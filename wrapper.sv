@@ -45,7 +45,17 @@ output wire [1:0] r_is_expo_golomb_code,
 output wire [1:0] l_is_expo_golomb_code_n_n,
 output wire [1:0] l_is_expo_golomb_code_n,
 output wire [1:0] l_is_expo_golomb_code,
-output wire [2:0] k
+output wire [2:0] k,
+
+input wire [31:0] set_bit_enable,
+input wire [31:0] set_bit_val,
+input wire [31:0] set_bit_size_of_bit,
+input wire [31:0] set_bit_flush_bit,
+output wire [3:0]  set_bit_output_enabe_byte,
+output wire [31:0]  set_bit_output_val,
+output wire [31:0]  set_bit_tmp_buf_bit_offset,
+output wire [31:0]  set_bit_tmp_byte,
+output wire [31:0]  set_bit_tmp_bit
 
     );
 
@@ -143,7 +153,25 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 );
 
 
-endmodule
+
+set_bit set_bit_inst(
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.enable(set_bit_enable),
+	.val(set_bit_val),
+	.size_of_bit(set_bit_size_of_bit),
+	.flush_bit(set_bit_flush_bit),//val, size_of_bitを参照せずに、bitを吐き出す。
+	.output_enable_byte(set_bit_output_enabe_byte),
+	.output_val(set_bit_output_val),
+
+	
+	.tmp_buf_bit_offset(set_bit_tmp_buf_bit_offset),
+	.tmp_byte(set_bit_tmp_byte),
+	 .tmp_bit(set_bit_tmp_bit)
+);
+
+
+endmodule;
 
 
 

@@ -1,0 +1,5 @@
+verilator --cc --exe  --trace-params --trace-structs --trace-underscore \
+	-I../../bitstream -I../../config \
+    set_bit.v -exe test_set_bit.cpp
+make -C obj_dir -f Vset_bit.mk
+

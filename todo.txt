@@ -1,5 +1,9 @@
 todo
 
+[architecture]
+・先頭から順番に書き出す。
+
+
 [verilog]
 function->allways
 = -> <=
