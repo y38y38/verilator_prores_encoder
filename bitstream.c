@@ -60,6 +60,7 @@ void setBit(struct bitstream *write_bitstream, uint32_t buf, uint32_t size_of_bi
 
     write_bitstream->tmp_buf_byte_offset += (write_bitstream->tmp_buf_bit_offset + size_of_bit) >> 3;
     write_bitstream->tmp_buf_bit_offset = (write_bitstream->tmp_buf_bit_offset + size_of_bit) & 7;
+	//printf("tmp_bit 0x%x %d\n", *(write_bitstream->tmp_buf + write_bitstream->tmp_buf_byte_offset), write_bitstream->tmp_buf_bit_offset);
 	//printf("offset %d %d\n", write_bitstream->tmp_buf_byte_offset, write_bitstream->tmp_buf_bit_offset);
 }
 
