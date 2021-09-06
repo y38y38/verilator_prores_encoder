@@ -134,8 +134,12 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 	} else if (time_counter == block_num + 56) {
 		//printf("b %d\n", block_num);
 		dut->VLC_RESET = 0;
+//		dut->set_bit_flush_bit = 1;
+//		dut->set_bit_enable = 0;
+//		dut->set_bit_val = 0;
+//		dut->set_bit_size_of_bit = 0;
 	} else if ((time_counter >= block_num + 57) 
-				&& (time_counter < (63 * block_num) + 57 + block_num + 4 )
+				&& (time_counter < (63 * block_num) + 57 + block_num + 5 )
 			) {
 	    if (time_counter == block_num + 57)  {
 			dut->VLC_RESET = 1;
@@ -151,12 +155,21 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 			dut->INPUT_AC_DATA = 1;
 		//printf("e\n");
 		}
+	} else if  (time_counter == (63 * block_num) + 57 + block_num + 5 ) {
+		dut->VLC_RESET = 0;
+		dut->set_bit_flush_bit = 1;
+		dut->set_bit_enable = 0;
+		dut->set_bit_val = 0;
+		dut->set_bit_size_of_bit = 0;
+		//printf("flush\n");
 	} else {
 		dut->VLC_RESET = 0;
 //		printf("e\n");
 	}
 
 }
+
+#define SET_BIT_V	(1)
 
 void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bitstream, int block_num) {
 
@@ -165,14 +178,30 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 			set_result_dct_data(&v_data_result[(((time_counter - 10) % MAX_BLOCK_NUM ) * 64)], dut);
 		}
 	}
-
+#if SET_BIT_V
+				dut->set_bit_enable = 0;
+				dut->set_bit_val = 0;
+				dut->set_bit_size_of_bit = 0;
+//				printf()
+				dut->set_bit_flush_bit = 0;
+#endif
 	if (dut->VLC_RESET) {
 		if (vlc_state == Y_DC_STATE){
-
+#if SET_BIT_V
 			if ((dc_vlc_counter> 4) && (dc_vlc_counter<(block_num+5))) {
+//				setBit(bitstream, dut->DC_BITSTREAM_SUM, dut->LENGTH);
+				dut->set_bit_enable = 1;
+				dut->set_bit_val = dut->DC_BITSTREAM_SUM;
+				dut->set_bit_size_of_bit = dut->LENGTH;
+				dut->set_bit_flush_bit = 0;
+				//printf("d c %llx %d\n", dut->DC_BITSTREAM_SUM, dut->LENGTH);
+			} else {			}
+#else
+			if ((dc_vlc_counter> 4) && (dc_vlc_counter<(block_num+5))) {
+				printf("%d %x %d\n", dc_vlc_counter, dut->DC_BITSTREAM_SUM, dut->LENGTH);
 				setBit(bitstream, dut->DC_BITSTREAM_SUM, dut->LENGTH);
-				//printf("%x %d\n", dut->DC_BITSTREAM_SUM, dut->LENGTH);
 			}
+#endif
 			dc_vlc_counter++;
 
 		} else if (vlc_state == Y_AC_STATE){
@@ -182,10 +211,24 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 			if (ac_vlc_counter < ((block_num * 63) +100)) {
 				if (dut->AC_BITSTREAM_LEVEL_LENGTH) {
 
+#if SET_BIT_V
+//#if 0
+				uint64_t data = (dut->AC_BITSTREAM_RUN_SUM << dut->AC_BITSTREAM_LEVEL_LENGTH)|dut->AC_BITSTREAM_LEVEL_SUM;
+				uint64_t length = dut->AC_BITSTREAM_LEVEL_LENGTH + dut->AC_BITSTREAM_RUN_LENGTH;
+				//printf("a c %d %llx %d %llx %llx %d %d %d\n", dut->set_bit_enable, data, length, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_LEVEL_LENGTH, ac_vlc_counter);
+
+				dut->set_bit_enable = 1;
+				dut->set_bit_val = data;
+				dut->set_bit_size_of_bit = length;
+				dut->set_bit_flush_bit = 0;
+#else
+
+//
 //					setBit(bitstream, run_sum, run_length);
 					setBit(bitstream, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_RUN_LENGTH);
 					setBit(bitstream, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH);
 					//printf("%d %x %d %x\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM);
+#endif
 				}
 #if 0
 				printf("%d %x %d %x \t%d %d %d\t %d %d %d\n", dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_LENGTH, dut->AC_BITSTREAM_LEVEL_SUM
@@ -210,5 +253,21 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 	} else {
 //		printf("VLC_RESET %d\n", dut->VLC_RESET);
 	}
-
+#if SET_BIT_V
+	if (dut->set_bit_output_enable_byte) {
+		uint64_t data = dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8));
+		uint64_t length = dut->set_bit_output_enable_byte*8;
+		if (length > 23) {
+			//printf("v %llx %llx\n", data, length);
+			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))>>23, (dut->set_bit_output_enable_byte*8) - 23);
+			//printf("v1 %llx %llx\n", dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))>>23, (dut->set_bit_output_enable_byte*8) - 23);
+			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))&0x7fffff, 23);
+			//printf("v2 %llx %llx\n", dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))&0x7fffff, 23);
+		} else {
+			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8)), dut->set_bit_output_enable_byte*8);
+		}
+		//printf("vb %d %llx %llx %d\n", dut->set_bit_enable, dut->set_bit_val, dut->set_bit_size_of_bit, dut->set_bit_flush_bit);
+		//printf("v %llx %d %d %x %d\n", data, length, dut->set_bit_flush_bit,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset);
+	}
+#endif
 }
