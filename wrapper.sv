@@ -3,8 +3,9 @@
 module wapper(
 	input wire CLOCK,
 	input wire RESET,
-
-	input wire [31:0] INPUT_DATA[8][8],
+	input wire [31:0] INPUT_DATA_MEM[2048],
+	input wire [31:0] INPUT_DATA[64],
+	output wire [31:0] INPUT_DATA_ARRAY[8][8],
 	input wire [31:0] QSCALE,
 	input wire [31:0] QMAT[8][8],
 	
@@ -62,10 +63,15 @@ output wire [63:0]  set_bit_tmp_bit
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
 
 
+array array_inst (
+	.input_data(INPUT_DATA),
+	.output_array_data(INPUT_DATA_ARRAY)
+);
+
 pre_dct pre_dct_inst (
 	.CLOCK(CLOCK),
 	.RESET(RESET),
-	.INPUT_DATA(INPUT_DATA),
+	.INPUT_DATA(INPUT_DATA_ARRAY),
 	.OUTPUT_DATA(PRE_DCT_OUTPUT)
 );
 

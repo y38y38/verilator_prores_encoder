@@ -41,15 +41,40 @@ void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 	}
 }
 
+void set_pixel_data_mem(Vwrapper *dut, int16_t *data) {
+	for(int i=0;i<2048;i++) {
+		dut->INPUT_DATA_MEM[i] = (int32_t)data[i];
+	}
+}
 
 void set_pixel_data(Vwrapper *dut, int16_t *data) {
-	int i,j;
-	for(i=0;i<8;i++) {
-		for(j=0;j<8;j++) {
-			dut->INPUT_DATA[i][j] = (int32_t)data[((i*8)+j)];
-		}
+#if 1
+	for(int i=0;i<64;i++) {
+		dut->INPUT_DATA[i] = (int32_t)data[i];
 	}
 
+#else
+	for(int i=0;i<8;i++) {
+		for(int j=0;j<8;j++) {
+			dut->INPUT_DATA_ARRAY[i][j] = (int32_t)data[((i*8)+j)];
+		}
+	}
+#endif
+	#if 0
+	for (int i=0;i<64;i++) {
+		printf("%x ", data[i]);
+		if((i%8) == 7) {
+			printf("\n");
+		}
+	}
+	printf("\n");
+	for(int i=0;i<8;i++) {
+		for(int j=0;j<8;j++) {
+			printf("%x %x %x\n", dut->INPUT_DATA[i][j], i, j);
+		}
+	}
+	printf("\n");
+#endif
 }
 
 void set_qmatrix(Vwrapper *dut, uint8_t *matrix_table){
@@ -112,7 +137,7 @@ void init_test(Vwrapper *dut) {
 
 
 void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num){
-	
+	set_pixel_data_mem(dut, pixel);
 	set_pixel_data(dut, &pixel[(time_counter%MAX_BLOCK_NUM) * MAX_PIXEL_NUM]);
 
 	set_qscale(dut, qscale_table_[0]);
