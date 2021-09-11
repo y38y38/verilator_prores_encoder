@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 
 	uint16_t component_size[3];
 
-	for(int i=0;i<1;i++) {
+	for(int i=0;i<3;i++) {
 		initBitStream(&bitstream);
 		encode_slice_component_v(component_data[i],component_matrix_table[i], qscale_table_[0], block_num[i], &bitstream);
 
