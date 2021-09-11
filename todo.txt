@@ -3,14 +3,6 @@
  
 不具合
 ・DCTで=を使っている件
-・inputをCLOCK1で実施している件
-  →0がいい
-
-・outputをCLOCK１で実施している件
- →0がいい
- 
- ・CLOCK１でするためには、set_bitをinput側でしないといけなそう。
-   →setbitを移動する
    
  
 
