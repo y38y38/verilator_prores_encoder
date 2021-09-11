@@ -201,7 +201,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 //		dut->set_bit_val = 0;
 //		dut->set_bit_size_of_bit = 0;
 	} else if ((time_counter >= block_num + DCT_TIME+47) 
-				&& (time_counter < (63 * block_num) + DCT_TIME+47 + block_num  )
+				&& (time_counter < (63 * block_num) + DCT_TIME+47 + block_num  +5 )
 			) {
 	    if (time_counter == block_num + DCT_TIME+47)  {
 			dut->VLC_RESET = 1;
@@ -213,12 +213,12 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		if (conefficient1 < MAX_PIXEL_NUM) {
 			dut->INPUT_AC_DATA = v_data_result[(block * MAX_PIXEL_NUM) + position];
 	    if (time_counter == block_num + DCT_TIME+47)  {
-			printf("v %d %d %d\n", dut->INPUT_AC_DATA, block,position);
+		//	printf("v %d %d %d\n", dut->INPUT_AC_DATA, block,position);
 		}
 //			printf("v %d\n", dut->INPUT_AC_DATA);
 		}  else {
 			dut->INPUT_AC_DATA = 1;
-		printf("e\n");
+		//printf("e\n");
 		}
 			static uint32_t run_length=0;
 			static uint32_t run_sum=0;
@@ -264,13 +264,13 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 			ac_vlc_counter++;
 
 
-	} else if  (time_counter == (63 * block_num) + DCT_TIME+47 + block_num  ) {
+	} else if  (time_counter == (63 * block_num) + DCT_TIME+47 + block_num +5  ) {
 		dut->VLC_RESET = 0;
 		dut->set_bit_flush_bit = 1;
 		dut->set_bit_enable = 0;
 		dut->set_bit_val = 0;
 		dut->set_bit_size_of_bit = 0;
-		printf("flush\n");
+		//printf("flush\n");
 	} else {
 		dut->VLC_RESET = 0;
 //		printf("e\n");

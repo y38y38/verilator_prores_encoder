@@ -35,7 +35,7 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	unreset_test(dut);
 	dut->CLOCK = 1;
 	time_counter = 0;
-	printf("s\n");
+//printf("s\n");
 	while (is_run(time_counter) && !Verilated::gotFinish()) {
 		toggle_clock(dut);
 		if (!dut->CLOCK) {
