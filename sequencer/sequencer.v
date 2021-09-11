@@ -8,31 +8,33 @@ module sequencer (
 	output reg vlc_reset
 );
 
-
+/*
 always @(posedge clock, posedge reset_n) begin
 	if(!reset_n) begin
 		sequence_valid <= 1'b0;
 	end else begin
-		if (slice_start == 1'b'1) begin
+		if (slice_start == 1'b1) begin
 			sequence_valid <= 1'b1;
 		end
 	end
 end
+*/
 
-always @(posedge clock, posedge reset_n) begin
+always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		sequence_counter <= 32'h0;
 	end else begin
-		if (slice_start ) begin
-			sequence_counter <= 32'h0;
-		end else if (sequence_valid)  begin
+//		if (slice_start ) begin
+//			sequence_counter <= 32'h0;
+//		end else if (sequence_valid)  begin
 			sequence_counter <= sequence_counter + 32'h1;
-		end
+//		end
  	end
 end
+
 localparam DCT_TIME = 12;
 
-always @(posedge clock, posedge reset_n) begin
+always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		vlc_reset <=0;
 	end else begin
@@ -41,6 +43,6 @@ always @(posedge clock, posedge reset_n) begin
 			
 		end
 	end
-
+end
 
 endmodule;

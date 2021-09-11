@@ -33,15 +33,16 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	}
 	// Release reset
 	unreset_test(dut);
-
+	dut->CLOCK = 1;
 	time_counter = 0;
+	printf("s\n");
 	while (is_run(time_counter) && !Verilated::gotFinish()) {
 		toggle_clock(dut);
-		if (dut->CLOCK) {
+		if (!dut->CLOCK) {
 			posedge_clock_input(time_counter, dut, pixel, block_num);
 		}
 		dut->eval();
-		if (dut->CLOCK) {
+		if (!dut->CLOCK) {
 			posedge_clock_output(time_counter, dut, bitstream, block_num);
 			time_counter++;
 		}

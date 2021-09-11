@@ -3,9 +3,11 @@
 module wapper(
 	input wire CLOCK,
 	input wire RESET,
-	input wire [31:0] INPUT_DATA_MEM[2048],
+//	input wire [31:0] INPUT_DATA_MEM[2048],
+	input wire [31:0] INPUT_DATA_MEM[64],
 	input wire [31:0] INPUT_DATA[64],
 	output wire [31:0] INPUT_DATA_ARRAY[8][8],
+	output wire [31:0] INPUT_DATA_ARRAY2[8][8],
 	input wire [31:0] QSCALE,
 	input wire [31:0] QMAT[8][8],
 	
@@ -56,17 +58,39 @@ output wire [3:0]  set_bit_output_enable_byte,
 output wire [63:0]  set_bit_output_val,
 output wire [63:0]  set_bit_tmp_buf_bit_offset,
 output wire [63:0]  set_bit_tmp_byte,
-output wire [63:0]  set_bit_tmp_bit
+output wire [63:0]  set_bit_tmp_bit,
+output wire [31:0] sequence_counter,
+output wire sequence_valid,
+output wire vlc_reset2 
 
     );
 
+
+sequencer sequencer_inst(
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.slice_start(RESET),
+	.block_num(32),
+ 	.sequence_counter(sequence_counter),
+	.sequence_valid(sequence_valid),
+	.vlc_reset(vlc_reset2)
+);
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
 
+array_from_mem array_form_mem_inst (
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.counter(sequence_counter),
+	.input_data(INPUT_DATA),
+//	.input_data(INPUT_DATA_MEM),
+	.output_data_array(INPUT_DATA_ARRAY2)
+);
 
 array array_inst (
 	.input_data(INPUT_DATA),
 	.output_array_data(INPUT_DATA_ARRAY)
 );
+
 
 pre_dct pre_dct_inst (
 	.CLOCK(CLOCK),
