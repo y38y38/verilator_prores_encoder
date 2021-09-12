@@ -11,7 +11,7 @@ always @(posedge clock, negedge reset_n) begin
 	if (!reset_n) begin
 		vlc_dc <= 32'h0;
 	end else begin
-		vlc_dc <= input_data[];
+		vlc_dc <= input_data[counter];
 	end
 end
 
