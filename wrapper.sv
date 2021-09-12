@@ -3,8 +3,8 @@
 module wapper(
 	input wire CLOCK,
 	input wire RESET,
-//	input wire [31:0] INPUT_DATA_MEM[2048],
-	input wire [31:0] INPUT_DATA_MEM[64],
+	input wire [31:0] INPUT_DATA_MEM[2048],
+//	input wire [31:0] INPUT_DATA_MEM[64],
 	input wire [31:0] INPUT_DATA[64],
 	output wire [31:0] INPUT_DATA_ARRAY[8][8],
 	output wire [31:0] INPUT_DATA_ARRAY2[8][8],
@@ -61,7 +61,9 @@ output wire [63:0]  set_bit_tmp_byte,
 output wire [63:0]  set_bit_tmp_bit,
 output wire [31:0] sequence_counter,
 output wire sequence_valid,
-output wire vlc_reset2 
+output wire vlc_reset2,
+output wire vlc_reset3,
+input wire block_num 
 
     );
 
@@ -70,10 +72,12 @@ sequencer sequencer_inst(
 	.clock(CLOCK),
 	.reset_n(RESET),
 	.slice_start(RESET),
-	.block_num(32),
+	.block_num(block_num),
  	.sequence_counter(sequence_counter),
 	.sequence_valid(sequence_valid),
-	.vlc_reset(vlc_reset2)
+	.dc_vlc_reset(vlc_reset2),
+	.ac_vlc_reset(vlc_reset3)
+
 );
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
 
@@ -81,8 +85,8 @@ array_from_mem array_form_mem_inst (
 	.clock(CLOCK),
 	.reset_n(RESET),
 	.counter(sequence_counter),
-	.input_data(INPUT_DATA),
-//	.input_data(INPUT_DATA_MEM),
+//	.input_data(INPUT_DATA),
+	.input_data(INPUT_DATA_MEM),
 	.output_data_array(INPUT_DATA_ARRAY2)
 );
 
@@ -95,7 +99,7 @@ array array_inst (
 pre_dct pre_dct_inst (
 	.CLOCK(CLOCK),
 	.RESET(RESET),
-	.INPUT_DATA(INPUT_DATA_ARRAY),
+	.INPUT_DATA(INPUT_DATA_ARRAY2),
 	.OUTPUT_DATA(PRE_DCT_OUTPUT)
 );
 
@@ -124,7 +128,7 @@ pre_quant_qt_qscale pre_quant_qt_qscale_inst(
 
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(VLC_RESET),
+	.reset_n(vlc_reset2),
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
 	.DcCoeff(INPUT_DC_DATA),
@@ -153,7 +157,7 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 
 entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(VLC_RESET),
+	.reset_n(vlc_reset3),
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
@@ -168,7 +172,7 @@ entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 
 entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(VLC_RESET),
+	.reset_n(vlc_reset3),
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。

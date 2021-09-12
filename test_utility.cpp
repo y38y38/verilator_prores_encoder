@@ -44,9 +44,9 @@ void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 }
 
 void set_pixel_data_mem(Vwrapper *dut, int16_t *data) {
-//	for(int i=0;i<2048;i++) {
-	for(int i=0;i<64;i++) {
-		//dut->INPUT_DATA_MEM[i] = (int32_t)data[i];
+	for(int i=0;i<2048;i++) {
+//	for(int i=0;i<64;i++) {
+		dut->INPUT_DATA_MEM[i] = (int32_t)data[i];
 	}
 }
 
@@ -140,12 +140,11 @@ void init_test(Vwrapper *dut) {
 
 }
 
-#define DCT_TIME	(10)
+#define DCT_TIME	(11)
 #define SET_BIT_V	(1)
 
 void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num){
-	set_pixel_data_mem(dut, pixel);
-	set_pixel_data(dut, &pixel[(time_counter%MAX_BLOCK_NUM) * MAX_PIXEL_NUM]);
+//	set_pixel_data(dut, &pixel[(time_counter%MAX_BLOCK_NUM) * MAX_PIXEL_NUM]);
 //	set_pixel_data(dut, pixel);
 
 	set_qscale(dut, qscale_table_[0]);
@@ -156,15 +155,23 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 	dut->set_bit_size_of_bit = 0;
 	dut->set_bit_flush_bit = 0;
 
+	if(!dut->vlc_reset3) {
+		//printf("pin %d %d\n", dut->vlc_reset3, dut->sequence_counter);
+
+	}
 	//until dct output 
 	if (time_counter == block_num + DCT_TIME+1) {
-		dut->VLC_RESET = 0;
+//		dut->VLC_RESET = 0;
+		//printf("dc reset %d %d %d\n", dut->sequence_counter, dut->sequence_counter - block_num, dut->vlc_reset2);
+//		printf("pin %d\n", dut->vlc_reset2);
 	} else if ((time_counter >= block_num + DCT_TIME+2) 
 				&& (time_counter < (block_num + DCT_TIME+46)) //今は、出力する時間も含めて56としている
 				) {
 		if (time_counter == block_num + DCT_TIME+2) {
-			dut->VLC_RESET = 1;
+//			dut->VLC_RESET = 1;
 			vlc_state = Y_DC_STATE;
+		//printf("dc reset rel %d %d %d\n", dut->sequence_counter,dut->sequence_counter - block_num, dut->vlc_reset2);
+//		printf(" pin %d\n", dut->vlc_reset2);
 		}
 		int counter = ((time_counter - (block_num + DCT_TIME+2))*64);
 		dut->INPUT_DC_DATA = v_data_result[counter %(block_num*MAX_PIXEL_NUM)];
@@ -180,12 +187,14 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 
 	} else if (time_counter == block_num + DCT_TIME+46) {
 		dut->VLC_RESET = 0;
+		//printf("ac reset %d %d %d\n", dut->sequence_counter,dut->sequence_counter - block_num, dut->vlc_reset3);
 	} else if ((time_counter >= block_num + DCT_TIME+47) 
 				&& (time_counter < (63 * block_num) + DCT_TIME+47 + block_num  +5 )
 			) {
 	    if (time_counter == block_num + DCT_TIME+47)  {
 			dut->VLC_RESET = 1;
 			vlc_state = Y_AC_STATE;
+		//printf("ac reset rel %d %d %d\n", dut->sequence_counter,dut->sequence_counter - block_num,dut->vlc_reset3);
 		}
 		int conefficient1 = ((time_counter - (block_num + DCT_TIME+47)) /  block_num) + 1; 
     	int position = block_pattern_scan_read_order_table[conefficient1%MAX_PIXEL_NUM];
@@ -243,9 +252,10 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 	}
 #else
 //	if ((time_counter>=0) && (time_counter <= 5)) {
-	if ((time_counter>=10) && (time_counter <= 15)) {
+	if ((time_counter>=0) && (time_counter <= 5)) {
 		//printf("b0 %d %d %d\n",dut->INPUT_DATA_MEM[0],dut->INPUT_DATA_MEM[1], dut->sequence_counter);
 		//printf("b1 %d %d\n",dut->OUTPUT_DATA[0][0],dut->OUTPUT_DATA[0][1]);
+		//printf("b1 %d %d %d %d\n",dut->INPUT_DATA_ARRAY[0][0],dut->INPUT_DATA_ARRAY[0][1], dut->sequence_counter,dut->INPUT_DATA[0]);
 		//printf("b2 %d %d %d %d\n",dut->INPUT_DATA_ARRAY2[0][0],dut->INPUT_DATA_ARRAY2[0][1], dut->sequence_counter,dut->INPUT_DATA_MEM[0]);
 	}
 	if((time_counter >= DCT_TIME-1) && (time_counter <= DCT_TIME+4)) {

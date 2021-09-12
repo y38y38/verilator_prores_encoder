@@ -13,6 +13,8 @@
 #include "encoder.h"
 #include "debug.h"
 
+void set_pixel_data_mem(Vwrapper *dut, int16_t *data);
+
 //static int time_counter = 0;
 uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscale, int block_num, struct bitstream *bitstream) {
 	int time_counter;	
@@ -27,6 +29,7 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	time_counter = 0;
 	while (time_counter < 10) {
 		toggle_clock(dut);
+		dut->eval();
 		if (dut->CLOCK) {
 			time_counter++;
 		}
@@ -36,6 +39,10 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	dut->CLOCK = 1;
 	time_counter = 0;
 //printf("s\n");
+
+	set_pixel_data_mem(dut, pixel);
+	dut->block_num = block_num;
+
 	while (is_run(time_counter) && !Verilated::gotFinish()) {
 		toggle_clock(dut);
 		if (!dut->CLOCK) {
