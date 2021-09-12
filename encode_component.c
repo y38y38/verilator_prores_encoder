@@ -14,6 +14,9 @@
 #include "debug.h"
 
 void set_pixel_data_mem(Vwrapper *dut, int16_t *data);
+void set_qmatrix(Vwrapper *dut, uint8_t *matrix_table);
+void set_qscale(Vwrapper *dut, uint8_t qscale);
+
 
 //static int time_counter = 0;
 uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscale, int block_num, struct bitstream *bitstream) {
@@ -41,6 +44,8 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 //printf("s\n");
 
 	set_pixel_data_mem(dut, pixel);
+	set_qscale(dut, qscale_table_[0]);
+	set_qmatrix(dut, luma_matrix2_);
 	dut->block_num = block_num;
 
 	while (is_run(time_counter) && !Verilated::gotFinish()) {

@@ -1,5 +1,8 @@
 `timescale 1ns / 1ps
 
+`include "prores_param.v"
+
+
 module wapper(
 	input wire CLOCK,
 	input wire RESET,
@@ -60,9 +63,11 @@ output wire [63:0]  set_bit_tmp_buf_bit_offset,
 output wire [63:0]  set_bit_tmp_byte,
 output wire [63:0]  set_bit_tmp_bit,
 output wire [31:0] sequence_counter,
+output wire [31:0] sequence_counter2,
 output wire sequence_valid,
 output wire vlc_reset2,
 output wire vlc_reset3,
+output wire [31:0] v_data_result[2048],
 input wire block_num 
 
     );
@@ -76,7 +81,8 @@ sequencer sequencer_inst(
  	.sequence_counter(sequence_counter),
 	.sequence_valid(sequence_valid),
 	.dc_vlc_reset(vlc_reset2),
-	.ac_vlc_reset(vlc_reset3)
+	.ac_vlc_reset(vlc_reset3),
+	.sequence_counter2(sequence_counter2)
 
 );
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
@@ -89,12 +95,12 @@ array_from_mem array_form_mem_inst (
 	.input_data(INPUT_DATA_MEM),
 	.output_data_array(INPUT_DATA_ARRAY2)
 );
-
+/*
 array array_inst (
 	.input_data(INPUT_DATA),
 	.output_array_data(INPUT_DATA_ARRAY)
 );
-
+*/
 
 pre_dct pre_dct_inst (
 	.CLOCK(CLOCK),
@@ -124,6 +130,14 @@ pre_quant_qt_qscale pre_quant_qt_qscale_inst(
 
 );
 
+array_to_mem array_to_mem_inst(
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.counter(sequence_counter2),
+	.input_data_array(OUTPUT_DATA),
+	.output_data(v_data_result)
+
+);
 
 
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(

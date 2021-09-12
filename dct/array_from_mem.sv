@@ -1,4 +1,3 @@
-`include "prores_param.v"
 
 module array_from_mem(
 	input wire clock,
