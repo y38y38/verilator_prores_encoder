@@ -204,7 +204,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		}
 //			printf("v %d\n", dut->INPUT_AC_DATA);
 		}  else {
-			dut->INPUT_AC_DATA = 1;
+			//dut->INPUT_AC_DATA = 1;
 		//printf("e\n");
 		}
 		if (ac_vlc_counter < ((block_num * 63) +100)) {

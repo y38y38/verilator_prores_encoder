@@ -10,3 +10,13 @@ for file_name in ../prores_decoder/test/input_sample10bit/*.yuv ;do
     #../sn16/sn16 ${file_name} ./tmp/${OUT_NAME%.yuv}_dec.yuv 128 16
 #	break
 done
+#./all_test/tt0.sh &
+#./all_test/tt1.sh &
+#./all_test/tt2.sh &
+#./all_test/tt3.sh &
+#./all_test/tt4.sh &
+#./all_test/tt5.sh &
+#./all_test/tt6.sh &
+#./all_test/tt7.sh &
+#./all_test/tt8.sh &
+#./all_test/tt9.sh &

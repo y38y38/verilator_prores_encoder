@@ -1,7 +1,7 @@
 rm -rf obj_dir
 #verilator --cc  --exe  --trace-fst --trace-params --trace-structs --trace-underscore  -CFLAGS -DDEBUG -LDFLAGS -lpthread \
 verilator --cc  --exe   \
-	-Ivlc -Idct -Iquantization -Ibitstream -Iconfig -Isequencer \
+	-Ivlc -Idct -Iquantization -Ibitstream -Iconfig -Isequencer -Imem \
 	-CFLAGS -DDEBUG -LDFLAGS -lpthread \
     wrapper.sv \
 	-exe test_main.cpp \
