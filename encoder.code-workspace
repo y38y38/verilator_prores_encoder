@@ -11,7 +11,8 @@
 			"string": "c",
 			"string_view": "c",
 			"initializer_list": "cpp",
-			"utility": "cpp"
+			"utility": "cpp",
+			"unordered_map": "cpp"
 		}
 	}
 }

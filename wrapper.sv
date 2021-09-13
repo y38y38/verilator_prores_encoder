@@ -21,6 +21,7 @@ module wapper(
 
 	input wire VLC_RESET,
 	input wire [31:0] INPUT_DC_DATA,
+	output wire [31:0] INPUT_DC_DATA2,
 	output wire [31:0] DC_BITSTREAM_OUTPUT_ENABLE,
 	output wire [31:0] DC_BITSTREAM_SUM,
 
@@ -64,9 +65,10 @@ output wire [63:0]  set_bit_tmp_byte,
 output wire [63:0]  set_bit_tmp_bit,
 output wire [31:0] sequence_counter,
 output wire [31:0] sequence_counter2,
+output wire [31:0] dc_vlc_counter,
 output wire sequence_valid,
-output wire vlc_reset2,
-output wire vlc_reset3,
+output wire dc_vlc_reset,
+output wire ac_vlc_reset,
 output wire [31:0] v_data_result[2048],
 input wire block_num 
 
@@ -80,8 +82,9 @@ sequencer sequencer_inst(
 	.block_num(block_num),
  	.sequence_counter(sequence_counter),
 	.sequence_valid(sequence_valid),
-	.dc_vlc_reset(vlc_reset2),
-	.ac_vlc_reset(vlc_reset3),
+	.dc_vlc_reset(dc_vlc_reset),
+	.dc_vlc_counter(dc_vlc_counter),
+	.ac_vlc_reset(ac_vlc_reset),
 	.sequence_counter2(sequence_counter2)
 
 );
@@ -139,13 +142,21 @@ array_to_mem array_to_mem_inst(
 
 );
 
+mem_to_dc_vlc mem_to_dc_vlc_inst(
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.counter(dc_vlc_counter),
+	.block_num(block_num),
+	.input_data(v_data_result),
+	.vlc_dc(INPUT_DC_DATA2)
+);
 
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(vlc_reset2),
+	.reset_n(dc_vlc_reset),
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
-	.DcCoeff(INPUT_DC_DATA),
+	.DcCoeff(INPUT_DC_DATA2),
 	.output_enable(DC_BITSTREAM_OUTPUT_ENABLE),//mask
 	.pppp(PPPP),
 
@@ -171,7 +182,7 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 
 entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(vlc_reset3),
+	.reset_n(ac_vlc_reset),
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
@@ -186,7 +197,7 @@ entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 
 entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	.clk(CLOCK),
-	.reset_n(vlc_reset3),
+	.reset_n(ac_vlc_reset),
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
