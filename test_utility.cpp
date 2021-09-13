@@ -169,7 +169,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		//printf("dc reset rel %d %d %d\n", dut->sequence_counter,dut->sequence_counter - block_num, dut->vlc_reset2);
 //		printf(" pin %d\n", dut->vlc_reset2);
 		}
-		int counter = ((time_counter - (block_num + DCT_TIME+2))*64);
+		//int counter = ((time_counter - (block_num + DCT_TIME+2))*64);
 //		dut->INPUT_DC_DATA = v_data_result[counter %(block_num*MAX_PIXEL_NUM)];
 //		dut->INPUT_DC_DATA = dut->v_data_result[counter %(block_num*MAX_PIXEL_NUM)];
 		//printf("%d %d\n", time_counter, dut->INPUT_DC_DATA);
