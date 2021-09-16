@@ -30,6 +30,10 @@ always @(posedge clock, negedge reset_n) begin
 			dc_vlc_reset <= 0;
 		end else if (sequence_counter == DCT_TIME + block_num + 1) begin
 			dc_vlc_reset <= 1;
+
+		end else if (sequence_counter == DCT_TIME + block_num + block_num + 7) begin
+			dc_vlc_reset <= 0;
+
 		end
 	end
 end

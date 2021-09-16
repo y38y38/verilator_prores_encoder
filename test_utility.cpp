@@ -32,7 +32,7 @@ static int vlc_state = 0;
 
 int16_t v_data_result[128*16];
 
-
+/*
 void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 	for(int i=0;i<8;i++) {
 		for(int j=0;j<8;j++) {
@@ -42,14 +42,14 @@ void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 	}
 	//printf("data %d %d\n", data[0], dut->OUTPUT_DATA[0][0]);
 }
-
+*/
 void set_pixel_data_mem(Vwrapper *dut, int16_t *data) {
 	for(int i=0;i<2048;i++) {
 //	for(int i=0;i<64;i++) {
 		dut->INPUT_DATA_MEM[i] = (int32_t)data[i];
 	}
 }
-
+/*
 void set_pixel_data(Vwrapper *dut, int16_t *data) {
 #if 1
 	for(int i=0;i<64;i++) {
@@ -80,7 +80,7 @@ void set_pixel_data(Vwrapper *dut, int16_t *data) {
 	printf("\n");
 #endif
 }
-
+*/
 void set_qmatrix(Vwrapper *dut, uint8_t *matrix_table){
 	int i,j;
 	for(i=0;i<8;i++) {
@@ -155,6 +155,15 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 
 //	}
 	//until dct output 
+#if 0
+	if (dut->LENGTH){
+			dut->set_bit_enable = 1;
+			dut->set_bit_val = dut->DC_BITSTREAM_SUM;
+			dut->set_bit_size_of_bit = dut->LENGTH;
+			dut->set_bit_flush_bit = 0;
+
+	}
+#endif
 
 	if (time_counter == block_num + DCT_TIME+2) {
 //		dut->VLC_RESET = 0;
@@ -176,6 +185,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		//printf("%d %d %d %d \n", counter ,dut->dc_vlc_counter * 64, time_counter ,dut->INPUT_DC_DATA2);
 		
 		//printf("dc %x %d %d\n", dut->INPUT_DC_DATA2,dut->INPUT_DC_DATA2, dut->dc_vlc_reset);
+#if 1
 		if ((dc_vlc_counter> 5) && (dc_vlc_counter<(block_num+6))) {
 			dut->set_bit_enable = 1;
 			dut->set_bit_val = dut->DC_BITSTREAM_SUM;
@@ -183,6 +193,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 			dut->set_bit_flush_bit = 0;
 			//printf("a %x %d\n", dut->DC_BITSTREAM_SUM, dut->LENGTH);
 		}
+#endif
 		dc_vlc_counter++;
 
 	} else if (time_counter == block_num + DCT_TIME+46) {
@@ -196,22 +207,22 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 			vlc_state = Y_AC_STATE;
 		//printf("ac reset rel %d %d %d\n", dut->sequence_counter,dut->sequence_counter - block_num,dut->vlc_reset3);
 		}
-		int conefficient1 = ((time_counter - (block_num + DCT_TIME+47)) /  block_num) + 1; 
-    	int position = block_pattern_scan_read_order_table[conefficient1%MAX_PIXEL_NUM];
-		int block = (time_counter - (block_num + DCT_TIME+47)) % block_num;
+		//int conefficient1 = ((time_counter - (block_num + DCT_TIME+47)) /  block_num) + 1; 
+    	//int position = block_pattern_scan_read_order_table[conefficient1%MAX_PIXEL_NUM];
+		//int block = (time_counter - (block_num + DCT_TIME+47)) % block_num;
 //		printf("%d %d %d , %d %d %d ,%d\n", conefficient1, position, block, dut->ac_vlc_conefficient1, dut->ac_vlc_position, dut->ac_vlc_block, dut->ac_vlc_counter);
-		if (conefficient1 < MAX_PIXEL_NUM) {
+		//if (conefficient1 < MAX_PIXEL_NUM) {
 
 //			dut->INPUT_AC_DATA = v_data_result[(block * MAX_PIXEL_NUM) + position];
 			//dut->INPUT_AC_DATA = dut->v_data_result[(block * MAX_PIXEL_NUM) + position];
-	    if (time_counter == block_num + DCT_TIME+47)  {
+	    //if (time_counter == block_num + DCT_TIME+47)  {
 		//	printf("v %d %d %d\n", dut->INPUT_AC_DATA, block,position);
-		}
+		//}
 //			printf("v %d\n", dut->INPUT_AC_DATA);
-		}  else {
+		//}  else {
 			//dut->INPUT_AC_DATA = 1;
 		//printf("e\n");
-		}
+		//}
 		//printf("%d %d\n", dut->INPUT_AC_DATA,dut->INPUT_AC_DATA2);
 		//printf("%d %d\n", ac_vlc_counter, dut->INPUT_AC_DATA);
 		if (ac_vlc_counter < ((block_num * 63) +100)) {
