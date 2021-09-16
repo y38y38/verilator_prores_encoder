@@ -1,6 +1,3 @@
-・time_counterを削除したい。
- ・inputデータを2048全部先にかいておきたい→反映されない→CLOCK1でかいているからでは？
- 
 不具合
 ・DCTで=を使っている件
    
@@ -13,11 +10,7 @@ todo
 
 
 [verilog]
-function->allways
 = -> <=
-モジュール共通化 dc/ac/run/level
-
-
 
 
 -----
@@ -27,8 +20,6 @@ function->allways
 爆速
 →並列化
 
-最小単位
-Y、Cb、Crは分離できるようにする
 
 データ取得する
 

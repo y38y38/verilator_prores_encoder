@@ -26,6 +26,7 @@ module wapper(
 	output wire [31:0] DC_BITSTREAM_SUM,
 
 	input wire [31:0] INPUT_AC_DATA,
+	output  wire [31:0] INPUT_AC_DATA2,
 	output wire [31:0] AC_BITSTREAM_LEVEL_LENGTH,
 	output wire [31:0] AC_BITSTREAM_LEVEL_OUTPUT_ENABLE,
 	output wire [31:0] AC_BITSTREAM_LEVEL_SUM,
@@ -66,11 +67,15 @@ output wire [63:0]  set_bit_tmp_bit,
 output wire [31:0] sequence_counter,
 output wire [31:0] sequence_counter2,
 output wire [31:0] dc_vlc_counter,
+output wire [31:0] ac_vlc_counter,
 output wire sequence_valid,
 output wire dc_vlc_reset,
 output wire ac_vlc_reset,
 output wire [31:0] v_data_result[2048],
-input wire block_num 
+output wire [31:0] ac_vlc_conefficient1,
+output wire [31:0] ac_vlc_block,
+output wire [31:0] ac_vlc_position,
+input wire [31:0] block_num 
 
     );
 
@@ -85,6 +90,7 @@ sequencer sequencer_inst(
 	.dc_vlc_reset(dc_vlc_reset),
 	.dc_vlc_counter(dc_vlc_counter),
 	.ac_vlc_reset(ac_vlc_reset),
+	.ac_vlc_counter(ac_vlc_counter),
 	.sequence_counter2(sequence_counter2)
 
 );
@@ -151,6 +157,20 @@ mem_to_dc_vlc mem_to_dc_vlc_inst(
 	.vlc_dc(INPUT_DC_DATA2)
 );
 
+mem_to_ac_vlc mem_to_ac_vlc_inst(
+	.clock(CLOCK),
+	.reset_n(RESET),
+	.counter(ac_vlc_counter),
+	.block_num(block_num),
+	.input_data(v_data_result),
+	.vlc_ac(INPUT_AC_DATA2),
+	.conefficient1(ac_vlc_conefficient1),
+	.block(ac_vlc_block),
+	.position(ac_vlc_position)
+
+);
+
+
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	.clk(CLOCK),
 	.reset_n(dc_vlc_reset),
@@ -186,7 +206,7 @@ entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
-	.Coeff(INPUT_AC_DATA),
+	.Coeff(INPUT_AC_DATA2),
 	.output_enable(AC_BITSTREAM_LEVEL_OUTPUT_ENABLE),//mask
 	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
 	.is_expo_golomb_code(l_is_expo_golomb_code),
@@ -201,7 +221,7 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
-	.Coeff(INPUT_AC_DATA),
+	.Coeff(INPUT_AC_DATA2),
 	.output_enable(AC_BITSTREAM_RUN_OUTPUT_ENABLE),//mask
 //	.sum(AC_BITSTREAM_RUN_SUM),
 	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
