@@ -70,11 +70,19 @@ output wire [31:0] dc_vlc_counter,
 output wire [31:0] ac_vlc_counter,
 output wire sequence_valid,
 output wire dc_vlc_reset,
+output wire dc_vlc_output_enable,
 output wire ac_vlc_reset,
 output wire [31:0] v_data_result[2048],
 output wire [31:0] ac_vlc_conefficient1,
 output wire [31:0] ac_vlc_block,
 output wire [31:0] ac_vlc_position,
+output wire dc_output_enable,
+output wire [31:0] dc_output_val,
+output wire [31:0]  dc_output_size_of_bit,
+output wire dc_output_flush,
+
+
+
 input wire [31:0] block_num 
 
     );
@@ -88,6 +96,7 @@ sequencer sequencer_inst(
  	.sequence_counter(sequence_counter),
 	.sequence_valid(sequence_valid),
 	.dc_vlc_reset(dc_vlc_reset),
+	.dc_vlc_output_enable(dc_vlc_output_enable),
 	.dc_vlc_counter(dc_vlc_counter),
 	.ac_vlc_reset(ac_vlc_reset),
 	.ac_vlc_counter(ac_vlc_counter),
@@ -229,6 +238,19 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	.is_expo_golomb_code_n(r_is_expo_golomb_code_n),
 	.is_expo_golomb_code_n_n(r_is_expo_golomb_code_n_n),
 	.codeword_length_n_n_n(AC_BITSTREAM_RUN_LENGTH)
+);
+
+
+dc_output dc_output_inst(
+	.clock(CLOCK),
+	.reset_n(dc_vlc_reset),
+	.LENGTH(LENGTH),
+	.SUM(DC_BITSTREAM_SUM),
+	.enable(dc_vlc_output_enable),
+	.output_enable(dc_output_enable),
+	.val(dc_output_val),
+	.size_of_bit(dc_output_size_of_bit),
+	.flush_bit(dc_output_flush)
 );
 
 
