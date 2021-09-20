@@ -23,7 +23,12 @@ always @(posedge clock, negedge reset_n) begin
  	end
 end
 
-localparam DCT_TIME = 12;
+
+//localparam DCT_TIME = 12;
+//localparam DCT_TIME2 = 2;
+
+localparam DCT_TIME = 10;
+localparam DCT_TIME2 = -2;
 
 always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
@@ -85,7 +90,7 @@ always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		sequence_counter2 <= 32'h0;
 	end else begin
-		sequence_counter2 <= (sequence_counter + 2 - DCT_TIME);
+		sequence_counter2 <= (sequence_counter + DCT_TIME2 - DCT_TIME);
  	end
 end
 

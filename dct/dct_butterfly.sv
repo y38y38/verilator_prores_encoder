@@ -135,6 +135,18 @@ module dct_butterfly(
 			s4[7] <=32'h0;
 
 		end else begin
+
+			s4[0] <= s3[0];
+			s4[1] <= s3[1];
+			s4[2] <= s3[2];
+			s4[3] <= s3[3];
+			s4[4] <= ((s3[4] * MATH_SIN_PI_16>>>16)) + ((s3[7] * MATH_COS_PI_16)>>>16);
+			s4[5] <= ((s3[5] * MATH_SIN_5_PI_16)>>>16) + ((s3[6] * MATH_COS_5_PI_16)>>>16);
+
+			s4[6] <= ((s3[6] * MATH_COS_3_PI_16)>>>16) - ((s3[5] * MATH_SIN_3_PI_16)>>>16);
+
+			s4[7] <= ((s3[7] * MATH_COS_7_PI_16)>>>16) - ((s3[4] * MATH_SIN_7_PI_16)>>>16);
+/*
 			s4[0] = s3[0];
 			s4[1] = s3[1];
 			s4[2] = s3[2];
@@ -145,6 +157,7 @@ module dct_butterfly(
 			s4[6] = ((s3[6] * MATH_COS_3_PI_16)>>>16) - ((s3[5] * MATH_SIN_3_PI_16)>>>16);
 
 			s4[7] = ((s3[7] * MATH_COS_7_PI_16)>>>16) - ((s3[4] * MATH_SIN_7_PI_16)>>>16);
+*/
 		end
 	end
 

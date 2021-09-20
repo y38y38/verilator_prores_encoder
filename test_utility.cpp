@@ -14,12 +14,12 @@
 #include "test_utility.h"
 
 
-extern uint8_t block_pattern_scan_read_order_table[64];
+//extern uint8_t block_pattern_scan_read_order_table[64];
 
 
-#define MAX_BLOCK_NUM	(32)
-#define MAX_PIXEL_NUM	(64)
-#define BYTE_PER_PIXEL	(2)
+//#define MAX_BLOCK_NUM	(32)
+//#define MAX_PIXEL_NUM	(64)
+//#define BYTE_PER_PIXEL	(2)
 
 
 //#define Y_DC_RESET_STATE	(1)
@@ -130,8 +130,8 @@ void toggle_clock(Vwrapper *dut) {
 }
 
 
-static int dc_vlc_counter = 0;
-static int ac_vlc_counter = 0;
+//static int dc_vlc_counter = 0;
+//static int ac_vlc_counter = 0;
 void init_test(Vwrapper *dut) {
 //	vlc_state = 0;
 //	dc_vlc_counter = 0;
@@ -278,6 +278,17 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 }
 
 void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bitstream, int block_num) {
+#if 0
+	if ((time_counter>=7) && (time_counter<=15))  {
+		printf("a %d %d %d %d\n", time_counter, dut->DCT_OUTPUT[0][0], dut->OUTPUT_DATA[0][0], dut->sequence_counter2);
+	}
+	if ((time_counter>=7+32) && (time_counter<=15+32))  {
+		printf("b %d %d\n", time_counter, dut->INPUT_DC_DATA2);
+	}
+	if ((time_counter>=7+32+2) && (time_counter<=15+32+6))  {
+		printf("c %d %d %d\n", time_counter, dut->DC_BITSTREAM_SUM,dut->dc_vlc_output_enable);
+	}
+#endif
 #if 0
 	if (time_counter>=11) {
 		if (time_counter>=11 && ((time_counter - 11) < block_num)) {
