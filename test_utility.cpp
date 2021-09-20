@@ -22,15 +22,15 @@ extern uint8_t block_pattern_scan_read_order_table[64];
 #define BYTE_PER_PIXEL	(2)
 
 
-#define Y_DC_RESET_STATE	(1)
-#define Y_DC_STATE			(2)
-#define Y_AC_RESET_STATE	(3)
-#define Y_AC_STATE			(4)
-#define END_STATE			(13)
-static int vlc_state = 0;
+//#define Y_DC_RESET_STATE	(1)
+//#define Y_DC_STATE			(2)
+//#define Y_AC_RESET_STATE	(3)
+//#define Y_AC_STATE			(4)
+//#define END_STATE			(13)
+//static int vlc_state = 0;
 
 
-int16_t v_data_result[128*16];
+//int16_t v_data_result[128*16];
 
 /*
 void set_result_dct_data(int16_t *data, Vwrapper *dut) {
@@ -133,9 +133,9 @@ void toggle_clock(Vwrapper *dut) {
 static int dc_vlc_counter = 0;
 static int ac_vlc_counter = 0;
 void init_test(Vwrapper *dut) {
-	vlc_state = 0;
-	dc_vlc_counter = 0;
-	ac_vlc_counter = 0;
+//	vlc_state = 0;
+//	dc_vlc_counter = 0;
+//	ac_vlc_counter = 0;
 
 
 }
@@ -164,7 +164,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 
 	}
 #endif
-
+/*
 	if (time_counter == block_num + DCT_TIME+2) {
 //		dut->VLC_RESET = 0;
 		//printf("dc reset %d %d %d\n", dut->sequence_counter, dut->sequence_counter - block_num, dut->vlc_reset2);
@@ -273,6 +273,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 //	if (dut->ac_vlc_output_flush) {
 //		printf("a %d\n", time_counter);
 	}
+	*/
 
 }
 
@@ -287,6 +288,7 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 		}
 	}
 #else
+/*
 //	if ((time_counter>=0) && (time_counter <= 5)) {
 	if ((time_counter>=0) && (time_counter <= 5)) {
 		//printf("b0 %d %d %d\n",dut->INPUT_DATA_MEM[0],dut->INPUT_DATA_MEM[1], dut->sequence_counter);
@@ -306,8 +308,10 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 			//printf("%d %d\n", dut->sequence_counter2, (((time_counter - DCT_TIME) % MAX_BLOCK_NUM )));
 		}
 	}
-#endif
+*/
 
+#endif
+/*
 	if (dut->VLC_RESET) {
 		if (vlc_state == Y_DC_STATE){
 
@@ -317,7 +321,7 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 	} else {
 //		printf("VLC_RESET %d\n", dut->VLC_RESET);
 	}
-
+*/
 	//printf("sequence_counter %d\n",dut->sequence_counter);
 	uint64_t data = dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8));
 	uint64_t length = dut->set_bit_output_enable_byte*8;
