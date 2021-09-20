@@ -9,6 +9,8 @@ module sequencer (
 	output reg dc_vlc_output_enable,
  	output wire [31:0] dc_vlc_counter,
 	output reg ac_vlc_reset,
+	output reg ac_vlc_output_enable,
+	output reg ac_vlc_output_flush,
  	output wire [31:0] ac_vlc_counter,
 	output reg [31:0] sequence_counter2
 );
@@ -70,7 +72,7 @@ always @(posedge clock, negedge reset_n) begin
 			ac_vlc_reset <= 0;
 		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 1) begin
 			ac_vlc_reset <= 1;
-		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + (63* block_num) + 6) begin
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + (63* block_num) + 8) begin
 			ac_vlc_reset <= 0;
 		end 
 	end
@@ -85,6 +87,24 @@ always @(posedge clock, negedge reset_n) begin
 	end else begin
 		sequence_counter2 <= (sequence_counter + 2 - DCT_TIME);
  	end
+end
+
+
+always @(posedge clock, negedge reset_n) begin
+	if(!reset_n) begin
+		ac_vlc_output_enable <=0;
+	end else begin
+		if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME) begin
+			ac_vlc_output_enable <= 0;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 6) begin
+			ac_vlc_output_enable <= 1;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + (63* block_num) + 6) begin
+			ac_vlc_output_enable <= 0;
+			ac_vlc_output_flush <= 1;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + (63* block_num) + 7) begin
+			ac_vlc_output_flush <= 0;
+		end 
+	end
 end
 
 

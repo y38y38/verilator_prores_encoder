@@ -79,8 +79,15 @@ output wire [31:0] ac_vlc_position,
 output wire dc_output_enable,
 output wire [31:0] dc_output_val,
 output wire [31:0]  dc_output_size_of_bit,
+
 output wire dc_output_flush,
 
+output wire ac_output_enable,
+output wire [63:0] ac_output_val,
+output wire [63:0] ac_output_size_of_bit,
+output wire ac_vlc_output_flush,
+output wire ac_output_flush,
+output wire ac_vlc_output_enable,
 
 
 input wire [31:0] block_num 
@@ -99,6 +106,8 @@ sequencer sequencer_inst(
 	.dc_vlc_output_enable(dc_vlc_output_enable),
 	.dc_vlc_counter(dc_vlc_counter),
 	.ac_vlc_reset(ac_vlc_reset),
+	.ac_vlc_output_enable(ac_vlc_output_enable),
+	.ac_vlc_output_flush(ac_vlc_output_flush),
 	.ac_vlc_counter(ac_vlc_counter),
 	.sequence_counter2(sequence_counter2)
 
@@ -254,15 +263,36 @@ dc_output dc_output_inst(
 );
 
 
+ac_output ac_output_inst(
+	.clock(CLOCK),
+	.reset_n(ac_vlc_reset),
+	.RUN_LENGTH(AC_BITSTREAM_RUN_LENGTH),
+	.RUN_SUM(AC_BITSTREAM_RUN_SUM),
+	.LEVEL_LENGTH(AC_BITSTREAM_LEVEL_LENGTH),
+	.LEVEL_SUM(AC_BITSTREAM_LEVEL_SUM),
+	.enable(ac_vlc_output_enable),
+	.ac_vlc_output_flush(ac_vlc_output_flush),
+	.output_enable(ac_output_enable),
+	.val(ac_output_val),
+	.size_of_bit(ac_output_size_of_bit),
+	.flush_bit(ac_output_flush)
+);
+
+
 wire sb_enable;
 wire [63:0] sb_val;
 wire [63:0] sb_size_of_bit;
 wire sb_flush;
-
+/*
 assign sb_enable = set_bit_enable|dc_output_enable;
 assign sb_val = set_bit_val|dc_output_val;
 assign sb_size_of_bit = set_bit_size_of_bit|dc_output_size_of_bit;
 assign sb_flush = set_bit_flush_bit|dc_output_flush;
+*/
+assign sb_enable = set_bit_enable|dc_output_enable|ac_output_enable;
+assign sb_val = set_bit_val|dc_output_val|ac_output_val;
+assign sb_size_of_bit = set_bit_size_of_bit|dc_output_size_of_bit|ac_output_size_of_bit;
+assign sb_flush = set_bit_flush_bit|dc_output_flush|ac_output_flush;
 
 set_bit set_bit_inst(
 	.clock(CLOCK),

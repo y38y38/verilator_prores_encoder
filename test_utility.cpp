@@ -144,7 +144,7 @@ void init_test(Vwrapper *dut) {
 
 void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num){
 
-#if 1
+#if 0
 	dut->set_bit_enable = 0;
 	dut->set_bit_val = 0;
 	dut->set_bit_size_of_bit = 0;
@@ -230,24 +230,31 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 				uint64_t data = (dut->AC_BITSTREAM_RUN_SUM << dut->AC_BITSTREAM_LEVEL_LENGTH)|dut->AC_BITSTREAM_LEVEL_SUM;
 				uint64_t length = dut->AC_BITSTREAM_LEVEL_LENGTH + dut->AC_BITSTREAM_RUN_LENGTH;
 			//	printf("a c %d %llx %d %llx %llx %d %d %d\n", dut->set_bit_enable, data, length, dut->AC_BITSTREAM_RUN_SUM, dut->AC_BITSTREAM_LEVEL_SUM, dut->AC_BITSTREAM_RUN_LENGTH, dut->AC_BITSTREAM_LEVEL_LENGTH, ac_vlc_counter);
-
+#if 0
 				dut->set_bit_enable = 1;
 				dut->set_bit_val = data;
 				dut->set_bit_size_of_bit = length;
 				dut->set_bit_flush_bit = 0;
+#endif
 				//printf("b %x %d\n", data, length);
 			}
+		}
+		if (ac_vlc_counter < ((block_num * 63) +100)) {
+//				printf("%llx %d  %d %llx %d %d %d\n", dut->set_bit_val, dut->set_bit_size_of_bit,
+//						 dut->ac_vlc_output_enable, dut->ac_output_val, dut->ac_output_size_of_bit, dut->ac_output_enable, dut->ac_output_flush);
 		}
 
 			ac_vlc_counter++;
 
 
 	} else if  (time_counter == (63 * block_num) + DCT_TIME+47 + block_num +5  ) {
+#if 0
 		dut->VLC_RESET = 0;
 		dut->set_bit_flush_bit = 1;
 		dut->set_bit_enable = 0;
 		dut->set_bit_val = 0;
 		dut->set_bit_size_of_bit = 0;
+#endif
 		//printf("flush\n");
 	} else {
 //		dut->VLC_RESET = 0;
@@ -257,7 +264,15 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 				&& (time_counter < (63 * block_num) + DCT_TIME+48 + block_num  +5 )) {
 	//printf("t %d %d %llx %llx %d %d\n", time_counter, ac_vlc_counter,	dut->AC_BITSTREAM_RUN_SUM,dut->AC_BITSTREAM_LEVEL_SUM, dut->ac_vlc_reset, dut->INPUT_AC_DATA);
 	}
-			//printf("%x %d %x %d %d\n", dut->set_bit_val, dut->set_bit_size_of_bit, dut->dc_output_val, dut->dc_output_size_of_bit, dut->dc_vlc_output_enable);
+	//printf("%x %d %x %d %d\n", dut->set_bit_val, dut->set_bit_size_of_bit, dut->dc_output_val, dut->dc_output_size_of_bit, dut->dc_vlc_output_enable);
+	if  ((time_counter >= (63 * block_num) + DCT_TIME+47 + block_num +3  )
+	     &&  (time_counter <= (63 * block_num) + DCT_TIME+47 + block_num +7  )) {
+//		printf("flush %d %d  %d %d\n", time_counter, dut->set_bit_flush_bit, dut->ac_output_flush, dut->ac_vlc_reset);
+	}
+	if (dut->ac_output_flush) {
+//	if (dut->ac_vlc_output_flush) {
+//		printf("a %d\n", time_counter);
+	}
 
 }
 
