@@ -36,6 +36,8 @@ extern uint32_t picture_size_offset;
 extern uint16_t slice_size_table[MAX_SLICE_NUM];
 extern FILE *slice_output;
 
+extern int y_size ;
+extern int cb_size ;
 
 int encoder_main(int argc, char **argv);
 
@@ -73,9 +75,9 @@ int main(int argc, char** argv) {
 	block_num[2] = 16;
 
 	uint16_t component_size[3];
-
+	initBitStream(&bitstream);
+#if 0
 	for(int i=0;i<3;i++) {
-		initBitStream(&bitstream);
 		encode_slice_component_v(component_data[i],component_matrix_table[i], qscale_table_[0], block_num[i], &bitstream);
 
 		uint32_t size  = getBitSize(&bitstream);
@@ -90,10 +92,25 @@ int main(int argc, char** argv) {
 		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
 
 	}
+#else
+		encode_slice_component_v(component_data[0],
+								 component_data[1],
+								 component_data[2],
+								 component_matrix_table[0], 
+								 component_matrix_table[1], 
+								 qscale_table_[0], block_num[0], &bitstream);
+		 component_size[0] = SET_DATA16(y_size);
+		 component_size[1] = SET_DATA16(cb_size);
+		 component_size[2] = 0;
+	    uint32_t current_offset = getBitSize(&bitstream);
+		uint32_t vlc_size = (current_offset)/8;
+		//printf("vlc %d\n",vlc_size);
+		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
+#endif
 
     setByteInOffset(slice_param[0].bitstream, code_size_of_y_data_offset , (uint8_t *)&component_size[0], 2);
 	setByteInOffset(slice_param[0].bitstream, code_size_of_cb_data_offset , (uint8_t *)&component_size[1], 2);
-	uint32_t current_offset = getBitSize(slice_param[0].bitstream);
+	current_offset = getBitSize(slice_param[0].bitstream);
 	uint32_t slice_size =  ((current_offset - slice_start_offset)/8);
 	write_slice_size(slice_param[0].slice_no, slice_size);
 

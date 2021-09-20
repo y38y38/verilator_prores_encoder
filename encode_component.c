@@ -13,13 +13,22 @@
 #include "encoder.h"
 #include "debug.h"
 
-void set_pixel_data_mem(Vwrapper *dut, int16_t *data);
-void set_qmatrix(Vwrapper *dut, uint8_t *matrix_table);
+void set_pixel_data_mem(Vwrapper *dut, int16_t *y_pixel,int16_t *cb_pxiel,int16_t *cr_pixel );
+void set_qmatrix(Vwrapper *dut, uint8_t *y_matrix_table, uint8_t *c_matrix_table);
 void set_qscale(Vwrapper *dut, uint8_t qscale);
 
+int y_size = 0;
+int cb_size = 0;
 
 //static int time_counter = 0;
-uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscale, int block_num, struct bitstream *bitstream) {
+uint32_t encode_slice_component_v(int16_t* y_pixel, 
+									int16_t* cb_pixel,
+									int16_t* cr_pixel,
+									uint8_t *y_matrix, 
+									uint8_t *c_matrix,
+									uint8_t qscale, 
+									int block_num, 
+									struct bitstream *bitstream) {
 	int time_counter;	
 	// Instantiate DUT
 	Vwrapper *dut = new Vwrapper();
@@ -43,15 +52,15 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	time_counter = 0;
 //printf("s\n");
 
-	set_pixel_data_mem(dut, pixel);
+	set_pixel_data_mem(dut, y_pixel, cb_pixel, cr_pixel);
 	set_qscale(dut, qscale_table_[0]);
-	set_qmatrix(dut, luma_matrix2_);
+	set_qmatrix(dut, y_matrix, c_matrix);
 	dut->block_num = block_num;
 
 	while (is_run(time_counter) && !Verilated::gotFinish()) {
 		toggle_clock(dut);
 		if (!dut->CLOCK) {
-			posedge_clock_input(time_counter, dut, pixel, block_num);
+			posedge_clock_input(time_counter, dut, y_pixel, block_num);
 		}
 		dut->eval();
 		if (!dut->CLOCK) {
@@ -61,6 +70,9 @@ uint32_t encode_slice_component_v(int16_t* pixel, uint8_t *matrix, uint8_t qscal
 	}
 	end_test(dut);
 	dut->final();
+	y_size = dut->slice_sequencer_y_size;
+	cb_size = dut->slice_sequencer_cb_size;
+
 	return 0;
 }
 

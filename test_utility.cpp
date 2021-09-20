@@ -43,11 +43,20 @@ void set_result_dct_data(int16_t *data, Vwrapper *dut) {
 	//printf("data %d %d\n", data[0], dut->OUTPUT_DATA[0][0]);
 }
 */
-void set_pixel_data_mem(Vwrapper *dut, int16_t *data) {
+void set_pixel_data_mem(Vwrapper *dut, int16_t *y_pixel, int16_t *cb_pixel, int16_t *cr_pixel) {
 	for(int i=0;i<2048;i++) {
 //	for(int i=0;i<64;i++) {
-		dut->INPUT_DATA_MEM[i] = (int32_t)data[i];
+		dut->INPUT_DATA_MEM[i] = (int32_t)y_pixel[i];
 	}
+	for(int i=0;i<1024;i++) {
+//	for(int i=0;i<64;i++) {
+		dut->INPUT_DATA_MEM[2048+i] = (int32_t)cb_pixel[i];
+	}
+	for(int i=0;i<1024;i++) {
+//	for(int i=0;i<64;i++) {
+		dut->INPUT_DATA_MEM[2048+1024+i] = (int32_t)cr_pixel[i];
+	}
+
 }
 /*
 void set_pixel_data(Vwrapper *dut, int16_t *data) {
@@ -81,11 +90,18 @@ void set_pixel_data(Vwrapper *dut, int16_t *data) {
 #endif
 }
 */
-void set_qmatrix(Vwrapper *dut, uint8_t *matrix_table){
+void set_qmatrix(Vwrapper *dut, uint8_t *y_matrix_table,uint8_t *c_matrix_table){
 	int i,j;
 	for(i=0;i<8;i++) {
 		for(j=0;j<8;j++) {
-			dut->QMAT[i][j] = matrix_table[(i*8)+j];
+			dut->Y_QMAT[i][j] = y_matrix_table[(i*8)+j];
+			
+
+		}
+	}
+	for(i=0;i<8;i++) {
+		for(j=0;j<8;j++) {
+			dut->C_QMAT[i][j] = c_matrix_table[(i*8)+j];
 			
 
 		}
@@ -99,7 +115,7 @@ void set_qscale(Vwrapper *dut, uint8_t qscale) {
 }
 bool is_run(int time_counter) {
 	//printf("is %d\n", time_counter);
-	if (time_counter < (10000/2)) {
+	if (time_counter < (40000)) {
 		return true;
 
 	} else {
@@ -278,16 +294,26 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 }
 
 void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bitstream, int block_num) {
-#if 0
+	if (dut->ac_output_flush) {
+		//printf("%d\n", dut->slice_sequencer_counter);
+	}
+	if (!dut->component_reset_n) {
+		//printf("c %d %d\n", time_counter, dut->slice_sequencer_counter);
+	}
+#if 1
 	if ((time_counter>=7) && (time_counter<=15))  {
-		printf("a %d %d %d %d\n", time_counter, dut->DCT_OUTPUT[0][0], dut->OUTPUT_DATA[0][0], dut->sequence_counter2);
+		//printf("a %d %d %d %d\n", time_counter, dut->DCT_OUTPUT[0][0], dut->OUTPUT_DATA[0][0], dut->sequence_counter2);
 	}
-	if ((time_counter>=7+32) && (time_counter<=15+32))  {
-		printf("b %d %d\n", time_counter, dut->INPUT_DC_DATA2);
+	if ((time_counter>=3000+7+16) && (time_counter<=3000+20+16))  {
+		//printf("b %d %d %d %d %d\n", time_counter, 
+		//							dut->dc_vlc_counter, 
+		//							dut->block_num, 
+		//							dut->v_data_result[0], 
+		//							dut->INPUT_DC_DATA2);
 	}
-	if ((time_counter>=7+32+2) && (time_counter<=15+32+6))  {
-		printf("c %d %d %d\n", time_counter, dut->DC_BITSTREAM_SUM,dut->dc_vlc_output_enable);
-	}
+//	if ((time_counter>=7+32+2) && (time_counter<=15+32+6))  {
+//		printf("c %d %d %d\n", time_counter, dut->DC_BITSTREAM_SUM,dut->dc_vlc_output_enable);
+//	}
 #endif
 #if 0
 	if (time_counter>=11) {
