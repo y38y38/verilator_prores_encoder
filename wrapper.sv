@@ -254,14 +254,23 @@ dc_output dc_output_inst(
 );
 
 
+wire sb_enable;
+wire [63:0] sb_val;
+wire [63:0] sb_size_of_bit;
+wire sb_flush;
+
+assign sb_enable = set_bit_enable|dc_output_enable;
+assign sb_val = set_bit_val|dc_output_val;
+assign sb_size_of_bit = set_bit_size_of_bit|dc_output_size_of_bit;
+assign sb_flush = set_bit_flush_bit|dc_output_flush;
 
 set_bit set_bit_inst(
 	.clock(CLOCK),
 	.reset_n(RESET),
-	.enable(set_bit_enable),
-	.val(set_bit_val),
-	.size_of_bit(set_bit_size_of_bit),
-	.flush_bit(set_bit_flush_bit),//val, size_of_bitを参照せずに、bitを吐き出す。
+	.enable(sb_enable),
+	.val(sb_val),
+	.size_of_bit(sb_size_of_bit),
+	.flush_bit(sb_flush),//val, size_of_bitを参照せずに、bitを吐き出す。
 	.output_enable_byte(set_bit_output_enable_byte),
 	.output_val(set_bit_output_val),
 

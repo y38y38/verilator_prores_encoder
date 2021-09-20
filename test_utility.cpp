@@ -144,12 +144,12 @@ void init_test(Vwrapper *dut) {
 
 void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int block_num){
 
-
+#if 1
 	dut->set_bit_enable = 0;
 	dut->set_bit_val = 0;
 	dut->set_bit_size_of_bit = 0;
 	dut->set_bit_flush_bit = 0;
-
+#endif
 //	if(!dut->vlc_reset3) {
 		//printf("pin %d %d\n", dut->vlc_reset3, dut->sequence_counter);
 
@@ -185,7 +185,7 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 		//printf("%d %d %d %d \n", counter ,dut->dc_vlc_counter * 64, time_counter ,dut->INPUT_DC_DATA2);
 		
 		//printf("dc %x %d %d\n", dut->INPUT_DC_DATA2,dut->INPUT_DC_DATA2, dut->dc_vlc_reset);
-#if 1
+#if 0
 		if ((dc_vlc_counter> 5) && (dc_vlc_counter<(block_num+6))) {
 			dut->set_bit_enable = 1;
 			dut->set_bit_val = dut->DC_BITSTREAM_SUM;
