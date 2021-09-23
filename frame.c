@@ -459,7 +459,9 @@ void encode_slices(struct encoder_param * param)
     slice_size_table_offset = (getBitSize(&write_bitstream)) >> 3 ;
     for (i = 0; i < slice_num_max ; i++) {
         uint16_t slice_size = 0x0;
+#if 0
         setByte(&write_bitstream, (uint8_t*)&slice_size, 2);
+#endif
     }
     slice_mb_count = param->slice_size_in_mb;
     mb_x = 0;
@@ -548,7 +550,7 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
 
 	write_bitstream.bitstream_buffer = bitstream_buffer;
     initBitStream(&write_bitstream);
-
+#if 0
     frame_size_offset = getBitSize(&write_bitstream) >> 3 ;
     uint32_t frame_size = SET_DATA32(0x0); 
     setByte(&write_bitstream, (uint8_t*)&frame_size,4);
@@ -562,7 +564,7 @@ uint8_t *encode_frame(struct encoder_param* param, uint32_t *encode_frame_size)
     picture_size_offset = (getBitSize(&write_bitstream)) >> 3 ;
 
     set_picture_header(param);
-
+#endif
     encode_slices(param);
 #ifdef DEV_ENCODE
     uint32_t picture_end = (getBitSize(&write_bitstream)) >>  3 ;

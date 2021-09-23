@@ -364,7 +364,7 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 	uint64_t length = dut->set_bit_output_enable_byte*8;
 	if (dut->set_bit_output_enable_byte) {
 		if (length > 23) {
-			//printf("v %llx %llx\n", data, length);
+//			printf("v %llx %llx\n", data, length);
 			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))>>23, (dut->set_bit_output_enable_byte*8) - 23);
 			//printf("v1 %llx %llx\n", dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))>>23, (dut->set_bit_output_enable_byte*8) - 23);
 			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8))&0x7fffff, 23);
@@ -372,8 +372,20 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 		} else {
 			setBit(bitstream, dut->set_bit_output_val >> (64 - (dut->set_bit_output_enable_byte*8)), dut->set_bit_output_enable_byte*8);
 		}
-		//printf("vb %d %llx %llx %d\n", dut->set_bit_enable, dut->set_bit_val, dut->set_bit_size_of_bit, dut->set_bit_flush_bit);
+//		if (time_counter < 30) {
+//			printf("vb %d %llx %llx %d\n", dut->set_bit_enable, dut->set_bit_val, dut->set_bit_size_of_bit, dut->set_bit_flush_bit);
+
+//		}
 		//	printf("v %llx %d %d %x %d  %llx %llx\n", 0, 0, dut->set_bit_flush_bit,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset
 		//	,dut->set_bit_output_enable_byte, dut->set_bit_output_val);
 	}
+		if ((time_counter > 28) && (time_counter < 200 )) {
+//			printf("vb %d %d %d %llx %llx %d\n", dut->sb_reset, dut->set_bit_output_enable_byte, dut->sb_enable, dut->sb_val, dut->sb_size_of_bit, dut->sb_flush);
+			//printf("vb %d %llx %llx %d %d\n", dut->header_output_enable, dut->header_val, dut->header_size_of_bit, dut->header_flush,dut->header_counter);
+//			printf("v %llx %d %d %x %d  %llx %llx\n", 0, 0, dut->set_bit_flush_bit,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset
+//			,dut->set_bit_output_enable_byte, dut->set_bit_output_val);
+			printf("va %d %d %d %llx %llx %d %d\n", dut->matrix_reset_n, dut->sb_reset, dut->sb_enable, dut->sb_val, dut->sb_size_of_bit, dut->sb_flush, dut->matrix_counter);
+			printf("vb %llx %llx %llx %llx\n", dut->set_bit_output_enable_byte, dut->set_bit_output_val,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset);
+
+		}
 }

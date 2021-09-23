@@ -17,6 +17,10 @@ void set_pixel_data_mem(Vwrapper *dut, int16_t *y_pixel,int16_t *cb_pxiel,int16_
 void set_qmatrix(Vwrapper *dut, uint8_t *y_matrix_table, uint8_t *c_matrix_table);
 void set_qscale(Vwrapper *dut, uint8_t qscale);
 
+extern uint32_t horizontal_;
+extern uint32_t vertical_;
+
+
 int y_size = 0;
 int cb_size = 0;
 
@@ -51,6 +55,20 @@ uint32_t encode_slice_component_v(int16_t* y_pixel,
 	dut->CLOCK = 1;
 	time_counter = 0;
 //printf("s\n");
+
+
+
+	dut->header_horizontal = horizontal_;
+	dut->header_vertical = vertical_;
+	dut->header_chroma_format = 2;
+	dut->header_interlace_mode = 0;
+	dut->header_aspect_ratio_information = 0;
+	dut->header_frame_rate_code = 0;
+	dut->header_color_primaries = 0;
+	dut->header_transfer_characteristic = 0;
+	dut->header_matrix_coefficients = 2;
+	dut->header_alpha_channel_type = 0;
+
 
 	set_pixel_data_mem(dut, y_pixel, cb_pixel, cr_pixel);
 	set_qscale(dut, qscale_table_[0]);

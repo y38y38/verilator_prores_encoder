@@ -284,24 +284,24 @@ uint16_t encode_slice(struct Slice *param)
 //	printf("start_slice_offset %d %p\n", start_offset, getBitStream(param->bitstream, &size2));
     uint8_t slice_header_size = 6;
 
-    setBit(param->bitstream, slice_header_size , 5);
+//    setBit(param->bitstream, slice_header_size , 5);
 
     uint8_t reserve =0x0;
-    setBit(param->bitstream, reserve, 3);
+  //  setBit(param->bitstream, reserve, 3);
 
-    setByte(param->bitstream, &param->qscale, 1);
+    //setByte(param->bitstream, &param->qscale, 1);
 
     code_size_of_y_data_offset = getBitSize(param->bitstream);
     code_size_of_y_data_offset = code_size_of_y_data_offset >> 3;
     uint16_t size = 0;
     uint16_t coded_size_of_y_data = SET_DATA16(size);
-    setByte(param->bitstream, (uint8_t*)&coded_size_of_y_data , 2);
+  //  setByte(param->bitstream, (uint8_t*)&coded_size_of_y_data , 2);
 
     code_size_of_cb_data_offset = getBitSize(param->bitstream);
     code_size_of_cb_data_offset = code_size_of_cb_data_offset >> 3 ;
     size = 0;
     uint16_t coded_size_of_cb_data = SET_DATA16(size);
-    setByte(param->bitstream, (uint8_t*)&coded_size_of_cb_data , 2);
+   // setByte(param->bitstream, (uint8_t*)&coded_size_of_cb_data , 2);
 //	printf("offset=0x%x\n", code_size_of_cb_data_offset);
 
 	getYver2((uint16_t*)param->working_buffer, param->y_data, param->mb_x,param->mb_y,param->slice_size_in_mb, param->horizontal, param->vertical);

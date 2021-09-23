@@ -105,27 +105,35 @@ int main(int argc, char** argv) {
 	    uint32_t current_offset = getBitSize(&bitstream);
 		uint32_t vlc_size = (current_offset)/8;
 		//printf("vlc %d\n",vlc_size);
+		printf("slice 0 bit size %d\n", getBitSize(slice_param[0].bitstream));
 		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
-#endif
 
+#endif
+#if 0
     setByteInOffset(slice_param[0].bitstream, code_size_of_y_data_offset , (uint8_t *)&component_size[0], 2);
 	setByteInOffset(slice_param[0].bitstream, code_size_of_cb_data_offset , (uint8_t *)&component_size[1], 2);
+#endif
 	current_offset = getBitSize(slice_param[0].bitstream);
 	uint32_t slice_size =  ((current_offset - slice_start_offset)/8);
+#if 0
 	write_slice_size(slice_param[0].slice_no, slice_size);
-
+#endif
 
 	setByte(&write_bitstream, slice_param[0].bitstream->bitstream_buffer, slice_size);
+#if 0
     setSliceTalbeFlush(slice_size_table[0], slice_size_table_offset);
+#endif
     uint32_t picture_end = (getBitSize(&write_bitstream)) >>  3 ;
     uint32_t tmp  = picture_end - picture_size_offset;
     uint32_t picture_size = SET_DATA32(tmp);
+#if 0
     setByteInOffset(&write_bitstream, picture_size_offset_, (uint8_t*)&picture_size, 4);
+#endif
 	uint32_t encode_frame_size;
 	 uint8_t *ptr = getBitStream(&write_bitstream, &encode_frame_size);
     uint32_t frame_size_data = SET_DATA32(encode_frame_size);
-    setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
-
+//    setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
+	printf("%d\n", encode_frame_size);
     size_t writesize = fwrite(ptr, 1, encode_frame_size,  slice_output);
     if (writesize != encode_frame_size) {
 	    printf("%s %d %d\n", __FUNCTION__, __LINE__, (int)writesize);
