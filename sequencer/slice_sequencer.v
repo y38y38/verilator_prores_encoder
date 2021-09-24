@@ -135,16 +135,16 @@ always @(posedge clock, negedge reset_n) begin
 
 			//sbにリセットがはいる。
 		end else if (counter == HEADER_TIME) begin 
-			$display(" slice_header_size %x %d", slice_header_size, slice_header_size );
+			//$display(" slice_header_size %x %d", slice_header_size, slice_header_size );
 			component_reset_n <= 1'b1;
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME) begin 
-			$display(" slicetop %x %x", slice_top,set_bit_total_byte_size );
+			//$display(" slicetop %x %x", slice_top,set_bit_total_byte_size );
 			component_reset_n <= 1'b0;
 			offset <= 32'd2048;
 			is_y <= 1'b0;
 			y_size <= set_bit_total_byte_size;
 			slice_size_tmp <= slice_size_tmp + set_bit_total_byte_size;
-			$display("1 %d", slice_size_tmp);
+			//$display("1 %d", slice_size_tmp);
 			block_num <= 32'd16;
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME + 32'h1) begin 
 			component_reset_n <= 1'b1;
@@ -153,23 +153,23 @@ always @(posedge clock, negedge reset_n) begin
 			offset <= 32'd3072;
 			cb_size <= set_bit_total_byte_size;
 			slice_size_tmp <= slice_size_tmp + set_bit_total_byte_size;
-			$display("2 %d", slice_size_tmp);
+			//$display("2 %d", slice_size_tmp);
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME + 32'h1 + COMPONENT_C_TIME + 32'h1 ) begin 
 			component_reset_n <= 1'b1;
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME + 32'h1 + COMPONENT_C_TIME + 32'h1 + COMPONENT_C_TIME) begin 
 			component_reset_n <= 1'b0;
 			cr_size <= set_bit_total_byte_size;
 			slice_size_tmp <= slice_size_tmp + set_bit_total_byte_size;
-			$display("3 %d", slice_size_tmp);
+			//$display("3 %d", slice_size_tmp);
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME + 32'h1 + COMPONENT_C_TIME + 32'h1 + COMPONENT_C_TIME + 1) begin 
-			$display("size %d %d %d %d %d", slice_header_size-slice_size_table_size, y_size, cb_size, cr_size, (slice_header_size-slice_size_table_size)+y_size+ cb_size+ cr_size );
+			//$display("size %d %d %d %d %d", slice_header_size-slice_size_table_size, y_size, cb_size, cr_size, (slice_header_size-slice_size_table_size)+y_size+ cb_size+ cr_size );
 //			slice_size <= (slice_header_size-slice_size_table_size)+y_size+ cb_size+ cr_size ;
 			slice_size <= slice_size_tmp;
-			$display("4 %d", slice_size_tmp);
+			//$display("4 %d", slice_size_tmp);
 
 
 			picture_size <= slice_size_tmp + slice_size_table_size - matrix_size;
-			$display("4p %x", slice_size_tmp + slice_size_table_size + picture_header_size);
+			//$display("4p %x", slice_size_tmp + slice_size_table_size + picture_header_size);
 			frame_size <= slice_size_tmp + slice_size_table_size;
 		end
 

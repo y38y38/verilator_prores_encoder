@@ -393,9 +393,9 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 		} else {
 			printf("err?");
 		}
-		printf("w %d %d %d\n", dut->slice_sequencer_offset_addr,
-							dut->slice_sequencer_val,
-							dut->slice_sequencer_byte_size);
+//		printf("w %d %d %d\n", dut->slice_sequencer_offset_addr,
+//							dut->slice_sequencer_val,
+//							dut->slice_sequencer_byte_size);
 		setByteInOffset(bitstream, 
 				dut->slice_sequencer_offset_addr,
 				tmp,
@@ -415,7 +415,7 @@ if ((time_counter > 0xb0) && (time_counter < 0xf0 )) {
 	if ( (time_counter < 0xf0 )) {
 		if (dut->set_bit_total_byte_size) {
 
-		printf("va %d %d %d\n", dut->set_bit_total_byte_size, dut->sb_reset,dut->set_bit_total_byte_size);
+//		printf("va %d %d %d\n", dut->set_bit_total_byte_size, dut->sb_reset,dut->set_bit_total_byte_size);
 		}
 	}
 

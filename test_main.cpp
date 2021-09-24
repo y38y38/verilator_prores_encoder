@@ -105,7 +105,7 @@ int main(int argc, char** argv) {
 	    uint32_t current_offset = getBitSize(&bitstream);
 		uint32_t vlc_size = (current_offset)/8;
 		//printf("vlc %d\n",vlc_size);
-		printf("slice 0 bit size %d\n", getBitSize(slice_param[0].bitstream));
+	//	printf("slice 0 bit size %d\n", getBitSize(slice_param[0].bitstream));
 		setByte(slice_param[0].bitstream, bitstream.bitstream_buffer, vlc_size);
 
 #endif
@@ -133,7 +133,7 @@ int main(int argc, char** argv) {
 	 uint8_t *ptr = getBitStream(&write_bitstream, &encode_frame_size);
     uint32_t frame_size_data = SET_DATA32(encode_frame_size);
 //    setByteInOffset(&write_bitstream, frame_size_offset, (uint8_t*)&frame_size_data , 4);
-	printf("%d\n", encode_frame_size);
+//	printf("%d\n", encode_frame_size);
     size_t writesize = fwrite(ptr, 1, encode_frame_size,  slice_output);
     if (writesize != encode_frame_size) {
 	    printf("%s %d %d\n", __FUNCTION__, __LINE__, (int)writesize);
