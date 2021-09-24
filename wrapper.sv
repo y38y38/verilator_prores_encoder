@@ -132,12 +132,38 @@ output wire [31:0] header_counter,
 	output wire [31:0] picture_header_counter,
 
 
+	output wire slice_size_table_reset_n,
+	input wire [31:0] slice_size_table_slice_num,
+
+	output wire slice_size_table_output_enable,
+	output wire [63:0] slice_size_table_val,
+	output wire [63:0] slice_size_table_size_of_bit,
+	output wire slice_size_table_flush,
+	output wire [31:0] slice_size_table_counter,
+
+
+	output wire [31:0] slice_header_qscale,
+
+	output wire slice_header_output_enable,
+	output wire [63:0] slice_header_val,
+	output wire [63:0] slice_header_size_of_bit,
+	output wire slice_header_flush,
+	output wire [31:0] slice_header_counter,
+
+
 output wire sb_reset,
 output wire sb_enable,
 output wire [63:0] sb_val,
 output wire [63:0] sb_size_of_bit,
 output wire sb_flush,
 
+output wire [31:0] set_byte_in_offset_addr,
+output wire [63:0] set_byte_in_offset_val,
+output wire [63:0] set_byte_in_offset_byte,
+
+output wire [31:0]	slice_sequencer_offset_addr,
+output wire [31:0]	slice_sequencer_val,
+output wire [31:0]	slice_sequencer_byte_size,
 
 
 input wire [31:0] block_num 
@@ -149,18 +175,28 @@ slice_sequencer slice_sequencer_inst(
 	.clock(CLOCK),
 	.reset_n(RESET),
 	.set_bit_total_byte_size(set_bit_total_byte_size),
+	.slice_num(slice_size_table_slice_num),
+
 	.header_reset_n(header_reset_n),
 	.matrix_reset_n(matrix_reset_n),
 	.picture_header_reset_n(picture_header_reset_n),
+	.slice_size_table_reset_n(slice_size_table_reset_n),
+	.slice_header_reset_n(slice_header_reset_n),
 	.component_reset_n(component_reset_n),
 	.counter(slice_sequencer_counter),
 	.offset(slice_sequencer_offset),
 	.block_num(slice_sequencer_block_num),
 	.is_y(is_y),
 	.y_size(slice_sequencer_y_size),
-	.cb_size(slice_sequencer_cb_size)
+	.cb_size(slice_sequencer_cb_size),
 //	input_mem(INPUT_DATA_MEM),
 //	output_mem(slice_sequencer_output_mem)
+
+	.offset_addr(slice_sequencer_offset_addr),
+	.val(slice_sequencer_val),
+	.byte_size(slice_sequencer_byte_size)
+	
+
 
 );
 
@@ -222,6 +258,32 @@ picture_header picture_header_inst (
 );
 
 
+slice_size_table slice_size_table_inst (
+	.clock(CLOCK),
+	.reset_n(slice_size_table_reset_n),
+	.slice_num(slice_size_table_slice_num),
+//	.slice_num(2),
+
+	.output_enable(slice_size_table_output_enable),
+	.val(slice_size_table_val),
+	.size_of_bit(slice_size_table_size_of_bit),
+	.flush_bit(slice_size_table_flush),
+	.counter(slice_size_table_counter)
+
+);
+
+slice_header slice_header_inst (
+	.clock(CLOCK),
+	.reset_n(slice_header_reset_n),
+	.qscale(slice_header_qscale),
+
+	.output_enable(slice_header_output_enable),
+	.val(slice_header_val),
+	.size_of_bit(slice_header_size_of_bit),
+	.flush_bit(slice_header_flush),
+	.counter(slice_header_counter)
+
+);
 
 
 
@@ -420,20 +482,29 @@ assign sb_size_of_bit = set_bit_size_of_bit|dc_output_size_of_bit|ac_output_size
 assign sb_flush = set_bit_flush_bit|dc_output_flush|ac_output_flush;
 */
 
+
+
 assign sb_reset = component_reset_n | picture_header_reset_n
 					|matrix_reset_n
-					|header_reset_n;
+					|header_reset_n
+					|slice_size_table_reset_n
+					|slice_header_reset_n;
 
 assign sb_enable = set_bit_enable|dc_output_enable
 					|ac_output_enable
 					|header_output_enable
 					|matrix_output_enable
-					|picture_header_output_enable;
+					|picture_header_output_enable
+					|slice_size_table_output_enable
+					|slice_header_output_enable;
+
 assign sb_val = set_bit_val|dc_output_val
 					|ac_output_val
 					|header_val
 					|matrix_val
-					|picture_header_val;
+					|picture_header_val
+					|slice_size_table_val
+					|slice_header_val;
 
 
 
@@ -442,13 +513,17 @@ assign sb_size_of_bit = set_bit_size_of_bit|dc_output_size_of_bit
 						|ac_output_size_of_bit
 						|header_size_of_bit
 						|matrix_size_of_bit
-						|picture_header_size_of_bit;
+						|picture_header_size_of_bit
+						|slice_size_table_size_of_bit
+						|slice_header_size_of_bit;
 
 assign sb_flush = set_bit_flush_bit|dc_output_flush
 						|ac_output_flush
 						|header_flush
 						|matrix_flush
-						|picture_header_flush;
+						|picture_header_flush
+						|slice_size_table_flush
+						|slice_header_flush;
 
 
 set_bit set_bit_inst(

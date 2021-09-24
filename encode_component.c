@@ -68,6 +68,8 @@ uint32_t encode_slice_component_v(int16_t* y_pixel,
 	dut->header_transfer_characteristic = 0;
 	dut->header_matrix_coefficients = 2;
 	dut->header_alpha_channel_type = 0;
+	dut->slice_size_table_slice_num = 1;
+	dut->slice_header_qscale = 3;
 
 
 	set_pixel_data_mem(dut, y_pixel, cb_pixel, cr_pixel);

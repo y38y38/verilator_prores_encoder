@@ -379,13 +379,44 @@ void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bit
 		//	printf("v %llx %d %d %x %d  %llx %llx\n", 0, 0, dut->set_bit_flush_bit,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset
 		//	,dut->set_bit_output_enable_byte, dut->set_bit_output_val);
 	}
-		if ((time_counter > 28) && (time_counter < 200 )) {
+	if (dut->slice_sequencer_byte_size) {
+		uint8_t tmp[4];
+		if(dut->slice_sequencer_byte_size == 2) {
+			tmp[1] = (uint8_t)(dut->slice_sequencer_val&0xff);
+			tmp[0] = (uint8_t)((dut->slice_sequencer_val&0xff00) >> 8);
+
+		} else if(dut->slice_sequencer_byte_size == 4) {
+			tmp[3] = (uint8_t)(dut->slice_sequencer_val&0xff);
+			tmp[2] = (uint8_t)((dut->slice_sequencer_val&0xff00) >> 8);
+			tmp[1] = (uint8_t)((dut->slice_sequencer_val&0xff0000)>>16);
+			tmp[0] = (uint8_t)((dut->slice_sequencer_val&0xff000000) >> 24);
+		} else {
+			printf("err?");
+		}
+		printf("w %d %d %d\n", dut->slice_sequencer_offset_addr,
+							dut->slice_sequencer_val,
+							dut->slice_sequencer_byte_size);
+		setByteInOffset(bitstream, 
+				dut->slice_sequencer_offset_addr,
+				tmp,
+				dut->slice_sequencer_byte_size);
+	}
+if ((time_counter > 0xb0) && (time_counter < 0xf0 )) {
 //			printf("vb %d %d %d %llx %llx %d\n", dut->sb_reset, dut->set_bit_output_enable_byte, dut->sb_enable, dut->sb_val, dut->sb_size_of_bit, dut->sb_flush);
 			//printf("vb %d %llx %llx %d %d\n", dut->header_output_enable, dut->header_val, dut->header_size_of_bit, dut->header_flush,dut->header_counter);
 //			printf("v %llx %d %d %x %d  %llx %llx\n", 0, 0, dut->set_bit_flush_bit,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset
 //			,dut->set_bit_output_enable_byte, dut->set_bit_output_val);
-			printf("va %d %d %d %llx %llx %d %d\n", dut->matrix_reset_n, dut->sb_reset, dut->sb_enable, dut->sb_val, dut->sb_size_of_bit, dut->sb_flush, dut->matrix_counter);
-			printf("vb %llx %llx %llx %llx\n", dut->set_bit_output_enable_byte, dut->set_bit_output_val,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset);
-
+	//printf("va %d %d %d %llx %llx %d %d\n", dut->matrix_reset_n, dut->sb_reset, dut->sb_enable, dut->sb_val, dut->sb_size_of_bit, dut->sb_flush, dut->matrix_counter);
+	//printf("va %x %d %d %d %llx %llx %d\n", dut->slice_sequencer_counter, dut->slice_size_table_slice_num,dut->slice_size_table_reset_n,dut->slice_size_table_counter, dut->slice_size_table_output_enable, dut->slice_size_table_val, dut->component_reset_n);
+//	printf("vb %llx %llx %llx %llx\n", dut->slice_size_table_output_enable, dut->slice_size_table_val,dut->slice_size_table_size_of_bit, dut->slice_size_table_flush);
+//	printf("vc %llx %llx %llx %llx\n", dut->set_bit_output_enable_byte, dut->set_bit_output_val,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset);
 		}
+
+	if ( (time_counter < 0xf0 )) {
+		if (dut->set_bit_total_byte_size) {
+
+		printf("va %d %d %d\n", dut->set_bit_total_byte_size, dut->sb_reset,dut->set_bit_total_byte_size);
+		}
+	}
+
 }

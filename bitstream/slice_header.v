@@ -1,13 +1,13 @@
-module picture_header(
+module slice_header(
 	input wire clock,
 	input wire reset_n,
+	input wire [31:0]qscale,
 
 	output reg output_enable,
 	output reg [63:0] val,
 	output reg [63:0] size_of_bit,
 	output reg flush_bit,
 	output reg [31:0] counter
-
 
 );
 
@@ -28,9 +28,9 @@ always @(posedge clock, negedge reset_n) begin
 		flush_bit <= 1'b0;
 	end else begin
 		if(counter == 32'h1) begin
-			//frame_size;
+			//slice header size
 			output_enable <= 1'b1;
-			val <= 64'h8;
+			val <= 64'h6;
 			size_of_bit <= 64'h5;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h 2) begin
@@ -40,35 +40,24 @@ always @(posedge clock, negedge reset_n) begin
 			size_of_bit <= 64'h3;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h 3) begin
-			//picture size
+			//qscale
 			output_enable <= 1'b1;
-			val <= 64'h0;
-//			val <= 64'h42e;
-			size_of_bit <= 64'h20;
+			val <= {32'h0, qscale};
+			size_of_bit <= 64'h8;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h 4) begin
-			//slice num
+			//y size
 			output_enable <= 1'b1;
-			val <= 64'h1;
+			val <= 64'h0;
+//			val <= 64'h319;
 			size_of_bit <= 64'h10;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h 5) begin
-			//reserve
+			//cb size
 			output_enable <= 1'b1;
 			val <= 64'h0;
-			size_of_bit <= 64'h2;
-			flush_bit <= 1'b0;
-		end else if(counter == 32'h 6) begin
-			//log2_desired_slice_size_in_mb
-			output_enable <= 1'b1;
-			val <= 64'h3;
-			size_of_bit <= 64'h2;
-			flush_bit <= 1'b0;
-		end else if(counter == 32'h 7) begin
-			//reserve
-			output_enable <= 1'b1;
-			val <= 64'h0;
-			size_of_bit <= 64'h4;
+//			val <= 64'h7c;
+			size_of_bit <= 64'h10;
 			flush_bit <= 1'b0;
 		end else begin
 			output_enable <= 1'b0;
