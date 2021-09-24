@@ -40,7 +40,7 @@ always @(posedge clock, negedge reset_n) begin
 		if(counter == 32'h1) begin
 			//frame_size;
 			output_enable <= 1'b1;
-			val <= 64'h4ca;
+			val <= 64'h0;
 //			val <= `SET_DATA16(64'h4ca);
 //			val <= `SET_DATA16(64'h0);
 			size_of_bit <= 64'h20;

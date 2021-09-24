@@ -20,8 +20,10 @@ module slice_sequencer (
 	output reg [31:0] offset_addr,
 	output reg [31:0] val,
 	output reg [31:0] byte_size,
-	
 	output reg [31:0] picture_size,
+	
+	output reg [31:0] frame_size,
+
 	output reg [31:0] slice_size,
 	output reg [31:0] slice_size_tmp,
 	output reg [31:0] y_size,
@@ -83,6 +85,7 @@ always @(posedge clock, negedge reset_n) begin
 		slice_size_tmp <= 32'h0;
 
 		picture_size <= 32'h0;
+		frame_size <= 32'h0;
 
 	end else begin
 
@@ -167,6 +170,7 @@ always @(posedge clock, negedge reset_n) begin
 
 			picture_size <= slice_size_tmp + slice_size_table_size - matrix_size;
 			$display("4p %x", slice_size_tmp + slice_size_table_size + picture_header_size);
+			frame_size <= slice_size_tmp + slice_size_table_size;
 		end
 
 	end
@@ -189,6 +193,11 @@ always @(posedge clock, negedge reset_n) begin
 			val <= picture_size;
 			byte_size <= 32'h4;
 			picture_size <= 32'h0;
+		end else if (frame_size) begin
+			offset_addr <= 0;
+			val <= frame_size;
+			byte_size <= 32'h4;
+			frame_size <= 32'h0;
 		end else if (y_size) begin
 			offset_addr <= slice_size_table_size + 2;
 			val <= y_size;
