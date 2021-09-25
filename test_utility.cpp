@@ -294,13 +294,13 @@ void posedge_clock_input(int time_counter, Vwrapper *dut, int16_t *pixel, int bl
 }
 
 void posedge_clock_output(int time_counter, Vwrapper *dut, struct bitstream *bitstream, int block_num) {
-	if (dut->ac_output_flush) {
+//	if (dut->ac_output_flush) {
 		//printf("%d\n", dut->slice_sequencer_counter);
-	}
-	if (!dut->component_reset_n) {
+//	}
+//	if (!dut->component_reset_n) {
 		//printf("c %d %d\n", time_counter, dut->slice_sequencer_counter);
-	}
-#if 1
+//	}
+#if 0
 	if ((time_counter>=7) && (time_counter<=15))  {
 		//printf("a %d %d %d %d\n", time_counter, dut->DCT_OUTPUT[0][0], dut->OUTPUT_DATA[0][0], dut->sequence_counter2);
 	}
@@ -412,11 +412,11 @@ if ((time_counter > 0xb0) && (time_counter < 0xf0 )) {
 //	printf("vc %llx %llx %llx %llx\n", dut->set_bit_output_enable_byte, dut->set_bit_output_val,dut->set_bit_tmp_bit, dut->set_bit_tmp_buf_bit_offset);
 		}
 
-	if ( (time_counter < 0xf0 )) {
-		if (dut->set_bit_total_byte_size) {
+//	if ( (time_counter < 0xf0 )) {
+//		if (dut->set_bit_total_byte_size) {
 
 //		printf("va %d %d %d\n", dut->set_bit_total_byte_size, dut->sb_reset,dut->set_bit_total_byte_size);
-		}
-	}
+//		}
+//	}
 
 }
