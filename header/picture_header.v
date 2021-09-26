@@ -28,6 +28,7 @@ always @(posedge clock, negedge reset_n) begin
 		flush_bit <= 1'b0;
 	end else begin
 		if(counter == 32'h1) begin
+//			$display("pic header a");
 			//frame_size;
 			output_enable <= 1'b1;
 			val <= 64'h8;
@@ -70,6 +71,8 @@ always @(posedge clock, negedge reset_n) begin
 			val <= 64'h0;
 			size_of_bit <= 64'h4;
 			flush_bit <= 1'b0;
+		//				$display("pic header end");
+
 		end else begin
 			output_enable <= 1'b0;
 			val <= 64'h0;

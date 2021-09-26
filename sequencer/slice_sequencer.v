@@ -4,6 +4,19 @@ module slice_sequencer (
 	input wire [31:0] set_bit_total_byte_size,
 	input wire [31:0] slice_num,
 
+	input wire [31:0] slice_size_table_size,
+
+	input wire [31:0] slice_size_offset_addr,
+	input wire [31:0] picture_size_offset_addr,
+	input wire [31:0] frame_size_offset_addr,
+	input wire [31:0] y_size_offset_addr,
+	input wire [31:0] cb_size_offset_addr,
+
+
+
+
+
+	output reg header2_reset_n,
 	output reg header_reset_n,
 	output reg matrix_reset_n,
 	output reg picture_header_reset_n,
@@ -55,7 +68,7 @@ localparam  COMPONENT_C_TIME = 1500;
 reg [31:0]		header_size;
 reg [31:0]		matrix_size;
 reg [31:0]		picture_header_size;
-reg [31:0]		slice_size_table_size;
+//reg [31:0]		slice_size_table_size;
 reg [31:0]		slice_header_size;
 
 
@@ -70,7 +83,7 @@ always @(posedge clock, negedge reset_n) begin
 		header_size <= 32'h0;
 		matrix_size <= 32'h0;
 		picture_header_size <=32'h0;
-		slice_size_table_size <= 32'h0;
+//		slice_size_table_size <= 32'h0;
 		slice_header_size <= 32'h0;
 
 		offset <= 32'h0;
@@ -87,13 +100,15 @@ always @(posedge clock, negedge reset_n) begin
 		picture_size <= 32'h0;
 		frame_size <= 32'h0;
 
+		header2_reset_n <= 1'b0;
 	end else begin
-
+/*
 		//total_byte_sizeはリセットをかけると、0になるので注意。
 		//今はリセットなしで、Slice Headerまで走っている
 		//サイズが確定するのは1clock後なのに注意
 		if (counter == 32'h0) begin
 			header_reset_n <= 1'b1;
+			header2_reset_n <= 1'b1;
 		end else if (counter == 32'h20) begin 
 			header_reset_n <= 1'b0;
 
@@ -126,6 +141,7 @@ always @(posedge clock, negedge reset_n) begin
 		end else if (counter == 32'hc0 + slice_num + 32'h10) begin
 //			$display(" slice_size_table_size %x %d", slice_size_table_size, slice_size_table_size );
 			slice_header_reset_n<= 1'b0;
+			header2_reset_n <= 1'b0;
 
 		end else if (counter == 32'hc0 + slice_num + 32'h11) begin
 			slice_header_size <=  set_bit_total_byte_size;
@@ -135,6 +151,16 @@ always @(posedge clock, negedge reset_n) begin
 
 			//sbにリセットがはいる。
 		end else if (counter == HEADER_TIME) begin 
+*/
+		if (counter == 32'h0) begin
+			header2_reset_n <= 1'b1;
+		end else if (counter == 32'hc0 + slice_num + 32'h10) begin
+			header2_reset_n <= 1'b0;
+
+		end else if (counter == 32'hc0 + slice_num + 32'h11) begin
+			slice_size_tmp <= set_bit_total_byte_size - slice_size_table_size;
+		end else if (counter == HEADER_TIME) begin 
+
 			//$display(" slice_header_size %x %d", slice_header_size, slice_header_size );
 			component_reset_n <= 1'b1;
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME) begin 
@@ -168,9 +194,10 @@ always @(posedge clock, negedge reset_n) begin
 			//$display("4 %d", slice_size_tmp);
 
 
-			picture_size <= slice_size_tmp + slice_size_table_size - matrix_size;
+			picture_size <= slice_size_tmp + slice_size_table_size - picture_size_offset_addr +1;
 			//$display("4p %x", slice_size_tmp + slice_size_table_size + picture_header_size);
 			frame_size <= slice_size_tmp + slice_size_table_size;
+		//	$display("%d %d", slice_size_tmp, slice_size_table_size);
 		end
 
 	end
@@ -184,28 +211,35 @@ always @(posedge clock, negedge reset_n) begin
 			byte_size <= 32'h0;
 	end else begin
 		if (slice_size) begin
-			offset_addr <= picture_header_size;
+			offset_addr <= slice_size_offset_addr;
+//			offset_addr <= picture_header_size;
 			val <= slice_size;
 			byte_size <= 32'h2;
 			slice_size <= 32'h0;
 		end else if (picture_size) begin
-			offset_addr <= matrix_size + 1;
+		//	$display("ge pic size %d %d", picture_size, picture_size_offset_addr);
+			offset_addr <= picture_size_offset_addr;
+//			offset_addr <= matrix_size + 1;
 			val <= picture_size;
 			byte_size <= 32'h4;
 			picture_size <= 32'h0;
 		end else if (frame_size) begin
-			offset_addr <= 0;
+			offset_addr <= frame_size_offset_addr;
+//			offset_addr <= 0;
 			val <= frame_size;
+		//	$display("frame_size %d", frame_size);
 			byte_size <= 32'h4;
 			frame_size <= 32'h0;
 		end else if (y_size) begin
-			offset_addr <= slice_size_table_size + 2;
+			offset_addr <= y_size_offset_addr;
+//			offset_addr <= slice_size_table_size + 2;
 			val <= y_size;
 			byte_size <= 32'h2;
 			y_size <= 32'h0;
 
 		end else if (cb_size) begin
-			offset_addr <= slice_size_table_size + 4;
+			offset_addr <= cb_size_offset_addr;
+//			offset_addr <= slice_size_table_size + 4;
 			val <= cb_size;
 			byte_size <= 32'h2;
 			cb_size <= 32'h0;

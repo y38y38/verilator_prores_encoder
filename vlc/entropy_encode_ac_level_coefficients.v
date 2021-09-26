@@ -5,6 +5,7 @@ module entropy_encode_ac_level_coefficients(
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
 	input  signed [31:0]  Coeff,
+	
 	output reg [31:0] Coeff_n,
 	output reg [31:0] output_enable,//mask
 	output reg [31:0] sum,

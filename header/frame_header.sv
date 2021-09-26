@@ -1,4 +1,4 @@
-module header (
+module frame_header (
 	input wire clock,
 	input wire reset_n,
 	input wire [15:0]horizontal,
@@ -24,8 +24,10 @@ module header (
 always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		counter <= 32'h0;
+			//$display("header counter r %d", counter);
 	end else begin
 		counter <= counter +1;
+//			$display("header counter %d", counter);
 	end
 end
 
@@ -38,6 +40,7 @@ always @(posedge clock, negedge reset_n) begin
 			flush_bit <= 1'b0;
 	end else begin
 		if(counter == 32'h1) begin
+		//	$display("frame header a");
 			//frame_size;
 			output_enable <= 1'b1;
 			val <= 64'h0;
@@ -177,6 +180,8 @@ always @(posedge clock, negedge reset_n) begin
 			val <= 64'h0;
 			size_of_bit <= 64'h0;
 			flush_bit <= 1'b0;
+
+			//$display("frame header d");
 		end
 	end
 end
