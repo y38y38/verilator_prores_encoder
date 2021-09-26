@@ -7,15 +7,18 @@ module golomb_rice_code(
 	input is_ac_level,
 	input is_minus_n,
 	output reg [31:0] sum_n,
-	output reg [31:0] codeword_length,
+	output reg [31:0] codeword_length
+
+ );
 
 	//internal reg
-	output reg is_minus_n_n,
-	output reg is_ac_level_n,
-	output reg [31:0] q,
-	output reg  [2:0] k_n,
-	output reg [31:0] sum
- );
+ reg is_minus_n_n;
+ reg is_ac_level_n;
+ reg [31:0] q;
+ reg  [2:0] k_n;
+ reg [31:0] sum;
+
+
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		is_minus_n_n <= 1'b0;

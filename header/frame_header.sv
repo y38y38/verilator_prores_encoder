@@ -16,18 +16,16 @@ module frame_header (
 	output reg output_enable,
 	output reg [63:0] val,
 	output reg [63:0] size_of_bit,
-	output reg flush_bit,
-	output reg [31:0] counter
+	output reg flush_bit
 );
+reg [31:0] counter;
 
 
 always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		counter <= 32'h0;
-			//$display("header counter r %d", counter);
 	end else begin
 		counter <= counter +1;
-//			$display("header counter %d", counter);
 	end
 end
 
@@ -40,12 +38,9 @@ always @(posedge clock, negedge reset_n) begin
 			flush_bit <= 1'b0;
 	end else begin
 		if(counter == 32'h1) begin
-		//	$display("frame header a");
 			//frame_size;
 			output_enable <= 1'b1;
 			val <= 64'h0;
-//			val <= `SET_DATA16(64'h4ca);
-//			val <= `SET_DATA16(64'h0);
 			size_of_bit <= 64'h20;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h 2) begin

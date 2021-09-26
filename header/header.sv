@@ -17,13 +17,6 @@ module header (
 	input wire [31:0] QSCALE,
 
 	input wire slice_size_table_slice_num,
-/*
-	input wire slice_size,
-	input wire picture_size,
-	input wire frame_size,
-	input wire y_size,
-	input wire cb_size,
-*/
 
 	input wire [31:0] set_bit_total_byte_size,
 
@@ -40,11 +33,6 @@ module header (
 	output wire [31:0] y_size_offset_addr,
 	output wire [31:0] cb_size_offset_addr
 
-/*
-	output reg [31:0] bitstream_insert_offset_addr,
-	output reg [31:0] bitstream_insert_val,
-	output reg [31:0] bitstream_insert_byte_size
-*/
 
 );
 
@@ -63,11 +51,11 @@ header_sequencer header_sequencer_inst (
 	.set_bit_total_byte_size(set_bit_total_byte_size),
 
 
-.header_reset_n(header_reset_n),
-.matrix_reset_n(matrix_reset_n),
-.picture_header_reset_n(picture_header_reset_n),
-.slice_size_table_reset_n(slice_size_table_reset_n),
-.slice_header_reset_n(slice_header_reset_n),
+	.header_reset_n(header_reset_n),
+	.matrix_reset_n(matrix_reset_n),
+	.picture_header_reset_n(picture_header_reset_n),
+	.slice_size_table_reset_n(slice_size_table_reset_n),
+	.slice_header_reset_n(slice_header_reset_n),
 
 	.slice_size_table_size(slice_size_table_size),
 	.slice_size_offset_addr(slice_size_offset_addr),
@@ -77,12 +65,6 @@ header_sequencer header_sequencer_inst (
 	.cb_size_offset_addr(cb_size_offset_addr)
 
 
-/*
-
-.offset_addr(bitstream_insert_offset_addr),
-.val(bitstream_insert_val),
-.byte_size(bitstream_insert_byte_size)
-*/
 );
 
 
@@ -117,8 +99,7 @@ frame_header frame_header_inst(
 	.output_enable(header_output_enable),
 	.val(header_val),
 	.size_of_bit(header_size_of_bit),
-	.flush_bit(header_flush),
-//	.counter(header_counter)
+	.flush_bit(header_flush)
 
 );
 
@@ -138,7 +119,6 @@ matrix matrix_inst (
 	.val(matrix_val),
 	.size_of_bit(matrix_size_of_bit),
 	.flush_bit(matrix_flush),
-//	.counter(matrix_counter)
 
 );
 
@@ -156,7 +136,6 @@ picture_header picture_header_inst (
 	.val(picture_header_val),
 	.size_of_bit(picture_header_size_of_bit),
 	.flush_bit(picture_header_flush),
-//	.counter(picture_header_counter)
 
 );
 
@@ -173,7 +152,6 @@ slice_size_table slice_size_table_inst (
 
 	//input
 	.slice_num(slice_size_table_slice_num),
-//	.slice_num(2),
 
 
 	//output
@@ -181,7 +159,6 @@ slice_size_table slice_size_table_inst (
 	.val(slice_size_table_val),
 	.size_of_bit(slice_size_table_size_of_bit),
 	.flush_bit(slice_size_table_flush),
-//	.counter(slice_size_table_counter)
 
 );
 
@@ -204,7 +181,6 @@ slice_header slice_header_inst (
 	.val(slice_header_val),
 	.size_of_bit(slice_header_size_of_bit),
 	.flush_bit(slice_header_flush),
-//	.counter(slice_header_counter)
 
 );
 

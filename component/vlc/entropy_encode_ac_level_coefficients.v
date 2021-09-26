@@ -6,31 +6,34 @@ module entropy_encode_ac_level_coefficients(
 	//1bit多く用意しておく。
 	input  signed [31:0]  Coeff,
 	
-	output reg [31:0] Coeff_n,
-	output reg [31:0] output_enable,//mask
-	output reg [31:0] sum,
-	output reg [31:0] codeword_length,
-	output reg [31:0] sum_n,
-	output reg [31:0] codeword_length_n,
 	output reg [31:0] sum_n_n,
-	output reg [31:0] codeword_length_n_n,
-output wire [31:0] exp_golomb_sum,
-output wire [31:0] exp_golomb_codeword_length,
+	output reg [31:0] codeword_length_n_n
 
-output reg [31:0] previousLevel,
-output reg signed [31:0] abs_level_minus_1,
-output reg signed [31:0] abs_level_minus_1_n,
-output reg [1:0] is_expo_golomb_code,
-output reg [1:0] is_expo_golomb_code_n,
-output reg [1:0] is_expo_golomb_code_n_n,
-output reg [1:0] is_add_setbit,
-output reg [2:0] k,
-output reg [31:0] q,
-output reg first,
-output reg is_minus,
-output reg is_minus_n
+
 
 );
+
+reg [31:0] Coeff_n;
+reg [31:0] output_enable;//mask
+reg [31:0] sum;
+reg [31:0] codeword_length;
+reg [31:0] sum_n;
+reg [31:0] codeword_length_n;
+reg [31:0] previousLevel;
+reg signed [31:0] abs_level_minus_1;
+reg signed [31:0] abs_level_minus_1_n;
+reg [1:0] is_expo_golomb_code;
+reg [1:0] is_expo_golomb_code_n;
+reg [1:0] is_expo_golomb_code_n_n;
+reg [1:0] is_add_setbit;
+reg [2:0] k;
+reg [31:0] q;
+reg first;
+reg is_minus;
+reg is_minus_n;
+
+
+
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		is_minus <= 1'b0;
@@ -153,6 +156,8 @@ exp_golomb_code exp_golomb_code_inst(
 	.k(k),
 	.is_ac_level(1),
 	.is_ac_minus_n(is_minus_n),
+
+	//output
 	.sum_n(exp_golomb_sum),
 	.codeword_length(exp_golomb_codeword_length)
 
@@ -168,25 +173,13 @@ golomb_rice_code golomb_rice_code_inst(
 	.val(abs_level_minus_1_n),
 	.is_ac_level(1),
 	.is_minus_n(is_minus_n),
+
+	//output
 	.sum_n(rice_sum),
 	.codeword_length(rice_codeword_length)
-//	.k_n(k_n),
-//	.sum(sum)
 
 );
-/*
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-		codeword_length <= 32'h0;
-	end else begin
-		if (is_expo_golomb_code == 2'h2) begin
-			sum <= 0;
-			codeword_length <= 0;
-			output_enable <= 0;
-		end
-	end
-end
-*/
+
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		is_expo_golomb_code_n <= 2'h2;
@@ -196,25 +189,7 @@ always @(posedge clk, negedge reset_n) begin
 		is_expo_golomb_code_n_n <= is_expo_golomb_code_n;//4clk
 	end
 end
-/*
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-		sum_n <= 32'h0;
-		codeword_length_n <= 32'h0;
-	end else begin
-		if (is_expo_golomb_code_n == 2'h0) begin
-//			sum_n <= sum;
-//			codeword_length_n <= codeword_length;
-		end else if (is_expo_golomb_code_n == 2'h1) begin
-//			sum_n <= sum;
-//			codeword_length_n <= codeword_length;
-		end else if (is_expo_golomb_code_n == 2'h2) begin
-			sum_n <= sum;
-			codeword_length_n <= codeword_length;
-		end
-	end
-end
-*/
+
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin

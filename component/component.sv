@@ -66,24 +66,20 @@ wire ac_output_flush;
 wire ac_vlc_output_enable;
 
 
-sequencer sequencer_inst(
+slice_sequencer slice_sequencer_inst(
 	.clock(clock),
 	.reset_n(component_reset_n),
 
 	//input
-//	.slice_start(component_reset_n),
 	.block_num(slice_sequencer_block_num),
-
-
-//	.sequence_valid(sequence_valid),
 
 
 	//output
  	.sequence_counter(sequence_counter),
-
 	.dc_vlc_reset(dc_vlc_reset),
 	.dc_vlc_output_enable(dc_vlc_output_enable),
 	.dc_vlc_counter(dc_vlc_counter),
+
 	.ac_vlc_reset(ac_vlc_reset),
 	.ac_vlc_output_enable(ac_vlc_output_enable),
 	.ac_vlc_output_flush(ac_vlc_output_flush),
@@ -106,12 +102,6 @@ array_from_mem array_form_mem_inst (
 	//output
 	.output_data_array(INPUT_DATA_ARRAY2)
 );
-/*
-array array_inst (
-	.input_data(INPUT_DATA),
-	.output_array_data(INPUT_DATA_ARRAY)
-);
-*/
 
 pre_dct pre_dct_inst (
 	.CLOCK(clock),
@@ -192,9 +182,6 @@ mem_to_ac_vlc mem_to_ac_vlc_inst(
 
 	//output
 	.vlc_ac(INPUT_AC_DATA2),
-	//.conefficient1(ac_vlc_conefficient1),
-	//.block(ac_vlc_block),
-	//.position(ac_vlc_position)
 
 );
 
@@ -205,27 +192,10 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
 	.DcCoeff(INPUT_DC_DATA2),
-//	.output_enable(DC_BITSTREAM_OUTPUT_ENABLE),//mask
-//	.pppp(PPPP),
-
-//	.sum_n(DC_BITSTREAM_SUM),
-//	.LENGTH(LENGTH),
-
 	.sum_n_n(DC_BITSTREAM_SUM),
-	.codeword_length_n(LENGTH),
+	.codeword_length_n(LENGTH)
 
 
-	//debug
-//	.abs_previousDCDiff(ABS_PREVIOUSDCDIFF),
-//	.abs_previousDCDiff_next(ABS_PREVIOUSDCDIFF_NEXT), 
-//	.previousDCCoeff(PREVIOUSDCOEFF), 
-//	.previousDCDiff(PREVIOUSDCDIFF), 
-//	.dc_coeff_difference(DC_COEFF_DIFFERENCE), 
-//	.val(VAL),
-//	.val_n(VAL_N),
-//	.is_expo_golomb_code(is_expo_golomb_code),
-//	.is_add_setbit(is_add_setbit),
-//	.k(k)
 );
 
 entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
@@ -235,11 +205,9 @@ entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
 	.Coeff(INPUT_AC_DATA2),
-//	.output_enable(AC_BITSTREAM_LEVEL_OUTPUT_ENABLE),//mask
+
+
 	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
-//	.is_expo_golomb_code(l_is_expo_golomb_code),
-//	.is_expo_golomb_code_n(l_is_expo_golomb_code_n),
-//	.is_expo_golomb_code_n_n(l_is_expo_golomb_code_n_n),
 	.codeword_length_n_n(AC_BITSTREAM_LEVEL_LENGTH)
 );
 
@@ -250,12 +218,9 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
 	.Coeff(INPUT_AC_DATA2),
-//	.output_enable(AC_BITSTREAM_RUN_OUTPUT_ENABLE),//mask
-//	.sum(AC_BITSTREAM_RUN_SUM),
+
+
 	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
-//	.is_expo_golomb_code(r_is_expo_golomb_code),
-//	.is_expo_golomb_code_n(r_is_expo_golomb_code_n),
-//	.is_expo_golomb_code_n_n(r_is_expo_golomb_code_n_n),
 	.codeword_length_n_n_n(AC_BITSTREAM_RUN_LENGTH)
 );
 
@@ -298,53 +263,19 @@ ac_output ac_output_inst(
 );
 
 assign sb_reset = component_reset_n ;
-				//	| picture_header_reset_n
-				//	|matrix_reset_n
-				//	|header_reset_n
-				//	|slice_size_table_reset_n
-				//	|slice_header_reset_n
-//					|header2_reset_n;
 
 assign sb_enable = dc_output_enable
 					|ac_output_enable;
-				//	|header_output_enable
-				//	|matrix_output_enable
-				//	|picture_header_output_enable
-				//	|slice_size_table_output_enable
-				//	|slice_header_output_enable
-				//	|header_sb_enable;
 
 assign sb_val = dc_output_val
 					|ac_output_val;
-				//	|header_val
-				//	|matrix_val
-				//	|picture_header_val
-				//	|slice_size_table_val
-				//	|slice_header_val
-			//		|header_sb_val;
-
-
 
 
 assign sb_size_of_bit = dc_output_size_of_bit
 						|ac_output_size_of_bit;
-				//		|header_size_of_bit
-				//		|matrix_size_of_bit
-				//		|picture_header_size_of_bit
-				//		|slice_size_table_size_of_bit
-				//		|slice_header_size_of_bit
-					//	|header_sb_size_of_bit;
 
 assign sb_flush = dc_output_flush
 						|ac_output_flush;
-				//		|header_flush
-				//		|matrix_flush
-				//		|picture_header_flush
-				//		|slice_size_table_flush
-				//		|slice_header_flush
-				//		|header_sb_flush;
-
-
 
 
 endmodule;
