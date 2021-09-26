@@ -1,7 +1,7 @@
 module sequencer (
 	input clock,
 	input reset_n,
-	input slice_start,
+//	input slice_start,
 	input [31:0] block_num,
  	output reg [31:0] sequence_counter,
 	output reg sequence_valid,

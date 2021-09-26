@@ -152,11 +152,11 @@ slice_sequencer slice_sequencer_inst(
 	//output
 	.header2_reset_n(header2_reset_n),
 
-	.header_reset_n(header_reset_n),
-	.matrix_reset_n(matrix_reset_n),
-	.picture_header_reset_n(picture_header_reset_n),
-	.slice_size_table_reset_n(slice_size_table_reset_n),
-	.slice_header_reset_n(slice_header_reset_n),
+//	.header_reset_n(header_reset_n),
+//	.matrix_reset_n(matrix_reset_n),
+//	.picture_header_reset_n(picture_header_reset_n),
+//	.slice_size_table_reset_n(slice_size_table_reset_n),
+//	.slice_header_reset_n(slice_header_reset_n),
 	.component_reset_n(component_reset_n),
 	.counter(slice_sequencer_counter),
 	.offset(slice_sequencer_offset),
@@ -334,18 +334,46 @@ slice_header slice_header_inst (
 
 */
 
+wire component_enable;
+wire [63:0] component_val;
+wire [63:0] component_size_of_bit;
+wire component_flush;
+
+component component_inst(
+	.clock(CLOCK),
+	.component_reset_n(component_reset_n),
+	.slice_sequencer_block_num(slice_sequencer_block_num),
+	.slice_sequencer_offset(slice_sequencer_offset),
+	.INPUT_DATA_MEM(INPUT_DATA_MEM),
+	.Y_QMAT(Y_QMAT),
+	.C_QMAT(C_QMAT),
+	.QSCALE(QSCALE),
+
+//	.sb_reset(),
+	.sb_enable(component_enable),
+	.sb_val(component_val),
+	.sb_size_of_bit(component_size_of_bit),
+	.sb_flush(component_flush)
+
+);
+
+
 sequencer sequencer_inst(
 	.clock(CLOCK),
 	.reset_n(component_reset_n),
 
+
 	//input
-	.slice_start(component_reset_n),
+//	.slice_start(component_reset_n),
 	.block_num(slice_sequencer_block_num),
- 	.sequence_counter(sequence_counter),
+
+
 //	.sequence_valid(sequence_valid),
 
 
 	//output
+ 	.sequence_counter(sequence_counter),
+
 	.dc_vlc_reset(dc_vlc_reset),
 	.dc_vlc_output_enable(dc_vlc_output_enable),
 	.dc_vlc_counter(dc_vlc_counter),
@@ -587,43 +615,51 @@ assign sb_reset = component_reset_n
 				//	|slice_header_reset_n
 					|header2_reset_n;
 
-assign sb_enable = dc_output_enable
-					|ac_output_enable
+assign sb_enable = 
+//dc_output_enable
+//					|ac_output_enable
 				//	|header_output_enable
 				//	|matrix_output_enable
 				//	|picture_header_output_enable
 				//	|slice_size_table_output_enable
 				//	|slice_header_output_enable
+				component_enable
 					|header_sb_enable;
 
-assign sb_val = dc_output_val
-					|ac_output_val
+assign sb_val = 
+//dc_output_val
+//					|ac_output_val
 				//	|header_val
 				//	|matrix_val
 				//	|picture_header_val
 				//	|slice_size_table_val
 				//	|slice_header_val
+				component_val
 					|header_sb_val;
 
 
 
 
-assign sb_size_of_bit = dc_output_size_of_bit
-						|ac_output_size_of_bit
+assign sb_size_of_bit = 
+//dc_output_size_of_bit
+//						|ac_output_size_of_bit
 				//		|header_size_of_bit
 				//		|matrix_size_of_bit
 				//		|picture_header_size_of_bit
 				//		|slice_size_table_size_of_bit
 				//		|slice_header_size_of_bit
+				component_size_of_bit
 						|header_sb_size_of_bit;
 
-assign sb_flush = dc_output_flush
-						|ac_output_flush
+assign sb_flush = 
+//dc_output_flush
+//						|ac_output_flush
 				//		|header_flush
 				//		|matrix_flush
 				//		|picture_header_flush
 				//		|slice_size_table_flush
 				//		|slice_header_flush
+				component_flush
 						|header_sb_flush;
 
 
