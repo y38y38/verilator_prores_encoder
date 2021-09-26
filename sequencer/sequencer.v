@@ -132,29 +132,29 @@ always @(posedge clock, negedge reset_n) begin
 			val <= 32'h0;
 			byte_size <= 32'h0;
 	end else begin
-		if (slice_size) begin
+		if (slice_size>0) begin
 			offset_addr <= slice_size_offset_addr;
 			val <= slice_size;
 			byte_size <= 32'h2;
 			slice_size <= 32'h0;
-		end else if (picture_size) begin
+		end else if (picture_size>0) begin
 			offset_addr <= picture_size_offset_addr;
 			val <= picture_size;
 			byte_size <= 32'h4;
 			picture_size <= 32'h0;
-		end else if (frame_size) begin
+		end else if (frame_size>0) begin
 			offset_addr <= frame_size_offset_addr;
 			val <= frame_size;
 		//	$display("frame_size %d", frame_size);
 			byte_size <= 32'h4;
 			frame_size <= 32'h0;
-		end else if (y_size) begin
+		end else if (y_size>0) begin
 			offset_addr <= y_size_offset_addr;
 			val <= y_size;
 			byte_size <= 32'h2;
 			y_size <= 32'h0;
 
-		end else if (cb_size) begin
+		end else if (cb_size>0) begin
 			offset_addr <= cb_size_offset_addr;
 			val <= cb_size;
 			byte_size <= 32'h2;

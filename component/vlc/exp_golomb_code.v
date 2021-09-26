@@ -55,40 +55,40 @@ always @(posedge clk, negedge reset_n) begin
 	if(!reset_n) begin
 		q <= 32'h0;
 	end else begin
-		casex(val + (1<<(k)))
-			32'b1xxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001f - k;//1clk
-			32'b01xx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001e - k;
-			32'b001x_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001d - k;
-			32'b0001_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001c - k;
-			32'b0000_1xxx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001b - k;
-			32'b0000_01xx_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_001a - k;
-			32'b0000_001x_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0019 - k;
-			32'b0000_0001_xxxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0018 - k;
-			32'b0000_0000_1xxx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0017 - k;
-			32'b0000_0000_01xx_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0016 - k;
-			32'b0000_0000_001x_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0015 - k;
-			32'b0000_0000_0001_xxxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0014 - k;
-			32'b0000_0000_0000_1xxx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0013 - k;
-			32'b0000_0000_0000_01xx_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0012 - k;
-			32'b0000_0000_0000_001x_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0011 - k;
-			32'b0000_0000_0000_0001_xxxx_xxxx_xxxx_xxxx: q <= 32'h00_0010 - k;
-			32'b0000_0000_0000_0000_1xxx_xxxx_xxxx_xxxx: q <= 32'h00_000f - k;
-			32'b0000_0000_0000_0000_01xx_xxxx_xxxx_xxxx: q <= 32'h00_000e - k;
-			32'b0000_0000_0000_0000_001x_xxxx_xxxx_xxxx: q <= 32'h00_000d - k;
-			32'b0000_0000_0000_0000_0001_xxxx_xxxx_xxxx: q <= 32'h00_000c - k;
-			32'b0000_0000_0000_0000_0000_1xxx_xxxx_xxxx: q <= 32'h00_000b - k;
-			32'b0000_0000_0000_0000_0000_01xx_xxxx_xxxx: q <= 32'h00_000a - k;
-			32'b0000_0000_0000_0000_0000_001x_xxxx_xxxx: q <= 32'h00_0009 - k;
-			32'b0000_0000_0000_0000_0000_0001_xxxx_xxxx: q <= 32'h00_0008 - k;
-			32'b0000_0000_0000_0000_0000_0000_1xxx_xxxx: q <= 32'h00_0007 - k;
-			32'b0000_0000_0000_0000_0000_0000_01xx_xxxx: q <= 32'h00_0006 - k;
-			32'b0000_0000_0000_0000_0000_0000_001x_xxxx: q <= 32'h00_0005 - k;
-			32'b0000_0000_0000_0000_0000_0000_0001_xxxx: q <= 32'h00_0004 - k;
-			32'b0000_0000_0000_0000_0000_0000_0000_1xxx: q <= 32'h00_0003 - k;
-			32'b0000_0000_0000_0000_0000_0000_0000_01xx: q <= 32'h00_0002 - k;
-			32'b0000_0000_0000_0000_0000_0000_0000_001x: q <= 32'h00_0001 - k;
-			32'b0000_0000_0000_0000_0000_0000_0000_0001: q <= 32'h00_0000 - k;
-			32'b0000_0000_0000_0000_0000_0000_0000_0000: q <= 32'h00_0000 - k;
+		casez(val + (1<<(k)))
+			32'b1zzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001f - {29'h0, k};//1clk
+			32'b01zz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001e - {29'h0,k};
+			32'b001z_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001d - {29'h0,k};
+			32'b0001_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001c - {29'h0,k};
+			32'b0000_1zzz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001b - {29'h0,k};
+			32'b0000_01zz_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_001a - {29'h0,k};
+			32'b0000_001z_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0019 - {29'h0,k};
+			32'b0000_0001_zzzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0018 - {29'h0,k};
+			32'b0000_0000_1zzz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0017 - {29'h0,k};
+			32'b0000_0000_01zz_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0016 - {29'h0,k};
+			32'b0000_0000_001z_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0015 - {29'h0,k};
+			32'b0000_0000_0001_zzzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0014 - {29'h0,k};
+			32'b0000_0000_0000_1zzz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0013 - {29'h0,k};
+			32'b0000_0000_0000_01zz_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0012 - {29'h0,k};
+			32'b0000_0000_0000_001z_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0011 - {29'h0,k};
+			32'b0000_0000_0000_0001_zzzz_zzzz_zzzz_zzzz: q <= 32'h00_0010 - {29'h0,k};
+			32'b0000_0000_0000_0000_1zzz_zzzz_zzzz_zzzz: q <= 32'h00_000f - {29'h0,k};
+			32'b0000_0000_0000_0000_01zz_zzzz_zzzz_zzzz: q <= 32'h00_000e - {29'h0,k};
+			32'b0000_0000_0000_0000_001z_zzzz_zzzz_zzzz: q <= 32'h00_000d - {29'h0,k};
+			32'b0000_0000_0000_0000_0001_zzzz_zzzz_zzzz: q <= 32'h00_000c - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_1zzz_zzzz_zzzz: q <= 32'h00_000b - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_01zz_zzzz_zzzz: q <= 32'h00_000a - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_001z_zzzz_zzzz: q <= 32'h00_0009 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0001_zzzz_zzzz: q <= 32'h00_0008 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_1zzz_zzzz: q <= 32'h00_0007 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_01zz_zzzz: q <= 32'h00_0006 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_001z_zzzz: q <= 32'h00_0005 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0001_zzzz: q <= 32'h00_0004 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0000_1zzz: q <= 32'h00_0003 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0000_01zz: q <= 32'h00_0002 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0000_001z: q <= 32'h00_0001 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0000_0001: q <= 32'h00_0000 - {29'h0,k};
+			32'b0000_0000_0000_0000_0000_0000_0000_0000: q <= 32'h00_0000 - {29'h0,k};
 		endcase
 	end
 end
@@ -98,9 +98,9 @@ always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 	end else begin
 		if (is_ac_level) begin
-			codeword_length <= (2 * q) + k_n + 2 + is_add_setbit_n;//2clk
+			codeword_length <= (2 * q) + {29'h0, k_n} + 2 + {30'h0, is_add_setbit_n};//2clk
 		end else begin
-			codeword_length <= (2 * q) + k_n + 1 + is_add_setbit_n;
+			codeword_length <= (2 * q) + {29'h0,k_n} + 1 + {30'h0,is_add_setbit_n};
 		end
 	end
 end

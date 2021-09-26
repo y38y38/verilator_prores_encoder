@@ -5,12 +5,13 @@ module mem_to_ac_vlc(
 	input wire [31:0] counter,
 	input wire [31:0] block_num,
 	input wire [31:0] input_data[2048],
-	output reg [31:0] vlc_ac,
-output wire [31:0] conefficient1,
-output wire [31:0] block,
-output wire [31:0] position
+	output reg [31:0] vlc_ac
 	
 );
+
+wire [31:0] conefficient1;
+wire [31:0] block;
+wire [31:0] position;
 
 //wire [31:0] position;
 

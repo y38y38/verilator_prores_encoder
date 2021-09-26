@@ -53,6 +53,7 @@ wire [31:0] slice_sequencer_block_num;
 wire [31:0] set_bit_total_byte_size;
 wire is_y;
 
+wire header2_reset_n;
 
 sequencer sequencer_inst(
 	.clock(CLOCK),
@@ -157,6 +158,7 @@ component component_inst(
 	.slice_sequencer_block_num(slice_sequencer_block_num),
 	.slice_sequencer_offset(slice_sequencer_offset),
 	.INPUT_DATA_MEM(INPUT_DATA_MEM),
+	.is_y(is_y),
 	.Y_QMAT(Y_QMAT),
 	.C_QMAT(C_QMAT),
 	.QSCALE(QSCALE),

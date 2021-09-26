@@ -52,7 +52,7 @@ for(i=0;i<8;i++) begin
 					size_of_bit <= 64'h8;
 					flush_bit <= 1'b0;
 					val[63:8] <= 56'h0;
-					val[7:0] <= Y_QMAT[i][j];
+					val[7:0] <= Y_QMAT[i][j][7:0];
 				end
 			end
 		end
@@ -72,7 +72,7 @@ for(k=0;k<8;k++) begin
 					size_of_bit <= 64'h8;
 					flush_bit <= 1'b0;
 					val[63:8] <= 56'h0;
-					val[7:0]   <= C_QMAT[k][l];
+					val[7:0]   <= C_QMAT[k][l][7:0];
 				end
 			end
 		end

@@ -2,12 +2,8 @@ module header_sequencer(
 	input wire clock,
 	input wire  reset_n,
 
-	input wire slice_num,
+	input wire [31:0] slice_num,
 	input wire [31:0] set_bit_total_byte_size,
-
-	input wire [31:0] o_y_size,
-	input wire [31:0] o_cb_size,
-	input wire [31:0] o_cr_size,
 
 
 output reg header_reset_n,

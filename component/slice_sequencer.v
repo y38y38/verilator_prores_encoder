@@ -3,7 +3,6 @@ module slice_sequencer (
 	input reset_n,
 	input [31:0] block_num,
  	output reg [31:0] sequence_counter,
-	output reg sequence_valid,
 	output reg dc_vlc_reset,
 	output reg dc_vlc_output_enable,
  	output wire [31:0] dc_vlc_counter,

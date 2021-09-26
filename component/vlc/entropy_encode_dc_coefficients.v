@@ -88,7 +88,7 @@ end
 //get abs
 always @(posedge clk ) begin
 	if (!reset_n) begin
-		abs_previousDCDiff <= 20'h0;
+		abs_previousDCDiff <= 32'h0;
 	end else begin
 		if (previousDCDiff[31] != 1'b1) begin
 			abs_previousDCDiff <= previousDCDiff;
@@ -182,7 +182,7 @@ end
 
 
 assign LENGTH = codeword_length;
-
+/*
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		previousDCDiff <= 32'hffff; 
@@ -190,7 +190,7 @@ always @(posedge clk, negedge reset_n) begin
 		
 	end
 end
-
+*/
 
 
 wire [31:0] exp_golomb_sum;

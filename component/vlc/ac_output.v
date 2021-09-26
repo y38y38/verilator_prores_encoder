@@ -27,7 +27,7 @@ always @(posedge clock, negedge reset_n) begin
 			flush_bit <= 1'b1;
 		end else if (enable) begin
 			output_enable <= 1'b1;
-			val <= ({32'h0, RUN_SUM}<<LEVEL_LENGTH)|LEVEL_SUM;
+			val <= ({32'h0, RUN_SUM}<<LEVEL_LENGTH)|{32'h0, LEVEL_SUM};
 			size_of_bit <= {32'h0, RUN_LENGTH + LEVEL_LENGTH};
 			flush_bit <= 1'b0;
 		end else begin

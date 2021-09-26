@@ -16,7 +16,7 @@ module header (
 	input wire [31:0] C_QMAT[8][8],
 	input wire [31:0] QSCALE,
 
-	input wire slice_size_table_slice_num,
+	input wire [31:0] slice_size_table_slice_num,
 
 	input wire [31:0] set_bit_total_byte_size,
 

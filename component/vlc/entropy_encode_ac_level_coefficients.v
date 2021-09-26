@@ -69,7 +69,7 @@ end
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
-		previousLevel <= 232'h1;
+		previousLevel <= 32'h1;
 		is_expo_golomb_code <= 2'h2;
 		abs_level_minus_1_n <= 32'h0;
 		first <=1'b1;

@@ -7,6 +7,7 @@ module component(
 	input wire [31:0]slice_sequencer_offset,
 	input wire [31:0] INPUT_DATA_MEM[4096],
 
+	input wire is_y,
 	input wire [31:0] QSCALE,
 	input wire [31:0] Y_QMAT[8][8],
 	input wire [31:0] C_QMAT[8][8],
@@ -55,8 +56,8 @@ wire [31:0] AC_BITSTREAM_RUN_SUM;
 
 
 wire dc_output_enable;
-wire [31:0] dc_output_val;
-wire [31:0]  dc_output_size_of_bit;
+wire [63:0] dc_output_val;
+wire [63:0]  dc_output_size_of_bit;
 wire dc_output_flush;
 wire ac_output_enable;
 wire [63:0] ac_output_val;
@@ -181,7 +182,7 @@ mem_to_ac_vlc mem_to_ac_vlc_inst(
 	.input_data(v_data_result),
 
 	//output
-	.vlc_ac(INPUT_AC_DATA2),
+	.vlc_ac(INPUT_AC_DATA2)
 
 );
 
@@ -262,7 +263,7 @@ ac_output ac_output_inst(
 	.flush_bit(ac_output_flush)
 );
 
-assign sb_reset = component_reset_n ;
+//assign sb_reset = component_reset_n ;
 
 assign sb_enable = dc_output_enable
 					|ac_output_enable;

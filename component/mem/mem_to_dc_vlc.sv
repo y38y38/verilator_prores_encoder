@@ -12,7 +12,7 @@ always @(posedge clock, negedge reset_n) begin
 	if (!reset_n) begin
 		vlc_dc <= 32'h0;
 	end else begin
-		if ((counter >= 0) && (counter < block_num)) begin
+		if ( (counter < block_num)) begin
 			vlc_dc <= input_data[(counter * 64) % (block_num * MAX_PIXEL_NUM)];
 		end 
 	end

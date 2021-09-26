@@ -76,13 +76,13 @@ always @(posedge clock, negedge reset_n) begin
 		end else if(counter == 32'h7) begin
 			//encoder horizontal
 			output_enable <= 1'b1;
-			val <= horizontal;
+			val <= {48'h0, horizontal};
 			size_of_bit <= 64'h10;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h8) begin
 			//encoder vertical
 			output_enable <= 1'b1;
-			val <= vertical;
+			val <= {48'h0, vertical};
 			size_of_bit <= 64'h10;
 			flush_bit <= 1'b0;
 		end else if(counter == 32'h9) begin
