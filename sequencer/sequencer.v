@@ -56,8 +56,8 @@ end
 
 //localparam  COMPONENT_Y_TIME = 10000;
 localparam  HEADER_TIME = 32'he0;
-localparam  COMPONENT_Y_TIME = 3000;
-localparam  COMPONENT_C_TIME = 1500;
+localparam  COMPONENT_Y_TIME = 2400;
+localparam  COMPONENT_C_TIME = 1200;
 
 
 
@@ -90,7 +90,7 @@ always @(posedge clock, negedge reset_n) begin
 		end else if (counter == 32'hc0 + slice_num + 32'h11) begin
 			slice_size_tmp <= set_bit_total_byte_size - slice_size_table_size;
 		end else if (counter == HEADER_TIME) begin 
-
+			
 			component_reset_n <= 1'b1;
 		end else if (counter == HEADER_TIME + COMPONENT_Y_TIME) begin 
 //			//$display(" slicetop %x %x", slice_top,set_bit_total_byte_size );

@@ -1,4 +1,4 @@
-module slice_sequencer (
+module component_sequencer (
 	input clock,
 	input reset_n,
 	input [31:0] block_num,

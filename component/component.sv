@@ -67,7 +67,7 @@ wire ac_output_flush;
 wire ac_vlc_output_enable;
 
 
-slice_sequencer slice_sequencer_inst(
+component_sequencer component_sequencer_inst(
 	.clock(clock),
 	.reset_n(component_reset_n),
 
