@@ -210,4 +210,4 @@ always @(posedge clk, negedge reset_n) begin
 end
 
 
-endmodule;
+endmodule

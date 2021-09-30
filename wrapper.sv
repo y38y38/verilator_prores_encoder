@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
-`include "prores_param.v"
-`include "encoder_def.v"
+//`include "prores_param.v"
+//`include "encoder_def.v"
 
 
 module wapper(
@@ -43,6 +43,10 @@ module wapper(
 	output wire [31:0]	slice_sequencer_byte_size
 
     );
+localparam MAX_BLOCK_NUM = 32'd32;
+localparam MAX_PIXEL_NUM =	32'd64;
+localparam BYTE_PER_PIXEL =	32'd2;
+
 
 
 
@@ -221,7 +225,7 @@ set_bit set_bit_inst(
 );
 
 
-endmodule;
+endmodule
 
 
 

@@ -11,4 +11,4 @@ for (i=0;i<8;i++) begin
 end
 
 
-endmodule;
+endmodule

@@ -1,5 +1,5 @@
 
-`include "encoder_config.v"
+//`include "encoder_config.v"
 
 
 //8bit以上溜まったら送信する
@@ -73,4 +73,4 @@ end
 
 
 
-endmodule;
+endmodule

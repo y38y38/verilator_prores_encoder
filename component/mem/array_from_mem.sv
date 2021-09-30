@@ -8,6 +8,10 @@ module array_from_mem(
 	input wire [31:0] offset,
 	output reg [31:0] output_data_array[8][8]
 );
+localparam MAX_BLOCK_NUM = 32'd32;
+localparam MAX_PIXEL_NUM =	32'd64;
+localparam BYTE_PER_PIXEL =	32'd2;
+
 
 genvar i,l;
 generate
@@ -41,4 +45,4 @@ for (j=0;j<8;j++) begin
 end
 endgenerate
 
-endmodule;
+endmodule

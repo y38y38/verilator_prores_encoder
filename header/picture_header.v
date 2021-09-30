@@ -5,11 +5,11 @@ module picture_header(
 	output reg output_enable,
 	output reg [63:0] val,
 	output reg [63:0] size_of_bit,
-	output reg flush_bit,
-	output reg [31:0] counter
+	output reg flush_bit
 
 
 );
+reg [31:0] counter;
 
 always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
@@ -83,5 +83,5 @@ always @(posedge clock, negedge reset_n) begin
 end
 
 
-endmodule;
+endmodule
 

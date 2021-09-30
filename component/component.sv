@@ -279,5 +279,5 @@ assign sb_flush = dc_output_flush
 						|ac_output_flush;
 
 
-endmodule;
+endmodule
 

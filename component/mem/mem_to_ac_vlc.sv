@@ -8,6 +8,10 @@ module mem_to_ac_vlc(
 	output reg [31:0] vlc_ac
 	
 );
+localparam MAX_BLOCK_NUM = 32'd32;
+localparam MAX_PIXEL_NUM =	32'd64;
+localparam BYTE_PER_PIXEL =	32'd2;
+
 
 wire [31:0] conefficient1;
 wire [31:0] block;
@@ -36,7 +40,8 @@ always @(posedge clock, negedge reset_n) begin
 	end
 end
 
-endmodule;
+endmodule
+
 function  [31:0] get_position(input [31:0] coneff);
 	begin
 		case (coneff)

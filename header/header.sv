@@ -118,7 +118,7 @@ matrix matrix_inst (
 	.output_enable(matrix_output_enable),
 	.val(matrix_val),
 	.size_of_bit(matrix_size_of_bit),
-	.flush_bit(matrix_flush),
+	.flush_bit(matrix_flush)
 
 );
 
@@ -135,7 +135,7 @@ picture_header picture_header_inst (
 	.output_enable(picture_header_output_enable),
 	.val(picture_header_val),
 	.size_of_bit(picture_header_size_of_bit),
-	.flush_bit(picture_header_flush),
+	.flush_bit(picture_header_flush)
 
 );
 
@@ -158,7 +158,7 @@ slice_size_table slice_size_table_inst (
 	.output_enable(slice_size_table_output_enable),
 	.val(slice_size_table_val),
 	.size_of_bit(slice_size_table_size_of_bit),
-	.flush_bit(slice_size_table_flush),
+	.flush_bit(slice_size_table_flush)
 
 );
 
@@ -180,7 +180,7 @@ slice_header slice_header_inst (
 	.output_enable(slice_header_output_enable),
 	.val(slice_header_val),
 	.size_of_bit(slice_header_size_of_bit),
-	.flush_bit(slice_header_flush),
+	.flush_bit(slice_header_flush)
 
 );
 
@@ -224,4 +224,4 @@ assign sb_flush =
 
 
 
-endmodule;
+endmodule

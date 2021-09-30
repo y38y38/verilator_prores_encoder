@@ -102,5 +102,5 @@ always @(posedge clock, negedge reset_n) begin
 end
 
 
-endmodule;
+endmodule
 
