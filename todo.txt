@@ -1,8 +1,8 @@
 todo
-・C言語削除
+・一度FPGAで動かす
+
 ・FULLHD/4k対応
 ・変数名変更
-・一度FPGAで動かす
 
 
 [architecture]
