@@ -2,10 +2,15 @@
 module golomb_rice_code(
 	input reset_n,
 	input clk,
+
+
+	input input_valid,
 	input [2:0] k,
 	input [31:0] val,
 	input is_ac_level,
 	input is_minus_n,
+
+	output wire output_valid,
 	output reg [31:0] sum_n,
 	output reg [31:0] codeword_length
 
@@ -29,22 +34,31 @@ always @(posedge clk, negedge reset_n) begin
 	end
 end
 
+reg valid_2clk;
+
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		sum_n <= 32'h0;
 		k_n <= 3'h0;
+		valid_2clk <= 1'b0;
 	end else begin
 		if (k_n!= 0) begin
 			sum_n <= sum;
 		end
 		k_n <= k;
+		valid_2clk <= valid_1clk;
 	end
 end
+
+assign output_valid = valid_2clk;
+
+reg valid_1clk;
 
 //golomb_rice_code
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		sum <= 32'h0;
+		valid_1clk <= 1'b0;
 	end else begin
 		q <= val >> k;
 		if (k != 0) begin
@@ -60,6 +74,7 @@ always @(posedge clk, negedge reset_n) begin
 				sum <= (1<<k) | (val & ((1<<k) - 1));
 			end
 		end
+		valid_1clk <= input_valid;
 	end
 end
 

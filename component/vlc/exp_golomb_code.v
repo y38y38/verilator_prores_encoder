@@ -1,11 +1,17 @@
+//入力に対して、出力が一意にきまるモジュール
+
 module exp_golomb_code(
 	input reset_n,
 	input clk,
+
+	input input_valid,
 	input [31:0] val,
 	input [1:0] is_add_setbit,
 	input [2:0]k,
 	input is_ac_level,
 	input is_ac_minus_n,
+
+	output wire output_valid,
 	output reg [31:0] sum_n,
 	output reg [31:0] codeword_length
 
@@ -15,25 +21,40 @@ reg [31:0] sum;
 reg [31:0] q;
 reg  [1:0] is_add_setbit_n;
 reg [2:0] k_n;
+reg is_ac_level_n;
 
+//1 clk
+//---------------------------------------------------------------------
+reg valid_1clk;
+
+always @(posedge clk, negedge reset_n) begin
+	if (!reset_n) begin
+		valid_1clk <= 1'b0;
+	end else begin
+		valid_1clk <= input_valid;
+	end
+end
 
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		k_n <= 3'h0;
-		sum_n <= 32'h0;
 		is_add_setbit_n <= 2'h0;
+		is_ac_level_n <= 1'b0;
 	end else begin
 		k_n <= k;
-		sum_n <= sum;
 		is_add_setbit_n <= is_add_setbit;
+		is_ac_level_n <= is_ac_level;
 	end
 end
+
+
 
 
 //exp_golomb_code
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
+		valid_1clk <= 1'b0;
 	end else begin
 		if (is_ac_level) begin
 			if (is_ac_minus_n) begin
@@ -41,7 +62,6 @@ always @(posedge clk, negedge reset_n) begin
 			end else begin
 				sum <= (val + (1<<k))<<1|0;
 			end
-			
 		end else begin
 			sum <= (val + (1<<k));
 		end
@@ -94,10 +114,33 @@ always @(posedge clk, negedge reset_n) begin
 end
 
 
+
+//2 clk
+//---------------------------------------------------------------------
+reg valid_2clk;
+always @(posedge clk, negedge reset_n) begin
+	if (!reset_n) begin
+		valid_2clk <= 1'b0;
+	end else begin
+		valid_2clk <= valid_1clk;
+	end
+end
+
+
+
+
+always @(posedge clk, negedge reset_n) begin
+	if (!reset_n) begin
+		sum_n <= 32'h0;
+	end else begin
+		sum_n <= sum;
+	end
+end
+
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 	end else begin
-		if (is_ac_level) begin
+		if (is_ac_level_n) begin
 			codeword_length <= (2 * q) + {29'h0, k_n} + 2 + {30'h0, is_add_setbit_n};//2clk
 		end else begin
 			codeword_length <= (2 * q) + {29'h0,k_n} + 1 + {30'h0,is_add_setbit_n};
@@ -105,6 +148,7 @@ always @(posedge clk, negedge reset_n) begin
 	end
 end
 
+assign output_valid = valid_2clk;
 
 endmodule
 

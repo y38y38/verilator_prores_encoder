@@ -172,19 +172,6 @@ mem_to_dc_vlc mem_to_dc_vlc_inst(
 	.vlc_dc(INPUT_DC_DATA2)
 );
 
-mem_to_ac_vlc mem_to_ac_vlc_inst(
-	.clock(clock),
-	.reset_n(component_reset_n),
-
-	//input
-	.counter(ac_vlc_counter),
-	.block_num(slice_sequencer_block_num),
-	.input_data(v_data_result),
-
-	//output
-	.vlc_ac(INPUT_AC_DATA2)
-
-);
 
 
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
@@ -198,33 +185,6 @@ entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 
 
 );
-
-entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
-	.clk(clock),
-	.reset_n(ac_vlc_reset),
-
-	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
-	//1bit多く用意しておく。
-	.Coeff(INPUT_AC_DATA2),
-
-
-	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
-	.codeword_length_n_n(AC_BITSTREAM_LEVEL_LENGTH)
-);
-
-entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
-	.clk(clock),
-	.reset_n(ac_vlc_reset),
-
-	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
-	//1bit多く用意しておく。
-	.Coeff(INPUT_AC_DATA2),
-
-
-	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
-	.codeword_length_n_n_n(AC_BITSTREAM_RUN_LENGTH)
-);
-
 
 dc_output dc_output_inst(
 	.clock(clock),
@@ -243,6 +203,70 @@ dc_output dc_output_inst(
 );
 
 
+
+mem_to_ac_vlc mem_to_ac_vlc_inst(
+	.clock(clock),
+	.reset_n(component_reset_n),
+
+	//input
+	.counter(ac_vlc_counter),
+	.block_num(slice_sequencer_block_num),
+	.input_data(v_data_result),
+
+	//output
+	.vlc_ac(INPUT_AC_DATA2)
+
+);
+
+
+
+
+reg [31:0] counter;
+
+always @(posedge clock, negedge component_reset_n) begin
+	if (!component_reset_n) begin
+		counter <= 0;
+	end else begin
+		counter <= counter +32'h1;
+	end
+end
+wire ac_level_output_valid;
+
+entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
+	.clk(clock),
+	.reset_n(ac_vlc_reset),
+
+	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
+	//1bit多く用意しておく。
+	.input_valid(ac_vlc_reset),
+	.Coeff(INPUT_AC_DATA2),
+
+	.output_valid(ac_level_output_valid),
+	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
+	.codeword_length_n_n(AC_BITSTREAM_LEVEL_LENGTH)
+);
+
+wire ac_run_output_valid;
+
+entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
+	.clk(clock),
+	.reset_n(ac_vlc_reset),
+
+	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
+	//1bit多く用意しておく。
+	.input_enable(ac_vlc_reset),
+	.Coeff(INPUT_AC_DATA2),
+
+	.output_valid_n(ac_run_output_valid),
+	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
+	.codeword_length_n_n_n(AC_BITSTREAM_RUN_LENGTH)
+);
+
+
+
+wire ac_run_level_valid;
+assign ac_run_level_valid = ac_level_output_valid|ac_run_output_valid;
+
 ac_output ac_output_inst(
 	.clock(clock),
 	.reset_n(ac_vlc_reset),
@@ -253,7 +277,8 @@ ac_output ac_output_inst(
 	.RUN_SUM(AC_BITSTREAM_RUN_SUM),
 	.LEVEL_LENGTH(AC_BITSTREAM_LEVEL_LENGTH),
 	.LEVEL_SUM(AC_BITSTREAM_LEVEL_SUM),
-	.enable(ac_vlc_output_enable),
+//	.enable(ac_vlc_output_enable),
+	.enable(ac_run_level_valid),
 	.ac_vlc_output_flush(ac_vlc_output_flush),
 
 	//output
