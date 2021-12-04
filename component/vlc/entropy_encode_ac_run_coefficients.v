@@ -24,9 +24,9 @@ reg [31:0] codeword_length_n_n;
 reg [31:0] previousRun;
 reg signed [31:0] run;
 reg signed [31:0] run_n;
-reg [1:0] is_expo_golomb_code;
-reg [1:0] is_expo_golomb_code_n;
-reg [1:0] is_expo_golomb_code_n_n;
+//reg [1:0] is_expo_golomb_code;
+//reg [1:0] is_expo_golomb_code_n;
+//reg [1:0] is_expo_golomb_code_n_n;
 reg [1:0] is_add_setbit;
 reg [2:0] k;
 
@@ -47,7 +47,7 @@ always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		previousRun <= 32'h4;
 		run <= 32'h0;
-		is_expo_golomb_code <= 2'h2;
+//		is_expo_golomb_code <= 2'h2;
 		valid_1clk <= 1'h0;
 		valid_2clk <= 1'h0;
 		exp_golomb_code_valid <= 1'b0;
@@ -55,111 +55,114 @@ always @(posedge clk, negedge reset_n) begin
 
 	end else begin
 		//$display("%d",input_enable);
-		if (Coeff != 0) begin
-			if ((previousRun == 0) || (previousRun == 1)) begin
-				if (run < 3) begin
-					is_expo_golomb_code <= 2'b0;//1clk
-					rice_golomb_code_valid <= input_enable;
-					exp_golomb_code_valid <= 1'b0;
-					is_add_setbit<=2'h0;
-					k <= 0;//1clk
-					run_n <= run;//1clk
-					q = run;
+		if (input_enable) begin
+			
+			if (Coeff != 0) begin
+				if ((previousRun == 0) || (previousRun == 1)) begin
+					if (run < 3) begin
+//						is_expo_golomb_code <= 2'b0;//1clk
+						rice_golomb_code_valid <= input_enable;
+						exp_golomb_code_valid <= 1'b0;
+						is_add_setbit<=2'h0;
+						k <= 0;//1clk
+						run_n <= run;//1clk
+						q = run;
 
-				end else begin
-					is_expo_golomb_code <= 2'b1;
+					end else begin
+//						is_expo_golomb_code <= 2'b1;
+						rice_golomb_code_valid <= 1'b0;
+						exp_golomb_code_valid <= input_enable;
+
+						is_add_setbit<=2'h3;
+						k <= 1;
+						run_n <= run - 3;
+					end
+				end else if ((previousRun == 2) || (previousRun == 3)) begin
+					if (run < 2) begin
+//						is_expo_golomb_code <= 2'b0;
+						rice_golomb_code_valid <= input_enable;
+						exp_golomb_code_valid <= 1'b0;
+
+
+						is_add_setbit<=2'h0;
+						k <= 0;
+						run_n <= run;
+						q = run;
+
+					end else begin
+//						is_expo_golomb_code <= 2'b1;
+						rice_golomb_code_valid <= 1'b0;
+						exp_golomb_code_valid <= input_enable;
+
+						is_add_setbit<=2'h2;
+						k <= 1;
+						run_n <= run - 2;
+					end
+				end else if ((previousRun == 4)) begin
+//					is_expo_golomb_code <= 2'b1;
 					rice_golomb_code_valid <= 1'b0;
 					exp_golomb_code_valid <= input_enable;
 
-					is_add_setbit<=2'h3;
-					k <= 1;
-					run_n <= run - 3;
-				end
-			end else if ((previousRun == 2) || (previousRun == 3)) begin
-				if (run < 2) begin
-					is_expo_golomb_code <= 2'b0;
-					rice_golomb_code_valid <= input_enable;
-					exp_golomb_code_valid <= 1'b0;
 
-
-					is_add_setbit<=2'h0;
+					is_add_setbit <= 2'h0;
 					k <= 0;
 					run_n <= run;
-					q = run;
+				end else if ((previousRun >= 5) && (previousRun <= 8)) begin
+					if (run < 4) begin
+//						is_expo_golomb_code <= 2'b0;
+						rice_golomb_code_valid <= input_enable;
+						exp_golomb_code_valid <= 1'b0;
 
-				end else begin
-					is_expo_golomb_code <= 2'b1;
+
+						is_add_setbit<=2'h0;
+						k <= 1;
+						run_n <= run;
+						q = run>>1;
+
+					end else begin
+//						is_expo_golomb_code <= 2'b1;
+						rice_golomb_code_valid <= 1'b0;
+						exp_golomb_code_valid <= input_enable;
+
+
+
+						is_add_setbit<=2'h2;
+						k <= 2;
+						run_n <= run - 4;
+					end
+				end else if ((previousRun >= 9) && (previousRun <= 14)) begin
+//					is_expo_golomb_code <= 2'b1;
 					rice_golomb_code_valid <= 1'b0;
 					exp_golomb_code_valid <= input_enable;
 
-					is_add_setbit<=2'h2;
-					k <= 1;
-					run_n <= run - 2;
-				end
-			end else if ((previousRun == 4)) begin
-				is_expo_golomb_code <= 2'b1;
-				rice_golomb_code_valid <= 1'b0;
-				exp_golomb_code_valid <= input_enable;
 
-
-				is_add_setbit <= 2'h0;
-				k <= 0;
-				run_n <= run;
-			end else if ((previousRun >= 5) && (previousRun <= 8)) begin
-				if (run < 4) begin
-					is_expo_golomb_code <= 2'b0;
-					rice_golomb_code_valid <= input_enable;
-					exp_golomb_code_valid <= 1'b0;
-
-
-					is_add_setbit<=2'h0;
+					is_add_setbit <= 2'h0;
 					k <= 1;
 					run_n <= run;
-					q = run>>1;
-
 				end else begin
-					is_expo_golomb_code <= 2'b1;
+//					is_expo_golomb_code <= 2'b1;
 					rice_golomb_code_valid <= 1'b0;
 					exp_golomb_code_valid <= input_enable;
 
 
-
-					is_add_setbit<=2'h2;
+					is_add_setbit <= 2'h0;
 					k <= 2;
-					run_n <= run - 4;
+					run_n <= run;
 				end
-			end else if ((previousRun >= 9) && (previousRun <= 14)) begin
-				is_expo_golomb_code <= 2'b1;
-				rice_golomb_code_valid <= 1'b0;
-				exp_golomb_code_valid <= input_enable;
-
-
-				is_add_setbit <= 2'h0;
-				k <= 1;
-				run_n <= run;
+				previousRun <= run;
+				run <= 0;
 			end else begin
-				is_expo_golomb_code <= 2'b1;
+				run <= run + 1;
+//				is_expo_golomb_code <= 2'b10;
 				rice_golomb_code_valid <= 1'b0;
-				exp_golomb_code_valid <= input_enable;
+				exp_golomb_code_valid <= 1'b0;
 
 
-				is_add_setbit <= 2'h0;
-				k <= 2;
-				run_n <= run;
 			end
-			previousRun <= run;
-			run <= 0;
-			valid_1clk <= input_enable;
 		end else begin
-			run <= run + 1;
-			is_expo_golomb_code <= 2'b10;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= 1'b0;
-
-			valid_1clk <= 1'b0;
-
 		end
-
 	end
 end
 
@@ -214,17 +217,8 @@ golomb_rice_code golomb_rice_code_inst(
 
 );
 
-/*
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-		is_expo_golomb_code_n <= 2'b10;
-		is_expo_golomb_code_n_n <= 2'b10;
-	end else begin
-		is_expo_golomb_code_n <= is_expo_golomb_code;
-		is_expo_golomb_code_n_n <= is_expo_golomb_code_n;
-	end
-end
-*/
+
+
 reg output_valid;
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
@@ -232,20 +226,6 @@ always @(posedge clk, negedge reset_n) begin
 		codeword_length_n_n <= 0;
 		output_valid <= 1'b0;
 	end else begin
-/*
-		if (is_expo_golomb_code_n_n == 2'b00) begin
-			sum_n_n <= rice_sum;
-			codeword_length_n_n <= rice_codeword_length;
-		end else if (is_expo_golomb_code_n_n == 2'b01) begin
-			sum_n_n <= exp_golomb_sum;
-			codeword_length_n_n <= exp_golomb_codeword_length;//4clk
-		end else if (is_expo_golomb_code_n_n == 2'b10) begin
-			sum_n_n <= 0;
-			codeword_length_n_n <= 0;
-
-
-		end
-*/
 		if (rice_output_valid == 1'b1) begin
 			sum_n_n <= rice_sum;
 			codeword_length_n_n <= rice_codeword_length;
@@ -278,17 +258,6 @@ always @(posedge clk, negedge reset_n) begin
 end
 
 
-/*
-always @(posedge clk, negedge reset_n) begin
-	if (!reset_n) begin
-	end else begin
-		if (is_expo_golomb_code == 2'h2) begin
-//			sum = 0;
-//			codeword_length = 0;
-		end
-	end
-end
-*/
 
 
 endmodule

@@ -25,9 +25,9 @@ reg [31:0] codeword_length_n;
 reg [31:0] previousLevel;
 reg signed [31:0] abs_level_minus_1;
 reg signed [31:0] abs_level_minus_1_n;
-reg [1:0] is_expo_golomb_code;
-reg [1:0] is_expo_golomb_code_n;
-reg [1:0] is_expo_golomb_code_n_n;
+//reg [1:0] is_expo_golomb_code;
+//reg [1:0] is_expo_golomb_code_n;
+//reg [1:0] is_expo_golomb_code_n_n;
 reg [1:0] is_add_setbit;
 reg [2:0] k;
 reg [31:0] q;
@@ -85,7 +85,7 @@ always @(posedge clk, negedge reset_n) begin
 		previousLevel <= 32'h1;
 		exp_golomb_code_valid <= 1'b0;
 		rice_golomb_code_valid <= 1'b0;
-		is_expo_golomb_code <= 2'h2;
+//		is_expo_golomb_code <= 2'h2;
 
 		abs_level_minus_1_n <= 32'h0;
 		first <=1'b1;
@@ -95,20 +95,20 @@ always @(posedge clk, negedge reset_n) begin
 		valid_2clk <= valid_1clk;
 		if (first) begin
 			previousLevel <= 32'h1;
-			is_expo_golomb_code <= 2'h2;
+//			is_expo_golomb_code <= 2'h2;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= 1'b0;
 
 
 			first <=1'b0;
 		end else if (Coeff_n == 32'h0) begin
-			is_expo_golomb_code <= 2'h2;
+//			is_expo_golomb_code <= 2'h2;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= 1'b0;
 		end else begin
 			if (previousLevel == 0)  begin
 				if (abs_level_minus_1 < 3) begin
-					is_expo_golomb_code <= 2'b0;//2clk
+//					is_expo_golomb_code <= 2'b0;//2clk
 			rice_golomb_code_valid <= valid_1clk;
 			exp_golomb_code_valid <= 1'b0;
 
@@ -116,7 +116,7 @@ always @(posedge clk, negedge reset_n) begin
 					k <= 0;
 					abs_level_minus_1_n <= abs_level_minus_1;
 				end else begin
-					is_expo_golomb_code <= 2'b1;
+//					is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -127,7 +127,7 @@ always @(posedge clk, negedge reset_n) begin
 				end
 			end else if (previousLevel == 1) begin
 				if (abs_level_minus_1 < 2) begin
-					is_expo_golomb_code <= 2'b0;
+//					is_expo_golomb_code <= 2'b0;
 			rice_golomb_code_valid <= valid_1clk;
 			exp_golomb_code_valid <= 1'b0;
 
@@ -136,7 +136,7 @@ always @(posedge clk, negedge reset_n) begin
 					k <= 0;
 					abs_level_minus_1_n <= abs_level_minus_1;
 				end else begin
-					is_expo_golomb_code <= 2'b1;
+//					is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -147,7 +147,7 @@ always @(posedge clk, negedge reset_n) begin
 				end
 			end else if ((previousLevel == 2)) begin
 				if (abs_level_minus_1 < 3) begin
-					is_expo_golomb_code <= 2'b0;
+//					is_expo_golomb_code <= 2'b0;
 			rice_golomb_code_valid <= valid_1clk;
 			exp_golomb_code_valid <= 1'b0;
 
@@ -157,7 +157,7 @@ always @(posedge clk, negedge reset_n) begin
 					k <= 0;
 					abs_level_minus_1_n <= abs_level_minus_1;
 				end else begin
-					is_expo_golomb_code <= 2'b1;
+//					is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -167,7 +167,7 @@ always @(posedge clk, negedge reset_n) begin
 					abs_level_minus_1_n <= abs_level_minus_1 - 3;
 				end
 			end else if (previousLevel == 3) begin
-				is_expo_golomb_code <= 2'b1;
+//				is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -176,7 +176,7 @@ always @(posedge clk, negedge reset_n) begin
 				k <= 0;
 				abs_level_minus_1_n <= abs_level_minus_1;
 			end else if ((previousLevel >= 4) && (previousLevel <= 7)) begin
-				is_expo_golomb_code <= 2'b1;
+//				is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -185,7 +185,7 @@ always @(posedge clk, negedge reset_n) begin
 				k <= 1;
 				abs_level_minus_1_n <= abs_level_minus_1;
 			end else begin
-				is_expo_golomb_code <= 2'b1;
+//				is_expo_golomb_code <= 2'b1;
 			rice_golomb_code_valid <= 1'b0;
 			exp_golomb_code_valid <= valid_1clk;
 
@@ -252,6 +252,8 @@ golomb_rice_code golomb_rice_code_inst(
 
 );
 
+
+/*
 always @(posedge clk, negedge reset_n) begin
 
 	if (!reset_n) begin
@@ -265,7 +267,7 @@ always @(posedge clk, negedge reset_n) begin
 		valid_4clk <= valid_3clk;
 	end
 end
-
+*/
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
