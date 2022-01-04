@@ -7,6 +7,10 @@ module component_sequencer (
 	output reg dc_vlc_output_enable,
  	output wire [31:0] dc_vlc_counter,
 	output reg ac_vlc_reset,
+
+	output reg  ac_vlc_input_start,
+	output reg  ac_vlc_input_end,
+
 	output reg ac_vlc_output_enable,
 	output reg ac_vlc_output_flush,
  	output wire [31:0] ac_vlc_counter,
@@ -73,6 +77,13 @@ always @(posedge clock, negedge reset_n) begin
 			ac_vlc_reset <= 0;
 		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 1) begin
 			ac_vlc_reset <= 1;
+			ac_vlc_input_start <= 1;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 2) begin
+			ac_vlc_input_start <= 0;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 1 + 2015) begin
+			ac_vlc_input_end <= 1;
+		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + 1 + 2016) begin
+			ac_vlc_input_end <= 0;
 		end else if (sequence_counter == DCT_TIME + block_num + DC_VLC_TIME + (63* block_num) + 8) begin
 			ac_vlc_reset <= 0;
 		end 

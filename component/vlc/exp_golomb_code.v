@@ -4,14 +4,20 @@ module exp_golomb_code(
 	input reset_n,
 	input clk,
 
+	input input_start,
 	input input_valid,
+	input input_end,
+
 	input [31:0] val,
 	input [1:0] is_add_setbit,
 	input [2:0]k,
 	input is_ac_level,
 	input is_ac_minus_n,
 
+	output wire output_start,
 	output wire output_valid,
+	output wire output_end,
+
 	output reg [31:0] sum_n,
 	output reg [31:0] codeword_length
 
@@ -26,12 +32,18 @@ reg is_ac_level_n;
 //1 clk
 //---------------------------------------------------------------------
 reg valid_1clk;
+reg start_1clk;
+reg end_1clk;
 
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		valid_1clk <= 1'b0;
+		start_1clk <= 1'b0;
+		end_1clk <= 1'b0;
 	end else begin
 		valid_1clk <= input_valid;
+		start_1clk <= input_start;
+		end_1clk <= input_end;
 	end
 end
 
@@ -54,7 +66,7 @@ end
 //exp_golomb_code
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
-		valid_1clk <= 1'b0;
+//		valid_1clk <= 1'b0;
 	end else begin
 		if (is_ac_level) begin
 			if (is_ac_minus_n) begin
@@ -118,11 +130,17 @@ end
 //2 clk
 //---------------------------------------------------------------------
 reg valid_2clk;
+reg start_2clk;
+reg end_2clk;
 always @(posedge clk, negedge reset_n) begin
 	if (!reset_n) begin
 		valid_2clk <= 1'b0;
+		start_2clk <= 1'b0;
+		end_2clk <= 1'b0;
 	end else begin
 		valid_2clk <= valid_1clk;
+		start_2clk <= start_1clk;
+		end_2clk <= end_1clk;
 	end
 end
 
@@ -149,6 +167,8 @@ always @(posedge clk, negedge reset_n) begin
 end
 
 assign output_valid = valid_2clk;
+assign output_start = start_2clk;
+assign output_end = end_2clk;
 
 endmodule
 

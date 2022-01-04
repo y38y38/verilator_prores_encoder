@@ -67,6 +67,9 @@ wire ac_output_flush;
 wire ac_vlc_output_enable;
 
 
+wire ac_vlc_input_start;
+wire ac_vlc_input_end;
+
 component_sequencer component_sequencer_inst(
 	.clock(clock),
 	.reset_n(component_reset_n),
@@ -82,6 +85,10 @@ component_sequencer component_sequencer_inst(
 	.dc_vlc_counter(dc_vlc_counter),
 
 	.ac_vlc_reset(ac_vlc_reset),
+
+	.ac_vlc_input_start(ac_vlc_input_start),
+	.ac_vlc_input_end(ac_vlc_input_end),
+
 	.ac_vlc_output_enable(ac_vlc_output_enable),
 	.ac_vlc_output_flush(ac_vlc_output_flush),
 	.ac_vlc_counter(ac_vlc_counter),
@@ -232,15 +239,25 @@ always @(posedge clock, negedge component_reset_n) begin
 end
 wire ac_level_output_valid;
 
+wire ac_level_output_start;
+wire ac_level_output_end;
+wire ac_run_output_start;
+wire ac_run_output_end;
+
 entropy_encode_ac_level_coefficients entropy_encode_ac_level_coefficients_inst(
 	.clk(clock),
 	.reset_n(ac_vlc_reset),
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
+	.input_start(ac_vlc_input_start),
+	.input_end(ac_vlc_input_end),
+
 	.input_valid(ac_vlc_reset),
 	.Coeff(INPUT_AC_DATA2),
 
+	.output_start(ac_level_output_start),
+	.output_end(ac_level_output_end),
 	.output_valid(ac_level_output_valid),
 	.sum_n_n(AC_BITSTREAM_LEVEL_SUM),
 	.codeword_length_n_n(AC_BITSTREAM_LEVEL_LENGTH)
@@ -254,8 +271,16 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 
 	//本当は19bitで足りるが、本関数の処理上桁溢れする可能性があるので、
 	//1bit多く用意しておく。
+
+
+	.input_start(ac_vlc_input_start),
+	.input_end(ac_vlc_input_end),
 	.input_enable(ac_vlc_reset),
 	.Coeff(INPUT_AC_DATA2),
+
+
+	.output_start_n(ac_run_output_start),
+	.output_end_n(ac_run_output_end),
 
 	.output_valid_n(ac_run_output_valid),
 	.sum_n_n_n(AC_BITSTREAM_RUN_SUM),
@@ -266,6 +291,13 @@ entropy_encode_ac_run_coefficients entropy_encode_ac_run_coefficients_inst(
 
 wire ac_run_level_valid;
 assign ac_run_level_valid = ac_level_output_valid|ac_run_output_valid;
+
+wire ac_run_level_output_start;
+assign  ac_run_level_output_start = ac_level_output_start|ac_run_output_start;
+
+wire ac_run_level_output_end;
+assign  ac_run_level_output_end = ac_level_output_end|ac_run_output_end;
+
 
 ac_output ac_output_inst(
 	.clock(clock),
@@ -278,6 +310,9 @@ ac_output ac_output_inst(
 	.LEVEL_LENGTH(AC_BITSTREAM_LEVEL_LENGTH),
 	.LEVEL_SUM(AC_BITSTREAM_LEVEL_SUM),
 //	.enable(ac_vlc_output_enable),
+
+	.input_start(ac_run_level_output_start),
+	.input_end(ac_run_level_output_end),
 	.enable(ac_run_level_valid),
 	.ac_vlc_output_flush(ac_vlc_output_flush),
 

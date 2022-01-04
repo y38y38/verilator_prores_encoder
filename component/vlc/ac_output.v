@@ -5,6 +5,9 @@ module ac_output(
 	input wire [31:0] RUN_SUM,
 	input wire [31:0] LEVEL_LENGTH,
 	input wire [31:0] LEVEL_SUM,
+
+	input wire input_start,
+	input wire input_end,
 	input wire enable,
 	input wire ac_vlc_output_flush,
 	output reg output_enable,
@@ -20,6 +23,7 @@ always @(posedge clock, negedge reset_n) begin
 			size_of_bit <= 64'h0;
 			flush_bit <= 1'b0;
 	end else begin
+		$display("ac outpu %d %d %d %d", ac_vlc_output_flush,enable, input_start, input_end );
 		if (ac_vlc_output_flush) begin
 			output_enable <= 1'b0;
 			val <= 64'h0;
