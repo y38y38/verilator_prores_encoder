@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module array_to_mem(
 	input wire clock,
 	input wire reset_n,// 0 reset , 1 not reset

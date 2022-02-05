@@ -1,3 +1,6 @@
+`timescale 1ns / 1ps
+
+
 module slice_size_table(
 	input wire clock,
 	input wire reset_n,

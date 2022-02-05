@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module exp_golomb_code(
 	input reset_n,
 	input clk,

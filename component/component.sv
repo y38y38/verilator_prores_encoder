@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module component(
 	input wire clock,
 	input wire component_reset_n,

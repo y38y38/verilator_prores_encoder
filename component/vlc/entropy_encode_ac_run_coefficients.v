@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module entropy_encode_ac_run_coefficients(
 	input clk,
 	input reset_n,

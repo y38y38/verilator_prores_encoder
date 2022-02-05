@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module component_sequencer (
 	input clock,
 	input reset_n,

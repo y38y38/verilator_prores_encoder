@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 module array_from_mem(
 	input wire clock,

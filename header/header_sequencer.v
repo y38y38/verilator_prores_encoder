@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module header_sequencer(
 	input wire clock,
 	input wire  reset_n,

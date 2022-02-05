@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module sequencer (
 	input clock,
 	input reset_n,
