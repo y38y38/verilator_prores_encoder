@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 //入力に対して、出力が一意にきまるモジュール
 
 module exp_golomb_code(

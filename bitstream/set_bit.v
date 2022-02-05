@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 //`include "encoder_config.v"
 

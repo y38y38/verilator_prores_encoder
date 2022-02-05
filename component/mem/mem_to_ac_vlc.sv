@@ -1,4 +1,6 @@
 
+`timescale 1ns / 1ps
+
 module mem_to_ac_vlc(
 	input wire clock,
 	input wire reset_n,// 0 reset , 1 not reset

@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 
 module mem_to_dc_vlc(
 	input wire clock,
