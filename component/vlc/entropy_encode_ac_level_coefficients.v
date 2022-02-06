@@ -10,7 +10,7 @@ module entropy_encode_ac_level_coefficients(
 	input wire input_valid,
 	input  signed [31:0]  Coeff,
 	
-	output wire output_valid,
+	output reg output_valid,
 	output reg [31:0] sum_n_n,
 	output reg [31:0] codeword_length_n_n
 
