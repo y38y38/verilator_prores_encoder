@@ -22,7 +22,7 @@ always @(posedge CLOCK) begin
 	end
 end
 
-
+generate
 genvar  j,k;
 for(j=0;j<8;j++) begin
 	for(k=0;k<8;k++) begin
@@ -41,7 +41,7 @@ for(j=0;j<8;j++) begin
 		end
 	end
 end
-
+endgenerate
 
 endmodule
 

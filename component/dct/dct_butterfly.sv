@@ -20,12 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module dct_butterfly(
-	input CLOCK,
-	input RESET,
-	input input_valid,
-	input [31:0] DATA[8],
-	output output_valid,
-	output [31:0] OUT_DATA[8]
+	input wire CLOCK,
+	input wire RESET,
+	input wire input_valid,
+	input wire signed [31:0] DATA[8],
+	output wire output_valid,
+	output wire signed [31:0] OUT_DATA[8]
     );
 
 	reg signed [31:0] s1[8];

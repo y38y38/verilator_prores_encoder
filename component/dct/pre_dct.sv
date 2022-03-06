@@ -7,7 +7,7 @@ module pre_dct (
 	input input_valid,
 	input wire [31:0] INPUT_DATA[8][8],
 	output reg output_valid,
-	output reg [31:0] OUTPUT_DATA[8][8]
+	output reg signed [31:0] OUTPUT_DATA[8][8]
 );
 
 always @(posedge CLOCK) begin
