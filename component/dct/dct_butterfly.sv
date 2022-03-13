@@ -20,10 +20,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module dct_butterfly(
-	input CLOCK,
-	input RESET,
-	input [31:0] DATA[8],
-	output [31:0] OUT_DATA[8]
+	input wire CLOCK,
+	input wire RESET,
+	input wire input_valid,
+	input wire signed [31:0] DATA[8],
+	output wire output_valid,
+	output wire signed [31:0] OUT_DATA[8]
     );
 
 	reg signed [31:0] s1[8];
@@ -40,6 +42,7 @@ module dct_butterfly(
 			s1[5] <=32'h0;
 			s1[6] <=32'h0;
 			s1[7] <=32'h0;
+			stage1_out_enable <= 1'b0;
 
 		end else begin
 			s1[0] <=DATA[0] + DATA[7];
@@ -50,11 +53,12 @@ module dct_butterfly(
 			s1[5] <=DATA[2] - DATA[5];
 			s1[6] <=DATA[1] - DATA[6];
 			s1[7] <=DATA[0] - DATA[7];
-			stage1_out_enable <= 1'b1;
+			stage1_out_enable <= input_valid;
 		end
 	end
 
 	reg signed [31:0] s2[8];
+	reg stage2_out_enable;
 
 	localparam MATH_COS_PI_4  = 46340;
 
@@ -68,6 +72,7 @@ module dct_butterfly(
 			s2[5] <=32'h0;
 			s2[6] <=32'h0;
 			s2[7] <=32'h0;
+			stage2_out_enable <= 1'b0;
 
 		end else begin
 			s2[0] <=s1[0] + s1[3];
@@ -78,10 +83,12 @@ module dct_butterfly(
 			s2[5] <=(((s1[6] * MATH_COS_PI_4)>>>16) - ((s1[5] * MATH_COS_PI_4) >>> 16));
 			s2[6] <=((s1[6] * MATH_COS_PI_4)>>>16) + ((s1[5] * MATH_COS_PI_4)>>> 16);
 			s2[7] <=s1[7];
+			stage2_out_enable <= stage1_out_enable;
 		end
 	end
 
 	reg signed [31:0] s3[8];
+	reg stage3_out_enable;
 
 	localparam MATH_SIN_PI_8  = 25079;
 	localparam MATH_COS_PI_8  = 60547;
@@ -98,6 +105,7 @@ module dct_butterfly(
 			s3[5] <=32'h0;
 			s3[6] <=32'h0;
 			s3[7] <=32'h0;
+			stage3_out_enable <= 1'b0;
 
 		end else begin
 			s3[0] <=((s2[0] * MATH_COS_PI_4)>>>16) + ((s2[1] * MATH_COS_PI_4)>>>16);
@@ -109,10 +117,12 @@ module dct_butterfly(
 			s3[5] <=s2[4] - s2[5];
 			s3[6] <=s2[7] - s2[6];
 			s3[7] <=s2[6] + s2[7];
+			stage3_out_enable <= stage2_out_enable;
 		end
 	end
 
 	reg signed [31:0] s4[8];
+	reg stage4_out_enable;
 
 	localparam MATH_SIN_PI_16  = 12785;
 	localparam MATH_COS_PI_16  = 64276;
@@ -133,6 +143,7 @@ module dct_butterfly(
 			s4[5] <=32'h0;
 			s4[6] <=32'h0;
 			s4[7] <=32'h0;
+			stage4_out_enable <= 1'b0;
 
 		end else begin
 
@@ -146,10 +157,13 @@ module dct_butterfly(
 			s4[6] <= ((s3[6] * MATH_COS_3_PI_16)>>>16) - ((s3[5] * MATH_SIN_3_PI_16)>>>16);
 
 			s4[7] <= ((s3[7] * MATH_COS_7_PI_16)>>>16) - ((s3[4] * MATH_SIN_7_PI_16)>>>16);
+
+			stage4_out_enable <= stage3_out_enable;
 		end
 	end
 
 	reg signed [31:0] s5[8];
+	reg stage5_out_enable;
 
 	always @(posedge CLOCK ) begin
 		if (RESET == 1'b0) begin
@@ -161,6 +175,7 @@ module dct_butterfly(
 			s5[5] <=32'h0;
 			s5[6] <=32'h0;
 			s5[7] <=32'h0;
+			stage5_out_enable <= 1'b0;
 		end else begin
 			s5[0] <= s4[0] >>>1;
 			s5[1] <= s4[4] >>>1;
@@ -170,6 +185,7 @@ module dct_butterfly(
 			s5[5] <= s4[5] >>>1;
 			s5[6] <= s4[3] >>>1;
 			s5[7] <= s4[7] >>>1;
+			stage5_out_enable <= stage4_out_enable;
 		end
 	end
 
@@ -182,4 +198,5 @@ module dct_butterfly(
 	assign OUT_DATA[5] = s5[5];
 	assign OUT_DATA[6] = s5[6];
 	assign OUT_DATA[7] = s5[7];
+	assign output_valid = stage5_out_enable;
 endmodule

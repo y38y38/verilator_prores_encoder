@@ -4,15 +4,25 @@
 module pre_quant_qt_qscale (
 	input wire CLOCK,
 	input wire RESET,
+	input wire input_valid,
 	input wire signed [31:0] INPUT_DATA[8][8],
 	input wire signed [31:0] QSCALE,
 	input wire is_y,
 	input wire signed [31:0] Y_QMAT[8][8],
 	input wire signed [31:0] C_QMAT[8][8],
+	output reg output_valid,
 	output reg signed [31:0] OUTPUT_DATA[8][8]
 );
 
+always @(posedge CLOCK) begin
+	if(RESET==1'b0) begin
+		output_valid <= 1'b0;
+	end else begin
+		output_valid <= input_valid;
+	end
+end
 
+generate
 genvar  j,k;
 for(j=0;j<8;j++) begin
 	for(k=0;k<8;k++) begin
@@ -31,7 +41,7 @@ for(j=0;j<8;j++) begin
 		end
 	end
 end
-
+endgenerate
 
 endmodule
 

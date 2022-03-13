@@ -19,7 +19,7 @@ always @(posedge clock, negedge reset_n) begin
 	if(!reset_n) begin
 		sequence_counter <= 32'h0;
 	end else begin
-		sequence_counter <= sequence_counter + 32'h1;
+		sequence_counter <= (sequence_counter + 32'h1;
  	end
 end
 

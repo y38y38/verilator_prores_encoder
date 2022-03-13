@@ -24,24 +24,28 @@
 module dct(
 	input CLOCK,
 	input RESET,
+	input INPUT_DATA_ENABLE,
 	input [31:0] INPUT_DATA[8][8],
+	output OUTPUT_DATA_ENABLE,
 	output [31:0] OUTPUT_DATA[8][8]
     );
-logic [31:0] s1_output[8][8];
-
+logic signed [31:0] s1_output[8][8];
+logic s1_butterfly_output_valid[8];
 genvar i;
 generate
 	for(i=0;i<8;i=i+1) begin
 		dct_butterfly butterfly1(
 			.CLOCK(CLOCK),
 			.RESET(RESET),
+			.input_valid(INPUT_DATA_ENABLE),
 			.DATA(INPUT_DATA[i]),
+			.output_valid(s1_butterfly_output_valid[i]),
 			.OUT_DATA(s1_output[i])
 		);
 	end
 endgenerate
 
-logic [31:0] tmp_data[8][8];
+logic signed [31:0] tmp_data[8][8];
 
 genvar  j,k;
 for(j=0;j<8;j++) begin
@@ -50,7 +54,8 @@ for(j=0;j<8;j++) begin
 	end
 end
 
-logic [31:0] s3_output[8][8];
+logic signed [31:0] s3_output[8][8];
+logic s3_butterfly_output_valid[8];
 
 
 genvar l;
@@ -59,14 +64,16 @@ generate
 		dct_butterfly butterfly2(
 			.CLOCK(CLOCK),
 			.RESET(RESET),
+			.input_valid(s1_butterfly_output_valid[l]),
 			.DATA(tmp_data[l]),
+			.output_valid(s3_butterfly_output_valid[l]),
 			.OUT_DATA(s3_output[l])
 		);
 	end
 endgenerate
 
 
-
+assign OUTPUT_DATA_ENABLE = s3_butterfly_output_valid[0];
 
 genvar  o;
 for(o=0;o<8;o++) begin

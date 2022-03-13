@@ -35,11 +35,8 @@ for (j=0;j<8;j++) begin
 		always @(posedge clock, negedge reset_n) begin
 			if (reset_n) begin
 				output_data_array[j][k] 
-//				<= 666;
-//				<= input_data[0];
 				<= input_data[offset + ((counter % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
 				  + (j*8)+k];
-//<= counter;
 			end
 		end
 	end
