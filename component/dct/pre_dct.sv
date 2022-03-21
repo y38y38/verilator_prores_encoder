@@ -26,8 +26,17 @@ for(j=0;j<8;j++) begin
 				OUTPUT_DATA[j][k] <= 32'h0;
 			end else begin
 				OUTPUT_DATA[j][k] <= INPUT_DATA[j][k] - 32'h200;
+//				  $display("%d %d %d %d", RESET,  j,k, OUTPUT_DATA[j][k]);
+
 			end
 		end
+	end
+end
+always @(posedge CLOCK) begin
+	if(RESET==1'b0) begin
+	end else begin
+//	  $display("%d %d", RESET,  OUTPUT_DATA[0][0]);
+
 	end
 end
 

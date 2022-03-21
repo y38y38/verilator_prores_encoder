@@ -37,11 +37,21 @@ for(j=0;j<8;j++) begin
 				end
 //				OUTPUT_DATA[j][k] <= (INPUT_DATA[j][k]<< 2) / (QSCALE * QMAT[j][k]);
 //				OUTPUT_DATA[j][k] <= (INPUT_DATA[j][k]<<2) / 12;
+//				  $display("%d %d %d %d", RESET,  j,k, OUTPUT_DATA[j][k]);
 			end
 		end
 	end
 end
 endgenerate
 
+always @(posedge CLOCK) begin
+	if(RESET==1'b0) begin
+	end else begin
+//	  $display("%d %d ", RESET,  INPUT_DATA[0][0]);
+//	  $display("%d %d ", RESET,  OUTPUT_DATA[1][1]);
+	end
+end
+
+	
 endmodule
 

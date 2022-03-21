@@ -20,6 +20,7 @@ always @(posedge clock, negedge reset_n) begin
 			flush_bit <= 1'b0;
 	end else begin
 		if (enable) begin
+//			$display("%d %d %d", enable, SUM, LENGTH);
 			output_enable <= 1'b1;
 			val <= {32'h0, SUM};
 			size_of_bit <= {32'h0, LENGTH};

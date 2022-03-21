@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+ `include "param.v"
 
 module array_to_mem(
 	input wire clock,
@@ -27,12 +28,31 @@ for (j=0;j<8;j++) begin
 	for (k=0;k<8;k++) begin
 		always @(posedge clock, negedge reset_n) begin
 			if (reset_n) begin
-				output_data[(counter * 64) + (j*8) + k ] 
+`ifdef TEST
+				output_data[((counter/8) * 64) + (j*8) + k ] 
 				<= input_data_array[j][k];
+`else
+				output_data[((counter) * 64) + (j*8) + k ] 
+				<= input_data_array[j][k];
+`endif 
+
+
+
 			end
 		end
 	end
 end
 endgenerate
+always @(posedge clock) begin
+	if(reset_n) begin
+//	  $display("%d %d %d ", reset_n,  counter, input_data_array[0][0]);
+//	  $display("%d %d %d ", reset_n,  counter, output_data[((counter/8)*64)]);
+`ifdef TEST
+//	  $display("%d %d %d %d %d %d", reset_n,  counter, output_data[((counter/8)*64)], counter/8,((counter/8)*64) , output_data[0]);
+`else
+//	  $display("%d %d %d %d %d %d", reset_n,  counter, output_data[((counter)*64)], counter,((counter)*64) , output_data[0]);
+`endif
+	end
+end
 
 endmodule

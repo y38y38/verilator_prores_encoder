@@ -175,7 +175,6 @@ mem_to_dc_vlc mem_to_dc_vlc_inst(
 );
 
 
-
 entropy_encode_dc_coefficients entropy_encode_dc_coefficients_inst(
 	.clk(clock),
 	.reset_n(dc_vlc_reset),

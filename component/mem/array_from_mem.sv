@@ -1,5 +1,7 @@
 `timescale 1ns / 1ps
 
+ `include "param.v"
+
 module array_from_mem(
 	input wire clock,
 	input wire reset_n,// 0 reset , 1 not reset
@@ -35,12 +37,24 @@ for (j=0;j<8;j++) begin
 		always @(posedge clock, negedge reset_n) begin
 			if (reset_n) begin
 				output_data_array[j][k] 
-				<= input_data[offset + ((counter % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+`ifdef TEST
+				<= input_data[offset + (((counter/8) % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+`else
+				<= input_data[offset + (((counter) % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+`endif 
+
 				  + (j*8)+k];
+//				  $display("%d %d %d %d %d", reset_n, counter, j,k, output_data_array[j][k]);
 			end
 		end
 	end
 end
 endgenerate
+always @(posedge clock, negedge reset_n) begin
+	if (reset_n) begin
+//		  $display("%d %d %d ", reset_n, counter, output_data_array[0][0]);
+	end
+end
+
 
 endmodule

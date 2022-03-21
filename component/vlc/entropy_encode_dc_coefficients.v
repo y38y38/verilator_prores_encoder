@@ -39,6 +39,13 @@ reg [31:0] q = 32'h0;
 reg [31:0] codeword_length = 32'h0;
 reg first_diff;
 
+always @(posedge clk) begin
+	if (!reset_n) begin
+	end else begin
+//		$display("%d %d", reset_n, DcCoeff);
+//		$display("%d %d %d", reset_n, sum_n_n, codeword_length_n);
+	end
+end
 
 
 always @(posedge clk) begin
@@ -47,6 +54,7 @@ always @(posedge clk) begin
 		previousDCCoeff <= 32'h0;
 	end else begin
 		previousDCCoeff <= DcCoeff;
+
 	end
 end
 
