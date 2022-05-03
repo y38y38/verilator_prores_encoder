@@ -27,8 +27,9 @@ end
 
 
 `ifdef TEST
-localparam DCT_TIME = 10;
+localparam DCT_TIME = 11;
 localparam DCT_TIME2 = -2;
+
 `else
 localparam DCT_TIME = 10;
 localparam DCT_TIME2 = -2;

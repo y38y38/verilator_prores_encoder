@@ -92,6 +92,9 @@ component_sequencer component_sequencer_inst(
 );
 //wire [31:0] PRE_DCT_OUTPUT[8][8];
 
+
+wire output_data_arrary_valid;
+
 array_from_mem array_form_mem_inst (
 	.clock(clock),
 	.reset_n(component_reset_n),
@@ -103,40 +106,49 @@ array_from_mem array_form_mem_inst (
 
 
 	//output
+	.output_valid(output_data_arrary_valid),
 	.output_data_array(INPUT_DATA_ARRAY2)
 );
 
+wire PRE_DCT_OUTPUT_VALID;
 pre_dct pre_dct_inst (
 	.CLOCK(clock),
 	.RESET(component_reset_n),
 
 	//input
+	.input_valid(output_data_arrary_valid),
 	.INPUT_DATA(INPUT_DATA_ARRAY2),
 
 	//output
+	.output_valid(PRE_DCT_OUTPUT_VALID),
 	.OUTPUT_DATA(PRE_DCT_OUTPUT)
 );
 
 
 //wire [31:0] DCT_OUTPUT[8][8];
+wire DCT_OUTPUT_ENABLE;
 
 dct dct_inst (
 	.CLOCK(clock),
 	.RESET(component_reset_n),
 
 	//input
+	.INPUT_DATA_ENABLE(PRE_DCT_OUTPUT_VALID),
 	.INPUT_DATA(PRE_DCT_OUTPUT),
 
 	//output
+	.OUTPUT_DATA_ENABLE(DCT_OUTPUT_ENABLE),
 	.OUTPUT_DATA(DCT_OUTPUT)
     );
 
 
+wire QUANT_OUTPUT_VALID;
 pre_quant_qt_qscale pre_quant_qt_qscale_inst(
 	.CLOCK(clock),
 	.RESET(component_reset_n),
 
 	//input
+	.input_valid(DCT_OUTPUT_ENABLE),
 	.INPUT_DATA(DCT_OUTPUT),
 	.QSCALE(QSCALE),
 	.is_y(is_y),
@@ -144,6 +156,7 @@ pre_quant_qt_qscale pre_quant_qt_qscale_inst(
 	.C_QMAT(C_QMAT),
 
 	//output
+	.output_valid(QUANT_OUTPUT_VALID),
 	.OUTPUT_DATA(OUTPUT_DATA)
 
 );
@@ -154,6 +167,7 @@ array_to_mem array_to_mem_inst(
 
 	//input
 	.counter(sequence_counter2),
+	.input_valid(QUANT_OUTPUT_VALID),
 	.input_data_array(OUTPUT_DATA),
 	
 	//output

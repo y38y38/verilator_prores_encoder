@@ -203,10 +203,12 @@ end
 
 wire [31:0] exp_golomb_sum;
 wire [31:0] exp_golomb_codeword_length;
-
+wire exp_golomb_output_valid;
 exp_golomb_code exp_golomb_code_inst(
 	.reset_n(reset_n),
 	.clk(clk),
+
+	.input_valid(1),
 	.val(val_n),
 	.is_add_setbit(is_add_setbit),
 	.k(k),
@@ -214,6 +216,7 @@ exp_golomb_code exp_golomb_code_inst(
 	.is_ac_minus_n(0),
 
 	//output
+	.output_valid(exp_golomb_output_valid),
 	.sum_n(exp_golomb_sum),
 	.codeword_length(exp_golomb_codeword_length)
 );
@@ -221,10 +224,12 @@ exp_golomb_code exp_golomb_code_inst(
 
 wire [31:0] rice_sum;
 wire [31:0] rice_codeword_length;
-
+wire rice_output_valid;
 golomb_rice_code golomb_rice_code_inst(
 	.reset_n(reset_n),
 	.clk(clk),
+
+	.input_valid(1),
 	.k(k),
 	.val(val_n),
 	.is_ac_level(0),
@@ -232,6 +237,7 @@ golomb_rice_code golomb_rice_code_inst(
 
 
 	//output
+	.output_valid(rice_output_valid),
 	.sum_n(rice_sum),
 	.codeword_length(rice_codeword_length)
 

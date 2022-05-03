@@ -9,12 +9,25 @@ module array_from_mem(
 	input wire [31:0] input_data[4096],
 //	input wire [31:0] input_data[64],
 	input wire [31:0] offset,
+	output reg output_valid,
 	output reg [31:0] output_data_array[8][8]
 );
 localparam MAX_BLOCK_NUM = 32'd32;
 localparam MAX_PIXEL_NUM =	32'd64;
 localparam BYTE_PER_PIXEL =	32'd2;
 
+always @(posedge clock, negedge reset_n) begin
+	if (!reset_n) begin
+		output_valid <= 1'b1;
+	end else begin
+		if ((counter % 8) == 0) begin
+			output_valid <= 1'b1;
+		end else begin
+			output_valid <= 1'b1;
+		end
+		
+	end
+end
 
 genvar i,l;
 generate
@@ -36,14 +49,18 @@ for (j=0;j<8;j++) begin
 	for (k=0;k<8;k++) begin
 		always @(posedge clock, negedge reset_n) begin
 			if (reset_n) begin
-				output_data_array[j][k] 
 `ifdef TEST
-				<= input_data[offset + (((counter/8) % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+				if ((counter % 8) == 0) begin
+					output_data_array[j][k] 
+					<= input_data[offset + (((counter/8) % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+				  + (j*8)+k];
+				end
 `else
+				output_data_array[j][k] 
 				<= input_data[offset + (((counter) % MAX_BLOCK_NUM) * MAX_PIXEL_NUM)
+				  + (j*8)+k];
 `endif 
 
-				  + (j*8)+k];
 //				  $display("%d %d %d %d %d", reset_n, counter, j,k, output_data_array[j][k]);
 			end
 		end

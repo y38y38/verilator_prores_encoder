@@ -58,7 +58,7 @@ end
 //localparam  COMPONENT_Y_TIME = 10000;
 localparam  HEADER_TIME = 32'he0;
 localparam  COMPONENT_Y_TIME = 2400;
-localparam  COMPONENT_C_TIME = 1200;
+localparam  COMPONENT_C_TIME = 1202;
 
 
 
